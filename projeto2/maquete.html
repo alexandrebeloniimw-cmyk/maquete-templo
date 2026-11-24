@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#2f6db5">
-<title>Igreja atual — Maquete 3D</title>
+<title>Projeto 2 — Maquete 3D</title>
 <style>
   :root { --ink:#1f2a37; --muted:#5b6776; --card:rgba(255,255,255,.92); --accent:#2f6db5; }
   * { box-sizing: border-box; }
@@ -35,7 +35,7 @@
 </head>
 <body>
 <canvas id="c"></canvas>
-<div class="top"><h1>Igreja atual · Maquete 3D</h1><p>Anexo, templo, pátio, estacionamentos e entorno</p></div>
+<div class="top"><h1>Projeto 2 · Maquete 3D</h1><p>Fileira 4 eliminada: corredor de acesso ao anexo</p></div>
 <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -387,7 +387,10 @@
   hwall(225, 40, 700, BH, [door(665)], C.wall, 0.18);                        // Parede divisor nave e anexo; porta do anexo
 
   // ---------- Parede do templo externo (nave x pátio): porta dupla e janela ----------
-  hwall(720, 40, 700, BH, [{ a: 300, b: 390, lh: 2.1 }, win(520)], C.wall, 0.22);
+  hwall(720, 40, 700, BH, [{ a: 300, b: 390, lh: 2.1 }, win(520), { a: 645, b: 685, lh: 2.1 }], C.wall, 0.22);
+  doorLeaf(true, 720, 665, 0.86, 2.08, 0.22);                                // PROJETO 2: porta de entrada do corredor de acesso ao anexo
+  vwall(630, 225, 720, BH, [], 0xd2d4d7, 0.14);                              // PROJETO 2: parede do corredor (lado da nave/altar)
+  rect(630, 320, 700, 720, 0, 0.1, C.corr, { cast: false });                 // PROJETO 2: piso do corredor
   // revestimento SOMENTE da face interna da nave e do altar: paredes em cinza claro
   (function(){
     var gray = 0xd2d4d7, off = 0.116, th = 0.012;
@@ -466,7 +469,7 @@
       });
     })();
     // parede do pátio (face interna): em torno da porta dupla e da janela
-    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 490, 0, BH); ph(720, -1, 550, 700, 0, BH);
+    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 490, 0, BH); ph(720, -1, 550, 645, 0, BH); ph(720, -1, 685, 700, 0, BH); ph(720, -1, 645, 685, 2.1, BH);
     ph(720, -1, 300, 390, 2.1, BH);           // acima da porta
     ph(720, -1, 490, 550, 0, 1.1); ph(720, -1, 490, 550, 2.3, BH);   // abaixo e acima da janela
   })();
@@ -503,7 +506,7 @@
   })();
 
   // ---------- Bancos: 4 fileiras x 10 (Mesa de som no lugar do Banco 1 da Fileira 1) ----------
-  var pewX = [56, 228, 400, 572];
+  var pewX = [56, 228, 400];   // PROJETO 2: Fileira 4 eliminada (dá lugar ao corredor de acesso ao anexo)
   pewX.forEach(function(x0, fi){
     for (var k = 0; k < 10; k++){
       var y0 = 356 + k * 35.5;
@@ -548,7 +551,7 @@
     box(0.5, 0.03, 0.2, 0xbcd5e8, X(200), 0.865, Z(sy + 7.5), null, { cast: false });
     vwall(224, y0 + 4, y0 + 53, 2.4, [], 'HALF', 0.08);                              // parede do corredor de acesso do banheiro
   });
-  rect(645, 730, 685, 830, 0, 0.95, C.bebedouro);                           // bebedouro (vertical, fino)
+  rect(590, 730, 630, 830, 0, 0.95, C.bebedouro);                           // bebedouro (vertical, fino)
 
   // ---------- Estacionamentos ----------
   function line(x1, y1, x2, y2){ rect(x1 - 1.5, y1 - 1.5, x2 + 1.5, y2 + 1.5, 0.05, 0.012, C.line, { cast: false }); }
@@ -710,6 +713,7 @@
     [135, 300, 470, 610].forEach(function(px){
       [252, 380, 470, 560, 650].forEach(function(py){ lamp(px, py, 0.9, 0.22); });
     });
+    [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22); });   // PROJETO 2: corredor
     // salas externas 1 e 2
     isopor(50, 880, 205, 1030); isopor(50, 1030, 205, 1180);
     lampRound(127, 955); lampRound(127, 1105);
@@ -754,12 +758,12 @@
   label('Bateria', 560, 255, 3.1, 1.5); label('Teclado', 110, 258, 3.0, 1.5); label('Guitarra', 262, 255, 3.0, 1.5); label('Baixo', 292, 255, 3.4, 1.3); label('Microfones', 375, 262, 3.0, 2.0);
   label('Piso da nave', 370, 560, 1.4, 2.6);
   label('Mesa de som', 112, 687, 1.7, 2.4);
-  label('Acesso ao anexo', 665, 270, 6.2, 3.2);
+  label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
   label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Sala 1 externo', 127, 955, 3.7, 2.6); label('Sala 2 externo', 127, 1105, 3.7, 2.6);
   label('Varanda', 230, 1030, 3.4, 1.6);
   label('Cobertura (abrigo)', 450, 790, 3.7, 3.0);
-  label('Bebedouro', 665, 780, 2.0, 2.0);
+  label('Bebedouro', 610, 780, 2.0, 2.0);
   label('Estacionamento 1', 150, 1680, 2.2, 3.0); label('Estacionamento 2', 570, 1735, 2.2, 3.0);
   label('Pátio', 370, 1450, 2.4, 1.8);
   label('Portão principal', 580, 1760, 3.8, 3.4);
@@ -776,6 +780,8 @@
     { id: 'banheiros', name: 'Banheiros e varanda', pos: [9, 8, 12], tgt: [-4, 0.8, 1.5], roof: false, labels: false },
     { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false },
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false },
+    { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false },
+    { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
     { id: 'altar',   name: 'Altar',           pos: [-2.5, 3.4, -4.2], tgt: [0, 0.8, -12.6], roof: false, labels: false },
     { id: 'anexo',   name: 'Anexo',           pos: [5, 19, -1],    tgt: [0, 0, -13], roof: false, labels: true },
     { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true }
