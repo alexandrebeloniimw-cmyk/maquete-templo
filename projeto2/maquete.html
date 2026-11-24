@@ -676,6 +676,21 @@
     }
   });
 
+  // ---------- Cabines sanitárias: divisória padrão (painel laminado com vão de 15 cm no piso) e porta de cabine ----------
+  var divMat = mat(0xdfe5e8, { roughness: 0.6 }), divDoorMat = mat(0xc4d3da, { roughness: 0.6 });
+  function divPanel(horiz, fixed, a, b){          // painel de 1,80 m de altura, 4 cm de espessura, erguido 15 cm do piso
+    var len = (b - a) * S, mid = (a + b) / 2;
+    if (horiz) box(len, 1.8, 0.04, 0, X(mid), 0.15 + 0.9, Z(fixed), null, { material: divMat });
+    else box(0.04, 1.8, len, 0, X(fixed), 0.15 + 0.9, Z(mid), null, { material: divMat });
+  }
+  function stallFront(xf, ya, yb, dw){            // frente da cabine (x = xf) com porta padrão de cabine (painel leve, dobradiças, trinco)
+    dw = dw || 0.66; var cc = (ya + yb) / 2, hp = dw / S / 2;
+    divPanel(false, xf, ya, cc - hp); divPanel(false, xf, cc + hp, yb);
+    box(0.035, 1.75, dw - 0.02, 0, X(xf), 0.15 + 0.875, Z(cc), null, { material: divDoorMat });
+    [0.5, 1.4].forEach(function(hy){ box(0.02, 0.1, 0.02, 0xc9ced3, X(xf) + 0.02, hy, Z(cc) - (dw / 2 - 0.02), null, { cast: false }); });   // dobradiças
+    box(0.03, 0.05, 0.1, 0xc9ced3, X(xf) + 0.03, 1.0, Z(cc) + (dw / 2 - 0.1), null, { cast: false });                                         // trinco
+    box(0.012, 0.03, 0.03, 0x3aa655, X(xf) + 0.026, 1.06, Z(cc) + (dw / 2 - 0.1), null, { cast: false });                                      // indicador livre
+  }
   // ---------- Banheiros (box, vasos, pia, corredor) e Salas externas ----------
   rect(50, 730, 255, 880, 0.0, 0.1, C.bath, { cast: false });                // PROJETO 2: banheiros (trocados de lugar com a Sala de Apoio)
   rect(255, 722, 700, 884, 0.0, 0.1, 0xe3ddd0, { cast: false });                // PROJETO 2: Hall (corredor grande aberto, porcelanato claro)
@@ -685,11 +700,11 @@
   rect(50, 1180, 205, 1330, 0.0, 0.1, C.salaExt, { cast: false });           // PROJETO 2: Cozinha
   rect(50, 1330, 205, 1480, 0.0, 0.1, C.salaExt, { cast: false });           // PROJETO 2: Cantina
   hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
-  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [{ a: 217, b: 254, lh: 2.1 }], 'HALF');      // paredes das salas externas: azul mais claro
+  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [{ a: 207, b: 253, lh: 2.1 }], 'HALF');      // paredes das salas externas: azul mais claro
   hwall(1030, 50, 205, BH, [], 'HALF');        hwall(1180, 50, 205, BH, [], 'HALF');
   hwall(1330, 50, 205, BH, [], 'HALF'); hwall(1480, 50, 205, BH, [], 'HALF'); vwall(50, 1180, 1480, BH, [], 'HALF');   // PROJETO 2: Cozinha e Cantina
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1180, BH, [], 'HALF');
-  vwall(255, 730, 880, BH, [{ a: 730, b: 774.5, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
+  vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
   vwall(205, 880, 1180, BH, [door(955), door(1090), win(1146)], 'HALF');
 
   // ---- Salas educacionais externas (Sala 1 e Sala 2): mesa, 6 cadeiras escolares, quadro branco e estante ----
@@ -723,20 +738,21 @@
   winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
   hwall(805, 50, 255, BH, [], 'HALF');
-  doorLeaf(false, 255, 752.25, 0.86, 2.08, 0.18); doorLeaf(true, 880, 235.5, 0.72, 2.08, 0.14);   // Feminino: porta pelo saguão; Masculino: porta própria pela varanda (acesso independente)
-  [730, 805].forEach(function(y0){ [y0 + 20.5, y0 + 53.5].forEach(function(cy){ doorLeaf(false, 154, cy, 0.4, 1.68, 0.1); }); });
+  doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(true, 880, 230, 0.86, 2.08, 0.14);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
   [730, 805].forEach(function(y0, bi){
-    [y0 + 4, y0 + 37, y0 + 70].forEach(function(py){ hwall(py, 54, 154, 1.9, [], 'HALF', 0.06); });
-    vwall(154, y0 + 4, y0 + 70, 1.9, [{ a: y0 + 9.5, b: y0 + 31.5, lh: 1.7 }, { a: y0 + 42.5, b: y0 + 64.5, lh: 1.7 }], 'HALF', 0.06);
-    [y0 + 20.5, y0 + 53.5].forEach(function(cy){
-      box(0.18, 0.75, 0.22, C.white, X(62.5), 0.375, Z(cy), null, {});
+    // 2 cabines (≈ 0,67 × 1,75 m) ao fundo, com divisórias padrão e porta de cabine; pia + espelho na área de acesso (sem corredor interno)
+    var xb = 54, xf = 142, cabs = [[y0 + 4, y0 + 37.5], [y0 + 37.5, y0 + 71]];
+    [y0 + 4, y0 + 37.5, y0 + 71].forEach(function(py){ divPanel(true, py, xb, xf); });
+    cabs.forEach(function(c){
+      stallFront(xf, c[0], c[1], 0.62);
+      var cy = (c[0] + c[1]) / 2;
+      box(0.18, 0.75, 0.22, C.white, X(62.5), 0.375, Z(cy), null, {});               // caixa acoplada
       var bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 18), mat(C.white, { roughness: 0.4 }));
       bowl.scale.set(1, 1, 0.72); bowl.position.set(X(82), 0.2, Z(cy)); bowl.castShadow = true; bowl.receiveShadow = true; root.add(bowl);
     });
-    var sy = bi === 0 ? y0 + 4 : y0 + 55;
-    box(0.64, 0.85, 0.3, C.white, X(200), 0.425, Z(sy + 7.5));
-    box(0.5, 0.03, 0.2, 0xbcd5e8, X(200), 0.865, Z(sy + 7.5), null, { cast: false });
-    vwall(224, y0 + 4, y0 + 53, 2.4, [], 'HALF', 0.08);
+    box(0.64, 0.85, 0.3, C.white, X(200), 0.425, Z(y0 + 11.5));                      // pia (parede norte)
+    box(0.5, 0.03, 0.2, 0xbcd5e8, X(200), 0.865, Z(y0 + 11.5), null, { cast: false });
+    box(0.7, 0.75, 0.02, 0, X(200), 1.55, Z(y0) + 0.09, null, { material: new THREE.MeshStandardMaterial({ color: 0xdde9ef, roughness: 0.05, metalness: 0.8 }), cast: false });   // espelho
   });
   // ---- Hall (corredor grande aberto): banco, painel de avisos na fachada, vaso, tapete ----
   (function(){

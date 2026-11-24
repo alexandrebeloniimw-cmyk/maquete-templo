@@ -893,15 +893,29 @@
       });
     })();
     box(1.9, 0.02, 0.7, 0x35383c, X(345), 0.06, Z(YF) + 0.5, null, { cast: false });
+  // ---------- Cabines sanitárias: divisória padrão (painel laminado com vão de 15 cm no piso) e porta de cabine ----------
+  var divMat = mat(0xdfe5e8, { roughness: 0.6 }), divDoorMat = mat(0xc4d3da, { roughness: 0.6 });
+  function divPanel(horiz, fixed, a, b){          // painel de 1,80 m de altura, 4 cm de espessura, erguido 15 cm do piso
+    var len = (b - a) * S, mid = (a + b) / 2;
+    if (horiz) box(len, 1.8, 0.04, 0, X(mid), 0.15 + 0.9, Z(fixed), null, { material: divMat });
+    else box(0.04, 1.8, len, 0, X(fixed), 0.15 + 0.9, Z(mid), null, { material: divMat });
+  }
+  function stallFront(xf, ya, yb, dw){            // frente da cabine (x = xf) com porta padrão de cabine (painel leve, dobradiças, trinco)
+    dw = dw || 0.66; var cc = (ya + yb) / 2, hp = dw / S / 2;
+    divPanel(false, xf, ya, cc - hp); divPanel(false, xf, cc + hp, yb);
+    box(0.035, 1.75, dw - 0.02, 0, X(xf), 0.15 + 0.875, Z(cc), null, { material: divDoorMat });
+    [0.5, 1.4].forEach(function(hy){ box(0.02, 0.1, 0.02, 0xc9ced3, X(xf) + 0.02, hy, Z(cc) - (dw / 2 - 0.02), null, { cast: false }); });   // dobradiças
+    box(0.03, 0.05, 0.1, 0xc9ced3, X(xf) + 0.03, 1.0, Z(cc) + (dw / 2 - 0.1), null, { cast: false });                                         // trinco
+    box(0.012, 0.03, 0.03, 0x3aa655, X(xf) + 0.026, 1.06, Z(cc) + (dw / 2 - 0.1), null, { cast: false });                                      // indicador livre
+  }
     // ---- banheiros amplos: cabines, PCD, bancada com 3 cubas, espelho; fraldário (fem.) e mictórios (masc.) ----
     function wcRoom(y0, y1, fem){
       var cabs = fem ? [[y0, y0 + 50, false], [y0 + 50, y0 + 100, false], [y0 + 100, y1, true]] : [[y0, y0 + 70, true], [y0 + 70, y0 + 120, false], [y0 + 120, y1, false]];
       var cab = 0xf4f5f4;
-      hwall(cabs[0][1], 50, 125, 1.9, [], cab, 0.05); hwall(cabs[1][1], 50, 125, 1.9, [], cab, 0.05);
-      vwall(125, y0, y1, 1.9, cabs.map(function(c){ var cc = (c[0] + c[1]) / 2, hw = c[2] ? 22.5 : 18; return { a: cc - hw, b: cc + hw, lh: 1.75 }; }), cab, 0.05);
+      divPanel(true, cabs[0][1], 52, 125); divPanel(true, cabs[1][1], 52, 125);                                  // divisórias padrão (vão no piso)
+      cabs.forEach(function(c){ stallFront(125, c[0], c[1], c[2] ? 0.86 : 0.62); });                              // porta padrão de cabine (PCD mais larga)
       cabs.forEach(function(c){
         var cc = (c[0] + c[1]) / 2;
-        doorLeaf(false, 125, cc, c[2] ? 0.9 : 0.72, 1.74, 0.07);
         box(0.18, 0.75, 0.22, C.white, X(56), 0.45, Z(cc)); bowlAt(X(82), Z(cc));
         if (c[2]){ box(0.04, 0.04, 0.8, 0xc9ced3, X(52), 0.85, Z(cc) + 0.55); box(0.04, 0.04, 0.8, 0xc9ced3, X(108), 0.85, Z(cc)); box(0.04, 0.04, 0.5, 0xc9ced3, X(70), 0.85, Z(cc) - 0.5); }
       });
