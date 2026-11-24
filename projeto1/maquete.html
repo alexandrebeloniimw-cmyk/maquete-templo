@@ -37,6 +37,7 @@
 <canvas id="c"></canvas>
 <div class="top"><h1>Projeto 1 · Maquete 3D</h1><p>Prédio de 2 andares no lugar da cobertura</p></div>
 <div class="tools">
+  <button id="tUp" class="on">2º andar</button>
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
   <button id="tSpin">Girar</button>
@@ -102,6 +103,7 @@
   var root = new THREE.Group(); scene.add(root);
   var roofGroup = new THREE.Group(); scene.add(roofGroup);
   var labelGroup = new THREE.Group(); scene.add(labelGroup);
+  var upperGroup = new THREE.Group(); scene.add(upperGroup);      // 2º andar do prédio (laje, pisos, paredes, janelas, portas)
   var forroGroup = new THREE.Group(); scene.add(forroGroup);      // forros e luzes (somem junto com o telhado)
 
   function box(w, h, d, color, x, y, z, parent, o){
@@ -682,6 +684,7 @@
     for (var j = 0; j < 7; j++){ var tq = 8 * r + (j + 1) * r; box(55 * S, tq, 14 * S, stc, X(667.5), tq / 2, Z(776 + 14 * j + 7)); }
     box(0.04, 1.0, 14 * 7 * S + 0.1, 0xdfe3e6, X(635), 1.0, Z(826), null, { cast: false });   // corrimão central entre os lances (painel fino)
 
+    var nUp = root.children.length;
     // laje do 2º andar (cobre o hall, os banheiros e a entrada; vazado sobre a escada)
     box(522 * S, 0.16, 196 * S, slabC, X(311), BH + 0.08, Z(842));
     box(128 * S, 0.16, 66 * S, slabC, X(636), BH + 0.08, Z(907));
@@ -703,6 +706,7 @@
     [130, 250, 370, 490, 630].forEach(function(c){ winFrame(true, 940, c); });
     doorLeaf(true, 888, 180, 0.86, 2.08, 0.14); doorLeaf(true, 888, 440, 0.86, 2.08, 0.14);
     YOFF = 0;
+    root.children.slice(nUp).forEach(function(c){ upperGroup.add(c); });
 
     // telhado cinza (telha metálica) do prédio, caindo para a frente, com platibanda no fundo + caixa d'água
     var cd = 208 * S, drop = 0.2, cw = 662 * S;
@@ -781,7 +785,7 @@
     var sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false, transparent: true }));
     sp.scale.set(wUnits || 3.4, (wUnits || 3.4) / 4, 1);
     sp.position.set(X(xpx), h, Z(ypx)); sp.renderOrder = 10;
-    labelGroup.add(sp);
+    labelGroup.add(sp); return sp;
   }
   label('Anexo ao templo', 370, 100, 6.4, 4.0);
   label('Cozinha', 152, 92, 4.0, 1.9); label('Sala 2', 367, 92, 4.0, 1.7); label('Sala 3', 582, 92, 4.0, 1.7);
@@ -791,9 +795,8 @@
   label('Mesa de som', 112, 687, 1.7, 2.4);
   label('Acesso ao anexo', 665, 270, 6.2, 3.2);
   label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
-  label('Prédio de 2 andares', 375, 812, 7.6, 4.2);
   label('Hall', 330, 800, 2.4, 1.2); label('Escada', 635, 826, 3.2, 1.6); label('Entrada do prédio', 345, 884, 3.4, 3.2);
-  label('Sala 1 (2º andar)', 178, 817, 5.6, 3.0); label('Sala 2 (2º andar)', 440, 817, 5.6, 3.0); label('Corredor (2º andar)', 300, 914, 4.8, 3.4);
+  [label('Sala 1 (2º andar)', 178, 817, 5.6, 3.0), label('Sala 2 (2º andar)', 440, 817, 5.6, 3.0), label('Corredor (2º andar)', 300, 914, 4.8, 3.4), label('Prédio de 2 andares', 375, 812, 7.6, 4.2)].forEach(function(s){ s.userData.up = true; });
   label('Bebedouro', 440, 780, 2.0, 2.0);
   label('Vagas da esquerda (8)', 150, 1330, 2.2, 3.2); label('Vagas da direita (6)', 590, 1200, 2.2, 3.2); label('Corredor de circulação', 370, 1620, 1.4, 3.6);
   label('Pátio', 370, 1450, 2.4, 1.8);
@@ -809,6 +812,7 @@
     { id: 'entrada', name: 'Entrada',         pos: [5.5, 2.2, 28], tgt: [0, 1.6, 10], labels: false },
     { id: 'patio',   name: 'Pátio',           pos: [0, 21, 24],    tgt: [0, 0, 8], labels: true },
     { id: 'predio',   name: 'Prédio',          pos: [8, 4.6, 14],   tgt: [0, 3.2, -1.6], labels: false },
+    { id: 'terreo',   name: 'Térreo: banheiros e hall', pos: [0.3, 15.5, 4.2], tgt: [0.1, 0, -1.5], roof: false, upper: false, labels: true },
     { id: 'andar2',   name: '2º andar',        pos: [0.3, 17.5, 1.8], tgt: [0.1, 3.2, -1.6], roof: false, labels: true },
     { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false },
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false },
@@ -820,10 +824,12 @@
   var anim = null, current = 'geral';
   function setLabels(on){ labelGroup.visible = on; document.getElementById('tLabels').classList.toggle('on', on); }
   function setRoof(on){ roofGroup.visible = on; forroGroup.visible = on; document.getElementById('tRoof').classList.toggle('on', on); }
+  function setUpper(on){ upperGroup.visible = on; labelGroup.children.forEach(function(s){ if (s.userData.up) s.visible = on; }); document.getElementById('tUp').classList.toggle('on', on); }
   function go(v, instant){
     current = v.id;
     [].forEach.call(bar.children, function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
     if (v.roof !== undefined) setRoof(v.roof); else setRoof(true);
+    setUpper(v.upper !== false);
     if (v.labels !== undefined) setLabels(v.labels);
     var p1 = new THREE.Vector3().fromArray(v.pos), t1 = new THREE.Vector3().fromArray(v.tgt);
     if (instant){ camera.position.copy(p1); controls.target.copy(t1); controls.update(); return; }
@@ -833,6 +839,7 @@
     var b = document.createElement('button'); b.className = 'view'; b.textContent = v.name; b.dataset.id = v.id;
     b.onclick = function(){ go(v); }; bar.appendChild(b);
   });
+  document.getElementById('tUp').onclick = function(){ setUpper(!upperGroup.visible); };
   document.getElementById('tRoof').onclick = function(){ setRoof(!roofGroup.visible); };
   document.getElementById('tLabels').onclick = function(){ setLabels(!labelGroup.visible); };
   document.getElementById('tSpin').onclick = function(e){ controls.autoRotate = !controls.autoRotate; e.currentTarget.classList.toggle('on', controls.autoRotate); };
