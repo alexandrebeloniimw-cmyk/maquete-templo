@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Templo — Planta e Maquete 3D</title>
+<style>
+  :root { --ink:#1f2a37; --muted:#5b6776; --accent:#2f6db5; --bg:#f3f6fa; }
+  * { box-sizing:border-box; }
+  body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; color:var(--ink); background:var(--bg); line-height:1.5; }
+  header { background:linear-gradient(135deg,#2f6db5,#1f4d85); color:#fff; padding:36px 20px; text-align:center; }
+  header h1 { margin:0 0 6px; font-size:clamp(24px,4vw,36px); }
+  header p { margin:0; opacity:.9; }
+  nav { position:sticky; top:0; z-index:5; background:#fff; box-shadow:0 2px 10px rgba(30,50,80,.12); display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:10px; }
+  nav a { text-decoration:none; color:var(--accent); font-weight:600; padding:8px 16px; border-radius:999px; background:#eef4fb; }
+  nav a:hover { background:var(--accent); color:#fff; }
+  main { max-width:1100px; margin:0 auto; padding:24px 16px 60px; }
+  section { background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(30,50,80,.10); padding:20px; margin-bottom:28px; }
+  h2 { margin:0 0 4px; color:#1f4d85; }
+  .sub { color:var(--muted); margin:0 0 14px; font-size:14.5px; }
+  .frame { width:100%; height:min(78vh,720px); border:0; border-radius:12px; background:#dfeaf5; display:block; }
+  .planta { text-align:center; }
+  .planta img { max-width:100%; max-height:85vh; border-radius:10px; border:1px solid #dde3ea; }
+  .btns { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
+  .btn { display:inline-block; text-decoration:none; background:var(--accent); color:#fff; padding:10px 18px; border-radius:999px; font-weight:600; font-size:14.5px; }
+  .btn.alt { background:#eef4fb; color:var(--accent); }
+  footer { text-align:center; color:var(--muted); font-size:13px; padding-bottom:30px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Templo — Planta e Maquete 3D</h1>
+  <p>Anexo, nave, altar, banheiros, salas externas, pátio e estacionamentos</p>
+</header>
+<nav>
+  <a href="#maquete">Maquete 3D</a>
+  <a href="#planta">Planta</a>
+  <a href="#prompt">Prompt</a>
+</nav>
+<main>
+  <section id="maquete">
+    <h2>Maquete 3D</h2>
+    <p class="sub">Arraste para girar, role para aproximar. Use os botões da maquete para trocar de vista e ligar ou desligar o telhado e os nomes.</p>
+    <iframe class="frame" src="maquete.html" title="Maquete 3D do templo" allowfullscreen></iframe>
+    <div class="btns">
+      <a class="btn" href="maquete.html" target="_blank" rel="noopener">Abrir em tela cheia</a>
+    </div>
+  </section>
+  <section id="planta">
+    <h2>Planta baixa</h2>
+    <p class="sub">Planta esquemática do templo, sem medidas.</p>
+    <div class="planta"><a href="planta.png" target="_blank" rel="noopener"><img src="planta.png" alt="Planta baixa do templo"></a></div>
+    <div class="btns">
+      <a class="btn alt" href="planta.png" download>Baixar a planta (PNG)</a>
+    </div>
+  </section>
+  <section id="prompt">
+    <h2>Prompt detalhado</h2>
+    <p class="sub">Descrição completa do projeto para continuar o trabalho em outra IA ou conversa.</p>
+    <div class="btns">
+      <a class="btn" href="prompt_3d_etapa10.md" download>Baixar o prompt (.md)</a>
+    </div>
+  </section>
+</main>
+<footer>Maquete apenas ilustrativa, para apresentação.</footer>
+</body>
+</html>
