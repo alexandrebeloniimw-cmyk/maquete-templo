@@ -595,8 +595,12 @@
         for (var f = 0; f < 8; f++) box(0.06, 0.03, 0.2, 0xe8eef6, X(x0 + 14 + f * 12.2), 0.08 + 0.96, cz, null, { cast: false });
         continue;
       }
-      box(2.24, 0.45, 0.44, C.wood, cx, 0.08 + 0.225, cz);
-      box(2.24, 0.55, 0.08, C.wood, cx, 0.08 + 0.45 + 0.27, Z(y0 + 20));   // encosto (lado oposto ao altar)
+      var estofado = mat(0x7b8189, { roughness: 0.95 });                                              // assento e encosto acochoados (cinza)
+      box(2.24, 0.30, 0.44, C.wood, cx, 0.08 + 0.15, cz);                                             // base de madeira
+      [-1, 1].forEach(function(sd){ box(0.07, 0.45, 0.44, C.wood, cx + sd * 1.085, 0.08 + 0.225, cz); });   // laterais de madeira
+      box(2.10, 0.13, 0.40, 0, cx, 0.08 + 0.30 + 0.065, cz, null, { material: estofado });            // assento estofado
+      box(2.24, 0.55, 0.08, C.wood, cx, 0.08 + 0.45 + 0.27, Z(y0 + 20));                              // encosto (moldura de madeira, lado oposto ao altar)
+      box(2.06, 0.38, 0.05, 0, cx, 0.08 + 0.45 + 0.30, Z(y0 + 20) - 0.065, null, { material: estofado });   // encosto estofado
     }
   });
 
