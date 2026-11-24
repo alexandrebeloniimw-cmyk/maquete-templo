@@ -393,6 +393,14 @@
   // ---------- Paredes externas e muros (3 m) ----------
   hwall(40, 40, 700, BH, [], C.wall, 0.22);                                  // Parede das salas do anexo (fundo)
   vwall(40, 40, 720, BH, [], C.wall, 0.22);  vwall(700, 40, 720, BH, [], C.wall, 0.22);
+
+  // ---- Placas acústicas nas paredes da nave: retangulares verticais, cinza escuro, com intervalos entre elas ----
+  (function(){
+    var pc = 0x4a4d52, pf = 0x5d6066;
+    function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
+    [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
+    [385, 475, 565, 655].forEach(function(py){ placa(X(700) - 0.11 - 0.03, -1, py); });
+  })();
   muro(false, X(40), Z(1240), (1760 - 720) * S, BH, 0.22); muro(false, X(700), Z(1240), (1760 - 720) * S, BH, 0.22);   // Muro à esquerda / à direita
   // Muro com grade na frente (muro de 1 m + grade de 2 m), com o Portão principal
   function gradeFrente(x1, x2){
