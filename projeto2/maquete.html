@@ -85,10 +85,10 @@
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SMALL ? 1.5 : 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-
+  
   var scene = new THREE.Scene();
-  scene.background = new THREE.Color(0xdfeaf5);
-  scene.fog = new THREE.Fog(0xdfeaf5, 80, 180);
+  scene.background = new THREE.Color(0xeef2f2);
+  scene.fog = new THREE.Fog(0xe4ecee, 90, 250);
 
   var camera = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
   var controls = new THREE.OrbitControls(camera, canvas);
@@ -100,11 +100,37 @@
   controls.autoRotateSpeed = 1.2;
 
   // ---------- Luzes ----------
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x9fae98, 0.5));
-  var sun = new THREE.DirectionalLight(0xfff1dc, 0.62);
-  sun.position.set(18, 34, 22);
+  // ---------- Céu (com nuvens) e reflexos do ambiente ----------
+  var skyCv = document.createElement('canvas'); skyCv.width = 1024; skyCv.height = 512;
+  (function(){
+    var x = skyCv.getContext('2d'), g = x.createLinearGradient(0, 0, 0, 512);
+    g.addColorStop(0, '#4f86c9'); g.addColorStop(0.25, '#7fb0e3'); g.addColorStop(0.42, '#c4dcf0'); g.addColorStop(0.495, '#eef2f2');
+    g.addColorStop(0.505, '#d9e0d3'); g.addColorStop(1, '#a9b79f');
+    x.fillStyle = g; x.fillRect(0, 0, 1024, 512);
+    var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < 26; i++) {
+      var cx = 90 + rnd() * 840, cy = 60 + rnd() * 150, w = 50 + rnd() * 110;
+      for (var k = 0; k < 9; k++) {
+        var ox = (rnd() - 0.5) * w * 1.5, oy = (rnd() - 0.5) * w * 0.28, r = w * (0.35 + rnd() * 0.35);
+        var rg = x.createRadialGradient(cx + ox, cy + oy, 0, cx + ox, cy + oy, r);
+        rg.addColorStop(0, 'rgba(255,255,255,0.55)'); rg.addColorStop(1, 'rgba(255,255,255,0)');
+        x.fillStyle = rg; x.fillRect(cx + ox - r, cy + oy - r, r * 2, r * 2);
+      }
+    }
+  })();
+  var skyTex = new THREE.CanvasTexture(skyCv);
+  var skyMat = new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false });
+  var skyDome = new THREE.Mesh(new THREE.SphereGeometry(320, 32, 16), skyMat); skyDome.renderOrder = -10; scene.add(skyDome);
+  try {
+    var envScene = new THREE.Scene(); envScene.add(new THREE.Mesh(new THREE.SphereGeometry(50, 32, 16), skyMat));
+    var pm = new THREE.PMREMGenerator(renderer); scene.environment = pm.fromScene(envScene, 0.02).texture; pm.dispose();
+  } catch (e) {}
+
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x9fae98, 0.08));
+  var sun = new THREE.DirectionalLight(0xffeccf, 0.78);
+  sun.position.set(22, 30, 19);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(SMALL ? 1024 : 2048, SMALL ? 1024 : 2048);
+  sun.shadow.mapSize.set(SMALL ? 1024 : 4096, SMALL ? 1024 : 4096);
   var sc = sun.shadow.camera; sc.left = -32; sc.right = 32; sc.top = 34; sc.bottom = -30; sc.near = 1; sc.far = 130;
   sun.shadow.bias = -0.0004;
   scene.add(sun);
@@ -112,9 +138,29 @@
 
   // ---------- Materiais ----------
   var cache = {};
+  // textura de reboco/sujeira leve calculada na própria superfície (sem imagens)
+  function grain(m){
+    m.onBeforeCompile = function(sh){
+      sh.vertexShader = sh.vertexShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;')
+        .replace('#include <begin_vertex>', '#include <begin_vertex>\nvWP = (modelMatrix * vec4(transformed, 1.0)).xyz;');
+      sh.fragmentShader = sh.fragmentShader.replace('#include <common>', '#include <common>\nvarying vec3 vWP;\n' +
+        'float h3(vec3 p){ p = fract(p * 0.3183099 + 0.1); p *= 17.0; return fract(p.x * p.y * p.z * (p.x + p.y + p.z)); }\n' +
+        'float vn(vec3 x){ vec3 i = floor(x), f = fract(x); f = f * f * (3.0 - 2.0 * f);\n' +
+        ' return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),\n' +
+        '            mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }')
+        .replace('#include <color_fragment>', '#include <color_fragment>\n' +
+        ' float gn = vn(vWP * 14.0) * 0.5 + vn(vWP * 45.0) * 0.3 + vn(vWP * 3.0) * 0.35;\n' +
+        ' diffuseColor.rgb *= 0.93 + 0.14 * gn;\n' +
+        ' vec3 wn = normalize(cross(dFdx(vWP), dFdy(vWP)));\n' +
+        ' float vert = 1.0 - step(0.5, abs(wn.y));\n' +
+        ' float dirt = (1.0 - smoothstep(0.0, 0.6, vWP.y)) * vert;\n' +
+        ' diffuseColor.rgb *= 1.0 - 0.2 * dirt * (0.45 + vn(vWP * 7.0));');
+    };
+    return m;
+  }
   function mat(hex, opts){
     var k = hex + JSON.stringify(opts || {});
-    if (!cache[k]) cache[k] = new THREE.MeshStandardMaterial(Object.assign({ color: hex, roughness: 0.9, metalness: 0 }, opts || {}));
+    if (!cache[k]) cache[k] = grain(new THREE.MeshStandardMaterial(Object.assign({ color: hex, roughness: 0.9, metalness: 0, envMapIntensity: 0.55 }, opts || {})));
     return cache[k];
   }
   var C = {
@@ -1112,6 +1158,14 @@
     requestAnimationFrame(tick);
   }
   tick();
+  // reflexos do céu: fortes só no vidro/metal; nas demais superfícies só um toque (evita estourar a luz)
+  scene.traverse(function(o){
+    if (o.isMesh && o.material && o.material.isMeshStandardMaterial) {
+      var m = o.material;
+      if (m.side === THREE.DoubleSide && m.metalness > 0.2 && m.metalness < 0.5) { m.metalness = 0.12; m.roughness = 0.75; }   // telhado: menos brilho de céu
+      m.envMapIntensity = (m.transparent || m.metalness > 0.5 || m.roughness < 0.3) ? 1.0 : 0.28;
+    }
+  });
   window.__ready = true;
 })();
 </script>
