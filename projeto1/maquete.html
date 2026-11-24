@@ -83,7 +83,7 @@
   var canvas = document.getElementById('c');
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
   var SMALL = Math.min(window.innerWidth, window.innerHeight) < 700;      // celular: menos carga gráfica
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SMALL ? 1.5 : 2));
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, SMALL ? 1.25 : 1.5));   // desempenho: limita a resolução interna
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   
@@ -131,7 +131,7 @@
   var sun = new THREE.DirectionalLight(0xffeccf, 0.78);
   sun.position.set(22, 30, 19);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(SMALL ? 1024 : 4096, SMALL ? 1024 : 4096);
+  sun.shadow.mapSize.set(SMALL ? 1024 : 2048, SMALL ? 1024 : 2048);
   var sc = sun.shadow.camera; sc.left = -32; sc.right = 32; sc.top = 34; sc.bottom = -30; sc.near = 1; sc.far = 130;
   sun.shadow.bias = -0.0004;
   scene.add(sun);
@@ -150,7 +150,7 @@
         ' return mix(mix(mix(h3(i), h3(i + vec3(1,0,0)), f.x), mix(h3(i + vec3(0,1,0)), h3(i + vec3(1,1,0)), f.x), f.y),\n' +
         '            mix(mix(h3(i + vec3(0,0,1)), h3(i + vec3(1,0,1)), f.x), mix(h3(i + vec3(0,1,1)), h3(i + vec3(1,1,1)), f.x), f.y), f.z); }')
         .replace('#include <color_fragment>', '#include <color_fragment>\n' +
-        ' float gn = vn(vWP * 14.0) * 0.5 + vn(vWP * 45.0) * 0.3 + vn(vWP * 3.0) * 0.35;\n' +
+        (SMALL ? ' float gn = vn(vWP * 14.0) * 0.9;\n' : ' float gn = vn(vWP * 14.0) * 0.5 + vn(vWP * 45.0) * 0.3 + vn(vWP * 3.0) * 0.35;\n') +
         ' diffuseColor.rgb *= 0.93 + 0.14 * gn;\n' +
         ' vec3 wn = normalize(cross(dFdx(vWP), dFdy(vWP)));\n' +
         ' float vert = 1.0 - step(0.5, abs(wn.y));\n' +
@@ -370,9 +370,11 @@
       g.fillStyle = ((i + j) % 2 ? '#efe2c9' : '#e6d6b9'); g.fillRect(i * 32 + 2, j * 32 + 2, 28, 28);
     }
   })();
+  var tileCache = {};      // desempenho: reaproveita textura/material de mesmo tamanho
   function tileMat(rx, ry){
+    var k = rx.toFixed(3) + '_' + ry.toFixed(3); if (tileCache[k]) return tileCache[k];
     var t = new THREE.CanvasTexture(tileCv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(rx, ry);
-    return new THREE.MeshStandardMaterial({ map: t, roughness: 0.85 });
+    return (tileCache[k] = new THREE.MeshStandardMaterial({ map: t, roughness: 0.85 }));
   }
   // muro: horiz=true segue o eixo X (largura len); false segue o eixo Z
   function muro(horiz, cx, cz, len, h, th){
@@ -1291,6 +1293,8 @@
   go(views[0], true);
   var clock = new THREE.Clock();
   function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
+  var need = 60;
+  ['pointerdown','pointerup','click','keydown','wheel','touchstart','touchend','resize'].forEach(function(ev){ window.addEventListener(ev, function(){ need = 40; }, { passive: true }); });
   function tick(){
     var dt = clock.getDelta();
     if (anim){
@@ -1301,8 +1305,9 @@
       if (anim.t >= 1) anim = null;
     }
     if (window.__fpTick) window.__fpTick();
-    controls.update();
-    renderer.render(scene, camera);
+    var moved = controls.update();
+    // DESEMPENHO: só redesenha quando algo muda (câmera, animação, giro, clique/toque); parado, o aparelho descansa
+    if (moved || anim || controls.autoRotate || need > 0){ renderer.render(scene, camera); if (need > 0) need--; }
     requestAnimationFrame(tick);
   }
   tick();
@@ -1314,6 +1319,39 @@
       m.envMapIntensity = (m.transparent || m.metalness > 0.5 || m.roughness < 0.3) ? 1.0 : 0.28;
     }
   });
+
+  // ---- DESEMPENHO: junta peças estáticas de mesmo material em poucas malhas (de ~1.500 para ~150 chamadas de desenho por quadro) ----
+  (function(){
+    function mergeStatic(group){
+      group.updateMatrixWorld(true);
+      var inv = new THREE.Matrix4().copy(group.matrixWorld).invert(), list = [], buckets = {}, order = [];
+      group.traverse(function(o){
+        var g = o.geometry, a = g && g.attributes;
+        if (o.isMesh && o.visible && !Array.isArray(o.material) && a && a.position && a.normal && a.uv && Object.keys(a).length === 3) list.push(o);
+      });
+      list.forEach(function(o){
+        var g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone();
+        g.applyMatrix4(new THREE.Matrix4().multiplyMatrices(inv, o.matrixWorld));
+        var key = o.material.uuid + (o.castShadow ? 'c' : 'n') + (o.receiveShadow ? 'r' : 'n') + o.renderOrder;
+        if (!buckets[key]){ buckets[key] = { mat: o.material, cast: o.castShadow, recv: o.receiveShadow, ro: o.renderOrder, gs: [] }; order.push(key); }
+        buckets[key].gs.push(g);
+        o.parent.remove(o);
+      });
+      order.forEach(function(k){
+        var b = buckets[k], n = 0, i, off = 0;
+        b.gs.forEach(function(g){ n += g.attributes.position.count; });
+        var P = new Float32Array(n * 3), N = new Float32Array(n * 3), U = new Float32Array(n * 2), uo = 0;
+        b.gs.forEach(function(g){
+          P.set(g.attributes.position.array, off * 3); N.set(g.attributes.normal.array, off * 3); U.set(g.attributes.uv.array, uo);
+          off += g.attributes.position.count; uo += g.attributes.uv.count * 2; g.dispose();
+        });
+        var geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.BufferAttribute(P, 3)); geo.setAttribute('normal', new THREE.BufferAttribute(N, 3)); geo.setAttribute('uv', new THREE.BufferAttribute(U, 2));
+        var m = new THREE.Mesh(geo, b.mat); m.castShadow = b.cast; m.receiveShadow = b.recv; m.renderOrder = b.ro; group.add(m);
+      });
+    }
+    scene.children.slice().forEach(function(c){ if (c.isGroup && c !== labelGroup) mergeStatic(c); });
+  })();
   window.__ready = true;
 })();
 </script>
