@@ -798,6 +798,27 @@
     // jardineiras na entrada (sob o balanço)
     [275, 415].forEach(function(px){ box(0.9, 0.5, 0.45, stoneC, X(px), 0.25, Z(955)); plant(X(px), Z(955), 0.5, 1.3); });
     // ================= 2º ANDAR =================
+    // marquise de policarbonato (fumê) em balanço sobre a porta de entrada: estrutura de aço preto, caimento para a frente, LED na borda
+    (function(){
+      var W = 140 * S, L = (1090 - 940) * S - 0.1, hw = 2.9, hf = 2.6;
+      var th = Math.atan((hw - hf) / L);
+      var cv = document.createElement('canvas'); cv.width = 64; cv.height = 64; var g = cv.getContext('2d');
+      g.fillStyle = '#9fbdc6'; g.fillRect(0, 0, 64, 64);
+      for (var k = 0; k < 8; k++){ g.fillStyle = 'rgba(40,70,82,.22)'; g.fillRect(k * 8, 0, 1.6, 64); }
+      var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set(W / 0.4, 1);
+      var pc = new THREE.MeshStandardMaterial({ map: tx, color: 0x8fb4bf, transparent: true, opacity: 0.58, roughness: 0.18, metalness: 0.25, side: THREE.DoubleSide });
+      var mg = new THREE.Group(); mg.position.set(X(345), hw, Z(940) + 0.1); mg.rotation.x = th;
+      function part(w, hh, d, x, y, z, m){ var q = new THREE.Mesh(new THREE.BoxGeometry(w, hh, d), m); q.position.set(x, y, z); q.castShadow = false; mg.add(q); return q; }
+      var steel = mat(blk, { roughness: 0.45, metalness: 0.4 });
+      part(W, 0.035, L, 0, 0.03, L / 2, pc);
+      [-W / 2, W / 2].forEach(function(sx){ part(0.07, 0.11, L, sx, -0.03, L / 2, steel); });
+      [0.25, 0.5, 0.75].forEach(function(f){ part(W, 0.05, 0.05, 0, -0.01, L * f, steel); });
+      part(W + 0.14, 0.13, 0.07, 0, 0.0, 0.03, steel);
+      part(W + 0.14, 0.16, 0.08, 0, 0.0, L, steel);
+      part(W, 0.02, 0.025, 0, -0.1, L - 0.03, new THREE.MeshBasicMaterial({ color: 0xfff1c4 }));
+      root.add(mg);
+      [[-0.9, 0.55], [0.9, 0.55], [0, 1.9]].forEach(function(q){ var m = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.02, 16), ledM); m.position.set(X(345) + q[0], 2.55 - 0.12 * q[1], Z(940) + 0.1 + q[1] * L / 2.1); root.add(m); });
+    })();
     var nUp = root.children.length;
     // (2º andar) forro de madeira sob o balanço + spots de LED
     box(650 * S, 0.04, 60 * S, 0, X(375), BH - 0.02, Z(970), null, { material: slatMat(650 * S / 0.4, 1), cast: false });
@@ -952,6 +973,7 @@
   label('Acesso ao anexo', 665, 270, 6.2, 3.2);
   label('Banheiro Feminino', 150, 776, 2.6, 3.0); label('Banheiro Masculino', 150, 885, 2.6, 3.0);
   label('Hall e recepção', 330, 800, 2.7, 2.6); label('Escada', 635, 826, 3.2, 1.6); label('Entrada do prédio', 345, 950, 3.4, 3.2);
+  label('Marquise de policarbonato', 345, 1075, 3.3, 3.6).userData.hideIn = ['andar2', 'sala', 'hall'];
   label('Bebedouro', 262, 830, 1.5, 1.7); label('Ar-condicionado', 480, 735, 2.4, 2.4);
   labelGroup.children.slice(-7).forEach(function(s){ s.userData.hideIn = ['andar2', 'sala']; });
   // (rótulos do térreo acima somem nas vistas do 2º andar)
