@@ -249,7 +249,8 @@
     rect(40, 720, 700, 1760, 0, 0.05, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: tx, roughness: 0.9 }) });   // pátio
   })();
   rect(40, 40, 700, 230, 0, 0.06, C.anexo, { cast: false });                 // bloco do anexo
-  [[50,210],[210,370],[370,530]].forEach(function(r){ rect(r[0], 50, r[1], 155, 0.06, 0.04, C.salaAnexo, { cast: false }); });   // PROJETO 2: 3 salas
+  [[50,178],[273,401],[401,530]].forEach(function(r){ rect(r[0], 50, r[1], 155, 0.06, 0.04, C.salaAnexo, { cast: false }); });
+  rect(178, 50, 273, 155, 0.06, 0.04, 0xdfe7ea, { cast: false });            // PROJETO 2: banheiro do anexo (entre Sala 1 e Sala 2)   // PROJETO 2: 3 salas
   rect(530, 50, 625, 155, 0.06, 0.04, 0xdfe7ea, { cast: false });            // PROJETO 2: banheiro PCD unissex
   rect(625, 50, 695, 155, 0.06, 0.04, 0xe8d9c0, { cast: false });            // PROJETO 2: Sala de Apoio às Mamães (piso amadeirado claro)
   rect(50, 155, 700, 220, 0.06, 0.04, C.corr, { cast: false });              // corredor do anexo
@@ -406,21 +407,25 @@
 
   // ---------- Anexo (paredes das salas com altura padrão de 3 m) ----------
   // PROJETO 2: anexo reorganizado (3 salas + banheiro PCD unissex + Sala de Apoio) com corredor y155..220 e bebedouro
-  [210, 370, 530, 625].forEach(function(px){ vwall(px, 50, 155, BH); });
+  [178, 273, 401, 530, 625].forEach(function(px){ vwall(px, 50, 155, BH); });
   vwall(695, 50, 155, BH);
-  hwall(155, 50, 695, BH, [door(100), win(175), door(260), win(335), door(420), win(495), { a: 553, b: 601, lh: 2.1 }, door(660)]);
+  hwall(155, 50, 695, BH, [door(78), win(142), { a: 205.5, b: 245.5, lh: 2.1 }, door(301), win(365), door(429), win(493), { a: 553, b: 601, lh: 2.1 }, door(660)]);
   doorLeaf(true, 225, 665, 0.86, 2.08, 0.2);                                // porta de madeira de acesso ao anexo
-  [100, 260, 420, 660].forEach(function(c){ doorLeaf(true, 155, c); });      // portas de madeira: Salas 1-3 e Sala de Apoio
+  [78, 301, 429, 660].forEach(function(c){ doorLeaf(true, 155, c); });
+  doorLeaf(true, 155, 225.5, 0.8, 2.08, 0.16);                              // porta do banheiro do anexo      // portas de madeira: Salas 1-3 e Sala de Apoio
   doorLeaf(true, 155, 577, 0.9, 2.08, 0.16);                                // porta do banheiro PCD
-  [175, 335, 495].forEach(function(c){ winFrame(true, 155, c); });           // janelas das 3 salas
+  [142, 365, 493].forEach(function(c){ winFrame(true, 155, c); });           // janelas das 3 salas
   (function(){
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
-    [130, 290, 450].forEach(function(cx){
+    [114, 337, 465.5].forEach(function(cx){
       acBox(X(cx), 2.45, Z(40) + 0.11 + 0.1);                                                   // split na parede do fundo
       box(1.3, 0.05, 0.55, 0xb58a5c, X(cx), 0.76, Z(115)); [-0.55, 0.55].forEach(function(o){ box(0.05, 0.72, 0.5, 0xdad7d0, X(cx) + o, 0.4, Z(115)); });
       [-0.4, 0, 0.4].forEach(function(o){ box(0.4, 0.04, 0.4, 0x3d4249, X(cx) + o, 0.45, Z(135)); box(0.4, 0.38, 0.04, 0x3d4249, X(cx) + o, 0.66, Z(135) + 0.19); box(0.06, 0.43, 0.06, 0x8a8f94, X(cx) + o, 0.22, Z(135)); });
       box(1.5, 0.85, 0.04, 0x16191c, X(cx), 1.5, Z(40) + 0.11 + 0.02);                          // tela
     });
+    // banheiro do anexo (x178..273, y50..155): vaso com caixa acoplada e pia
+    box(0.26, 0.7, 0.16, C.white, X(225), 0.6, Z(56)); var wc2 = new THREE.Mesh(new THREE.CylinderGeometry(0.18, 0.14, 0.4, 18), mat(C.white, { roughness: 0.4 })); wc2.scale.set(0.85, 1, 1.25); wc2.position.set(X(225), 0.2, Z(72)); wc2.castShadow = true; root.add(wc2);
+    box(0.4, 0.85, 0.36, C.white, X(260), 0.425, Z(107)); box(0.32, 0.03, 0.26, 0xbcd5e8, X(260), 0.865, Z(107), null, { cast: false });
     // banheiro PCD unissex (x530..625, y50..155): vaso, pia, barras de apoio, espelho
     box(0.18, 0.75, 0.22, C.white, X(536), 0.375, Z(111)); var wb = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 18), mat(C.white, { roughness: 0.4 })); wb.scale.set(1, 1, 0.72); wb.position.set(X(556), 0.2, Z(111)); wb.castShadow = true; root.add(wb);
     box(0.04, 0.04, 0.8, 0xc9ced3, X(534), 0.85, Z(125)); box(0.04, 0.04, 0.8, 0xc9ced3, X(582), 0.85, Z(100)); box(0.8, 0.04, 0.04, 0xc9ced3, X(560), 0.85, Z(76));
@@ -899,12 +904,12 @@
     lampRound(110, 805); lampRound(200, 805); [310, 400, 490, 580, 665].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
     // salas do anexo e cozinha: laje emboçada branca lisa + luzes
     var lajeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0x8c8c88 });
-    [[50, 210], [210, 370], [370, 530], [530, 625], [625, 695]].forEach(function(r){
+    [[50, 178], [178, 273], [273, 401], [401, 530], [530, 625], [625, 695]].forEach(function(r){
       var cx = (r[0] + r[1]) / 2;
       box((r[1] - r[0]) * S, 0.08, 105 * S, 0, X(cx), BH - 0.04, Z(102.5), forroGroup, { material: lajeMat, cast: false });
       lampRound(cx, 100);
     });
-    isopor(50, 155, 700, 220); [130, 290, 450, 580, 660].forEach(function(px){ lampRound(px, 188); });   // corredor do anexo
+    isopor(50, 155, 700, 220); [114, 225, 337, 465, 580, 660].forEach(function(px){ lampRound(px, 188); });   // corredor do anexo
   })();
 
   // ---------- Árvores ----------
@@ -931,7 +936,7 @@
     labelGroup.add(sp);
   }
   label('Anexo ao templo', 370, 100, 6.4, 4.0);
-  label('Sala 1', 130, 100, 4.0, 1.7); label('Sala 2', 290, 100, 4.0, 1.7); label('Sala 3', 450, 100, 4.0, 1.7); label('Banheiro PCD', 577, 100, 4.0, 2.0); label('Apoio às Mamães', 660, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
+  label('Sala 1', 114, 100, 4.0, 1.7); label('Banheiro (anexo)', 225.5, 100, 4.0, 1.9); label('Sala 2', 337, 100, 4.0, 1.7); label('Sala 3', 465.5, 100, 4.0, 1.7); label('Banheiro PCD', 577, 100, 4.0, 2.0); label('Apoio às Mamães', 660, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
   label('Altar', 160, 250, 2.6, 1.5); label('Plataforma 2', 335, 252, 2.3, 2.6); label('Plataforma 1', 335, 297, 1.6, 2.6);
   label('Bateria', 560, 255, 3.1, 1.5); label('Teclado', 110, 258, 3.0, 1.5); label('Guitarra', 262, 255, 3.0, 1.5); label('Baixo', 292, 255, 3.4, 1.3); label('Microfones', 375, 262, 3.0, 2.0);
   label('Piso da nave', 370, 560, 1.4, 2.6);
@@ -985,10 +990,11 @@
     { id: 'cozinhae', name: 'Cozinha', g: 'Salas externas', pos: [-3.5, 1.65, 5.8], tgt: [-6.2, 1.1, 7.8], roof: true, labels: false, fp: true },
     { id: 'cantinae', name: 'Cantina', g: 'Salas externas', pos: [-3.5, 1.65, 8.9], tgt: [-6.2, 1.1, 10.7], roof: true, labels: false, fp: true },
     { id: 'anexocorr', name: 'Corredor do anexo (leste-oeste)', g: 'Anexo', pos: [-5.8, 1.65, -14.24], tgt: [6.4, 1.5, -14.24], roof: true, labels: false, fp: true },
-    { id: 'sala1a', name: 'Sala 1 (anexo)', g: 'Anexo', pos: [-3.5, 1.65, -15.04], tgt: [-6.2, 1.3, -16.5], roof: true, labels: false, fp: true },
-    { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [-0.3, 1.65, -15.04], tgt: [-2.9, 1.3, -16.5], roof: true, labels: false, fp: true },
+    { id: 'sala1a', name: 'Sala 1 (anexo)', g: 'Anexo', pos: [-4.4, 1.65, -15.04], tgt: [-6.2, 1.3, -16.5], roof: true, labels: false, fp: true },
+    { id: 'wcanexo', name: 'Banheiro (anexo)', g: 'Anexo', pos: [-2.2, 1.65, -15.04], tgt: [-3.6, 1.1, -16.6], roof: true, labels: false, fp: true },
+    { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [0.2, 1.65, -15.04], tgt: [-1.9, 1.3, -16.5], roof: true, labels: false, fp: true },
     { id: 'apoiofp', name: 'Sala de Apoio às Mamães (anexo)', g: 'Anexo', pos: [5.85, 1.65, -15.06], tgt: [5.8, 1.15, -17.0], roof: true, labels: false, fp: true },
-    { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [2.9, 1.65, -15.04], tgt: [0.3, 1.3, -16.5], roof: true, labels: false, fp: true },
+    { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [2.8, 1.65, -15.04], tgt: [0.9, 1.3, -16.5], roof: true, labels: false, fp: true },
     { id: 'pcd', name: 'Banheiro PCD (anexo)', g: 'Anexo', pos: [4.6, 1.65, -15.04], tgt: [3.5, 1.2, -16.8], roof: true, labels: false, fp: true }
   ];
   var bar = document.getElementById('views');
