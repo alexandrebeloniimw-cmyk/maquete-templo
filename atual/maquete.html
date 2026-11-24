@@ -6,57 +6,69 @@
 <meta name="theme-color" content="#2f6db5">
 <title>Igreja atual — Maquete 3D</title>
 <style>
-  :root { --ink:#1f2a37; --muted:#5b6776; --card:rgba(255,255,255,.92); --accent:#2f6db5; }
+  :root { --ink:#1f2a37; --muted:#5b6776; --card:rgba(255,255,255,.92); --accent:#2f6db5; --navy:#1f3a5c; }
   * { box-sizing: border-box; }
-  html, body { margin:0; height:100%; overflow:hidden; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color:var(--ink); background:#dfeaf5; }
-  #c { position:fixed; inset:0; width:100%; height:100%; display:block; touch-action:none; }
-  .top { position:fixed; left:16px; top:14px; background:var(--card); padding:10px 16px; border-radius:14px; box-shadow:0 4px 18px rgba(30,50,80,.18); max-width:min(70vw,420px); }
-  .top h1 { margin:0; font-size:18px; letter-spacing:.2px; }
-  .top p { margin:2px 0 0; font-size:12.5px; color:var(--muted); }
-  .tools { position:fixed; right:14px; top:14px; display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end; max-width:55vw; }
-  .bar { position:fixed; left:0; right:0; bottom:14px; display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:0 12px; }
-  button { font:inherit; font-size:13.5px; border:0; cursor:pointer; padding:9px 14px; border-radius:999px; background:var(--card); color:var(--ink); box-shadow:0 3px 12px rgba(30,50,80,.18); transition:transform .12s, background .12s; }
-  button:hover { transform:translateY(-1px); background:#fff; }
+  html, body { margin:0; height:100%; overflow:hidden; font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif; color:var(--ink); background:#e9eff6; }
+  #app { display:flex; width:100%; height:100%; }
+  #stage { position:relative; flex:1 1 auto; min-width:0; min-height:0; background:linear-gradient(#cfe0f1,#e6efdc); }
+  #c { position:absolute; inset:0; width:100%; height:100%; display:block; touch-action:none; }
+  #side { order:-1; flex:0 0 292px; width:292px; background:#fff; border-right:1px solid #dbe3ec; display:flex; flex-direction:column; min-height:0; }
+  .top { padding:16px 18px 8px; }
+  .top h1 { margin:0; font-size:18px; letter-spacing:.2px; color:var(--navy); }
+  .top p { margin:4px 0 0; font-size:12.5px; color:var(--muted); line-height:1.35; }
+  .tools { display:flex; flex-wrap:wrap; gap:7px; padding:6px 18px 12px; border-bottom:1px solid #e6ecf3; }
+  button { font:inherit; font-size:13.5px; border:0; cursor:pointer; padding:9px 14px; border-radius:999px; background:#eef3f8; color:var(--ink); transition:background .12s, transform .12s; }
+  button:hover { background:#e1eaf3; }
+  .tools button { flex:1 1 auto; padding:8px 10px; font-size:13px; font-weight:600; }
   button.on { background:var(--accent); color:#fff; }
-  button.view.active { outline:2px solid var(--accent); }
-  .hint { position:fixed; left:50%; transform:translateX(-50%); bottom:64px; font-size:12px; color:#33465c; background:rgba(255,255,255,.7); padding:4px 10px; border-radius:999px; pointer-events:none; white-space:nowrap; }
-  @media (max-width:640px){
-    .top { left:8px; top:8px; padding:7px 11px; border-radius:11px; max-width:62vw; }
-    .top h1 { font-size:14px; } .top p { display:none; }
-    .tools { top:auto; bottom:calc(66px + env(safe-area-inset-bottom)); right:8px; gap:6px; flex-wrap:nowrap; max-width:none; }
-    .tools button { padding:8px 11px; font-size:12.5px; }
-    .bar { bottom:calc(10px + env(safe-area-inset-bottom)); flex-wrap:nowrap; justify-content:flex-start; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding:2px 10px 6px; gap:6px; }
-    .bar::-webkit-scrollbar { display:none; }
-    .bar button { flex:0 0 auto; padding:10px 14px; font-size:13px; white-space:nowrap; }
-    .hint { display:none }
-  }
-  @media (max-width:640px) and (max-height:480px){ .top p{display:none} }
-
-  /* IMERSÃO: menu de ambientes e barra rolável */
-  .bar { flex-wrap:nowrap !important; justify-content:flex-start !important; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; }
-  .bar::-webkit-scrollbar { display:none; }
-  .bar button { flex:0 0 auto; white-space:nowrap; }
-  #menuPanel { position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(8px); width:min(760px, calc(100vw - 20px)); max-height:62vh; overflow-y:auto; background:rgba(255,255,255,.97); border-radius:18px; box-shadow:0 12px 40px rgba(30,50,80,.3); padding:12px 14px 14px; opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:20; }
-  #menuPanel.open { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
-  #menuPanel .mt { font-size:11.5px; letter-spacing:.8px; text-transform:uppercase; color:#5b6f86; margin:8px 2px 6px; font-weight:700; }
-  #menuPanel .mrow { display:flex; flex-wrap:wrap; gap:7px; }
-  #menuPanel button { padding:8px 12px; font-size:13px; box-shadow:0 1px 5px rgba(30,50,80,.18); background:#f1f5f9; }
-  #menuPanel button.active { background:var(--accent); color:#fff; }
+  #tabs { display:none; }
+  #menuPanel { flex:1 1 auto; overflow-y:auto; padding:4px 16px 14px; }
+  #menuPanel .note { font-size:12px; color:#4a5f78; background:#f2f6fb; border-radius:10px; padding:8px 10px; margin:10px 0 2px; line-height:1.35; }
+  #menuPanel .mt { font-size:11.5px; letter-spacing:.9px; text-transform:uppercase; color:#5b6f86; margin:16px 2px 7px; font-weight:700; }
+  #menuPanel .mrow { display:flex; flex-wrap:wrap; gap:6px; }
+  #menuPanel button.mv { padding:8px 12px; font-size:13px; border-radius:10px; background:#f3f6fa; border:1px solid #e1e8f0; color:#26384d; }
+  #menuPanel button.mv:hover { background:#e6eef7; }
+  #menuPanel button.mv.active { background:var(--accent); border-color:var(--accent); color:#fff; }
   #menuPanel button.fpv:after { content:' 👁'; font-size:11px; }
-  @media (max-width:640px){ #menuPanel { bottom:112px; max-height:56vh; } }
+  .hint { padding:9px 18px 12px; font-size:12px; color:#5b6776; border-top:1px solid #e6ecf3; background:#f7f9fc; line-height:1.35; }
+  .bar { display:none; }
+  @media (max-width:760px){
+    #app { flex-direction:column; }
+    #stage { flex:1 1 0; }
+    #side { order:0; flex:0 0 auto; width:100%; border-right:0; border-top:1px solid #dbe3ec; padding-bottom:env(safe-area-inset-bottom); box-shadow:0 -4px 16px rgba(30,50,80,.08); }
+    .top { display:none; }
+    .tools { flex-wrap:nowrap; overflow-x:auto; padding:8px 10px 6px; border-bottom:0; scrollbar-width:none; }
+    .tools::-webkit-scrollbar, #tabs::-webkit-scrollbar, #menuPanel::-webkit-scrollbar { display:none; }
+    .tools button { flex:0 0 auto; padding:7px 14px; font-size:12.5px; }
+    #tabs { display:flex; gap:6px; overflow-x:auto; padding:2px 10px 6px; scrollbar-width:none; }
+    #tabs button { flex:0 0 auto; padding:7px 13px; font-size:12.5px; font-weight:600; background:#eef3f8; color:#33516f; }
+    #tabs button.on { background:var(--navy); color:#fff; }
+    #menuPanel { flex:none; overflow-x:auto; overflow-y:hidden; padding:2px 10px 10px; scrollbar-width:none; }
+    #menuPanel .mt, #menuPanel .note { display:none; }
+    #menuPanel .mrow { display:none; flex-wrap:nowrap; }
+    #menuPanel .mrow.show { display:flex; }
+    #menuPanel button.mv { flex:0 0 auto; white-space:nowrap; padding:10px 14px; font-size:13px; }
+    .hint { display:none; }
+  }
 </style>
 </head>
 <body>
-<canvas id="c"></canvas>
-<div class="top"><h1>Igreja atual · Maquete 3D</h1><p>Anexo, templo, pátio, estacionamentos e entorno</p></div>
-<div class="tools">
-  <button id="tMenu">☰ Ambientes</button>
+<div id="app">
+  <div id="stage"><canvas id="c"></canvas></div>
+  <aside id="side">
+    <div class="top"><h1>Igreja atual · Maquete 3D</h1><p>Anexo, templo, pátio, estacionamentos e entorno</p></div>
+    <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
   <button id="tSpin">Girar</button>
 </div>
-<div class="hint">Arraste para girar · role ou use dois dedos para aproximar</div>
-<div class="bar" id="views"></div>
+    <div id="tabs"></div>
+    <div id="menuPanel"></div>
+    <div class="hint">Arraste para girar · role ou use dois dedos para aproximar</div>
+  </aside>
+  <div class="bar" id="views"></div>
+  <button id="tMenu" hidden></button>
+</div>
 
 <script src="https://unpkg.com/three@0.128.0/build/three.min.js"></script>
 <script src="https://unpkg.com/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -841,17 +853,20 @@
   (function(){
     var G = {"geral": "Panorama", "patio": "Panorama", "cima": "Panorama", "banheiros": "Panorama", "anexo": "Panorama", "entrada": "Fora e rua", "nave": "Templo", "forro": "Templo", "altar": "Templo"};
     views.forEach(function(v){ v.g = v.g || G[v.id] || 'Panorama'; });
-    var panel = document.createElement('div'); panel.id = 'menuPanel'; document.body.appendChild(panel);
-    var nt = document.createElement('div'); nt.style.cssText = 'font-size:12.5px;color:#33465c;margin:0 2px 2px'; nt.textContent = '👁 = modo imersivo: você fica dentro do ambiente e arrasta para olhar ao redor.'; panel.appendChild(nt);
+    var panel = document.getElementById('menuPanel'), tabs = document.getElementById('tabs');
+    var nt = document.createElement('div'); nt.className = 'note'; nt.textContent = '👁 = modo imersivo: você fica dentro do ambiente e arrasta para olhar ao redor.'; panel.appendChild(nt);
     var order = []; views.forEach(function(v){ if (order.indexOf(v.g) < 0) order.push(v.g); });
     order.forEach(function(g){
       var h = document.createElement('div'); h.className = 'mt'; h.textContent = g; panel.appendChild(h);
-      var row = document.createElement('div'); row.className = 'mrow'; panel.appendChild(row);
+      var row = document.createElement('div'); row.className = 'mrow'; row.dataset.g = g; panel.appendChild(row);
+      var tb = document.createElement('button'); tb.textContent = g; tb.dataset.g = g; tb.onclick = function(){ setGroup(g); }; tabs.appendChild(tb);
       views.filter(function(v){ return v.g === g; }).forEach(function(v){
         var b = document.createElement('button'); b.className = 'mv' + (v.fp ? ' fpv' : ''); b.textContent = v.name; b.dataset.id = v.id;
-        b.onclick = function(){ go(v); panel.classList.remove('open'); }; row.appendChild(b);
+        b.onclick = function(){ go(v); }; row.appendChild(b);
       });
     });
+    function setGroup(g){ [].forEach.call(panel.querySelectorAll('.mrow'), function(r){ r.classList.toggle('show', r.dataset.g === g); }); [].forEach.call(tabs.children, function(t){ t.classList.toggle('on', t.dataset.g === g); }); }
+    setGroup(order[0]);
     document.getElementById('tMenu').onclick = function(e){ panel.classList.toggle('open'); e.stopPropagation(); };
     document.addEventListener('click', function(e){ if (!panel.contains(e.target)) panel.classList.remove('open'); });
     bar.addEventListener('wheel', function(e){ if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ bar.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
@@ -868,20 +883,19 @@
     var prevGo = go;
     go = function(v, instant){
       normal(); prevGo(v, instant);
-      [].forEach.call(panel.querySelectorAll('button.mv'), function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
-      if (bar.querySelector('.active')) bar.querySelector('.active').scrollIntoView({ block: 'nearest', inline: 'center' });
+      [].forEach.call(panel.querySelectorAll('button.mv'), function(b){ var on = b.dataset.id === v.id; b.classList.toggle('active', on); if (on){ setGroup(v.g); b.scrollIntoView({ block: 'nearest', inline: 'center' }); } });
       if (v.fp){ if (instant) applyFp(v); else pend = v; }
     };
     window.__fpTick = function(){ if (pend && !anim){ applyFp(pend); pend = null; } };
   })();
 
   function resize(){
-    var w = window.innerWidth, h = window.innerHeight;
+    var st = document.getElementById('stage'), w = st.clientWidth || window.innerWidth, h = st.clientHeight || window.innerHeight;
     renderer.setSize(w, h, false); camera.aspect = w / h;
     camera.fov = w / h < 1 ? Math.min(68, 2 * Math.atan(Math.tan(22.5 * Math.PI / 180) / Math.sqrt(w / h)) * 180 / Math.PI) : 45;   // telas em pé (celular): abre o campo de visão
     camera.updateProjectionMatrix();
   }
-  window.addEventListener('resize', resize); resize();
+  window.addEventListener('resize', resize); resize(); if (window.ResizeObserver) new ResizeObserver(resize).observe(document.getElementById('stage'));
 
   go(views[0], true);
   var clock = new THREE.Clock();
