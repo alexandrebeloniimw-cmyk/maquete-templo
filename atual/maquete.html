@@ -31,12 +31,26 @@
     .hint { display:none }
   }
   @media (max-width:640px) and (max-height:480px){ .top p{display:none} }
+
+  /* IMERSÃO: menu de ambientes e barra rolável */
+  .bar { flex-wrap:nowrap !important; justify-content:flex-start !important; overflow-x:auto; scrollbar-width:none; padding-bottom:6px; }
+  .bar::-webkit-scrollbar { display:none; }
+  .bar button { flex:0 0 auto; white-space:nowrap; }
+  #menuPanel { position:fixed; left:50%; bottom:64px; transform:translateX(-50%) translateY(8px); width:min(760px, calc(100vw - 20px)); max-height:62vh; overflow-y:auto; background:rgba(255,255,255,.97); border-radius:18px; box-shadow:0 12px 40px rgba(30,50,80,.3); padding:12px 14px 14px; opacity:0; pointer-events:none; transition:opacity .18s, transform .18s; z-index:20; }
+  #menuPanel.open { opacity:1; pointer-events:auto; transform:translateX(-50%) translateY(0); }
+  #menuPanel .mt { font-size:11.5px; letter-spacing:.8px; text-transform:uppercase; color:#5b6f86; margin:8px 2px 6px; font-weight:700; }
+  #menuPanel .mrow { display:flex; flex-wrap:wrap; gap:7px; }
+  #menuPanel button { padding:8px 12px; font-size:13px; box-shadow:0 1px 5px rgba(30,50,80,.18); background:#f1f5f9; }
+  #menuPanel button.active { background:var(--accent); color:#fff; }
+  #menuPanel button.fpv:after { content:' 👁'; font-size:11px; }
+  @media (max-width:640px){ #menuPanel { bottom:112px; max-height:56vh; } }
 </style>
 </head>
 <body>
 <canvas id="c"></canvas>
 <div class="top"><h1>Igreja atual · Maquete 3D</h1><p>Anexo, templo, pátio, estacionamentos e entorno</p></div>
 <div class="tools">
+  <button id="tMenu">☰ Ambientes</button>
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
   <button id="tSpin">Girar</button>
@@ -605,6 +619,14 @@
   for (var rr = 0; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);
   pSign(423, 922);
 
+  // ---------- Rua com carros estacionados ----------
+  (function(){
+    [-700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300].forEach(function(x, i){
+      if (x < 480 || x > 720) car(x, 1905, 0);            // lado da calçada (sem tapar o portão)
+      car(x + 90, 2015, Math.PI);                          // lado oposto
+    });
+  })();
+
   // ---------- Telhados ----------
   var roofMat = new THREE.MeshStandardMaterial({ color: C.roof, roughness: 0.8, side: THREE.DoubleSide });
   var gableMat = new THREE.MeshStandardMaterial({ color: C.wall, roughness: 0.9 });
@@ -771,14 +793,29 @@
   // ---------- Vistas ----------
   var views = [
     { id: 'geral',   name: 'Visão geral',     pos: [15, 17, 31],   tgt: [0, 0, 2], labels: true },
-    { id: 'entrada', name: 'Entrada',         pos: [5.5, 2.2, 28], tgt: [0, 1.6, 10], labels: false },
+    { id: 'entrada', name: 'Entrada',         pos: [5.5, 2.2, 28], tgt: [0, 1.6, 10], labels: false, fp: true },
     { id: 'patio',   name: 'Pátio',           pos: [0, 21, 24],    tgt: [0, 0, 8], labels: true },
     { id: 'banheiros', name: 'Banheiros e varanda', pos: [9, 8, 12], tgt: [-4, 0.8, 1.5], roof: false, labels: false },
-    { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false },
-    { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false },
+    { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false, fp: true },
+    { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false, fp: true },
     { id: 'altar',   name: 'Altar',           pos: [-2.5, 3.4, -4.2], tgt: [0, 0.8, -12.6], roof: false, labels: false },
     { id: 'anexo',   name: 'Anexo',           pos: [5, 19, -1],    tgt: [0, 0, -13], roof: false, labels: true },
-    { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true }
+    { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true },
+    { id: 'rua', name: 'Rua (calçada)', g: 'Fora e rua', pos: [-12, 1.7, 19.4], tgt: [2, 1.0, 21.3], roof: true, labels: false, fp: true },
+    { id: 'portao', name: 'Portão (olhando o templo)', g: 'Fora e rua', pos: [4.2, 1.7, 18.0], tgt: [0.5, 1.8, -0.3], roof: true, labels: false, fp: true },
+    { id: 'estac2', name: 'Estacionamento 2', g: 'Fora e rua', pos: [4.0, 1.65, 15.8], tgt: [4.0, 1.2, 0.0], roof: true, labels: false, fp: true },
+    { id: 'estac1', name: 'Estacionamento 1', g: 'Fora e rua', pos: [-2.0, 1.65, 11.0], tgt: [-6.2, 1.0, 11.0], roof: true, labels: false, fp: true },
+    { id: 'abrigo', name: 'Abrigo e entrada da nave', g: 'Templo', pos: [5.4, 1.65, -0.7], tgt: [-0.5, 1.4, -3.56], roof: true, labels: false, fp: true },
+    { id: 'altarfp', name: 'Do altar para a nave', g: 'Templo', pos: [-0.4, 2.1, -12.0], tgt: [-0.4, 1.4, -6.8], roof: true, labels: false, fp: true },
+    { id: 'bfem', name: 'Banheiro Feminino', g: 'Banheiros', pos: [-2.7, 1.65, -2.16], tgt: [-5.8, 1.2, -2.5], roof: true, labels: false, fp: true },
+    { id: 'bmasc', name: 'Banheiro Masculino', g: 'Banheiros', pos: [-2.5, 1.65, -0.64], tgt: [-5.6, 1.2, -1.3], roof: true, labels: false, fp: true },
+    { id: 'sala1ext', name: 'Sala 1 externo', g: 'Salas externas', pos: [-3.5, 1.65, 2.3], tgt: [-6.0, 1.1, 0.3], roof: true, labels: false, fp: true },
+    { id: 'sala2ext', name: 'Sala 2 externo', g: 'Salas externas', pos: [-6.0, 1.65, 4.0], tgt: [-3.3, 1.2, 4.92], roof: true, labels: false, fp: true },
+    { id: 'varanda', name: 'Varanda', g: 'Salas externas', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 11.0], roof: true, labels: false, fp: true },
+    { id: 'cozinha', name: 'Cozinha (anexo)', g: 'Anexo', pos: [-2.9, 1.65, -15.5], tgt: [-6.0, 1.3, -16.8], roof: true, labels: false, fp: true },
+    { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [1.3, 1.65, -15.5], tgt: [-1.8, 1.3, -16.8], roof: true, labels: false, fp: true },
+    { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [5.4, 1.65, -15.5], tgt: [2.4, 1.3, -16.8], roof: true, labels: false, fp: true },
+    { id: 'anexocorr', name: 'Corredor do anexo', g: 'Anexo', pos: [-5.8, 1.65, -14.4], tgt: [5.4, 1.5, -14.4], roof: true, labels: false, fp: true }
   ];
   var bar = document.getElementById('views');
   var anim = null, current = 'geral';
@@ -802,6 +839,44 @@
   document.getElementById('tSpin').onclick = function(e){ controls.autoRotate = !controls.autoRotate; e.currentTarget.classList.toggle('on', controls.autoRotate); };
   controls.addEventListener('start', function(){ anim = null; });
 
+  // ---- IMERSÃO: menu de ambientes + modo "olhar ao redor" (primeira pessoa) ----
+  (function(){
+    var G = {"geral": "Panorama", "patio": "Panorama", "cima": "Panorama", "banheiros": "Panorama", "anexo": "Panorama", "entrada": "Fora e rua", "nave": "Templo", "forro": "Templo", "altar": "Templo"};
+    views.forEach(function(v){ v.g = v.g || G[v.id] || 'Panorama'; });
+    var panel = document.createElement('div'); panel.id = 'menuPanel'; document.body.appendChild(panel);
+    var nt = document.createElement('div'); nt.style.cssText = 'font-size:12.5px;color:#33465c;margin:0 2px 2px'; nt.textContent = '👁 = modo imersivo: você fica dentro do ambiente e arrasta para olhar ao redor.'; panel.appendChild(nt);
+    var order = []; views.forEach(function(v){ if (order.indexOf(v.g) < 0) order.push(v.g); });
+    order.forEach(function(g){
+      var h = document.createElement('div'); h.className = 'mt'; h.textContent = g; panel.appendChild(h);
+      var row = document.createElement('div'); row.className = 'mrow'; panel.appendChild(row);
+      views.filter(function(v){ return v.g === g; }).forEach(function(v){
+        var b = document.createElement('button'); b.className = 'mv' + (v.fp ? ' fpv' : ''); b.textContent = v.name; b.dataset.id = v.id;
+        b.onclick = function(){ go(v); panel.classList.remove('open'); }; row.appendChild(b);
+      });
+    });
+    document.getElementById('tMenu').onclick = function(e){ panel.classList.toggle('open'); e.stopPropagation(); };
+    document.addEventListener('click', function(e){ if (!panel.contains(e.target)) panel.classList.remove('open'); });
+    bar.addEventListener('wheel', function(e){ if (Math.abs(e.deltaY) > Math.abs(e.deltaX)){ bar.scrollLeft += e.deltaY; e.preventDefault(); } }, { passive: false });
+    var hint = document.querySelector('.hint'), hint0 = hint ? hint.textContent : '', pend = null;
+    function normal(){ controls.minDistance = 1.5; controls.maxDistance = 95; controls.enableZoom = true; controls.enablePan = true; controls.rotateSpeed = 1; controls.maxPolarAngle = Math.PI * 0.499; controls.minPolarAngle = 0; pend = null; if (hint) hint.textContent = hint0; resize(); }
+    function applyFp(v){
+      var d = new THREE.Vector3().fromArray(v.tgt).sub(new THREE.Vector3().fromArray(v.pos)).normalize();
+      controls.target.copy(camera.position).addScaledVector(d, 0.02);
+      camera.fov = 74; camera.updateProjectionMatrix(); controls.minDistance = 0.005; controls.maxDistance = 0.06; controls.enableZoom = false; controls.enablePan = false; controls.rotateSpeed = -0.35;
+      controls.maxPolarAngle = Math.PI * 0.97; controls.minPolarAngle = Math.PI * 0.03;
+      if (hint) hint.textContent = 'Arraste para olhar ao redor · use o menu Ambientes para ir a outro lugar';
+      controls.update();
+    }
+    var prevGo = go;
+    go = function(v, instant){
+      normal(); prevGo(v, instant);
+      [].forEach.call(panel.querySelectorAll('button.mv'), function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
+      if (bar.querySelector('.active')) bar.querySelector('.active').scrollIntoView({ block: 'nearest', inline: 'center' });
+      if (v.fp){ if (instant) applyFp(v); else pend = v; }
+    };
+    window.__fpTick = function(){ if (pend && !anim){ applyFp(pend); pend = null; } };
+  })();
+
   function resize(){
     var w = window.innerWidth, h = window.innerHeight;
     renderer.setSize(w, h, false); camera.aspect = w / h;
@@ -822,6 +897,7 @@
       controls.target.lerpVectors(anim.t0, anim.t1, k);
       if (anim.t >= 1) anim = null;
     }
+    if (window.__fpTick) window.__fpTick();
     controls.update();
     renderer.render(scene, camera);
     requestAnimationFrame(tick);
