@@ -2,7 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#2f6db5">
 <title>Templo — Planta e Maquete 3D</title>
 <style>
   :root { --ink:#1f2a37; --muted:#5b6776; --accent:#2f6db5; --bg:#f3f6fa; }
@@ -24,6 +25,17 @@
   .btns { display:flex; gap:10px; flex-wrap:wrap; margin-top:14px; }
   .btn { display:inline-block; text-decoration:none; background:var(--accent); color:#fff; padding:10px 18px; border-radius:999px; font-weight:600; font-size:14.5px; }
   .btn.alt { background:#eef4fb; color:var(--accent); }
+  .only-mobile { display:none; background:#eef4fb; color:#1f4d85; border-radius:10px; padding:8px 12px; font-size:13.5px; margin:0 0 12px; }
+  @media (max-width:700px){
+    header { padding:24px 14px; }
+    nav { gap:6px; padding:8px; } nav a { padding:9px 14px; font-size:14px; }
+    main { padding:14px 10px 40px; }
+    section { padding:14px; border-radius:14px; margin-bottom:18px; }
+    .frame { height:68vh; min-height:380px; }
+    .only-mobile { display:block; }
+    .btn { display:block; width:100%; text-align:center; padding:13px 18px; font-size:16px; }
+    .btns { flex-direction:column; }
+  }
   footer { text-align:center; color:var(--muted); font-size:13px; padding-bottom:30px; }
 </style>
 </head>
@@ -40,6 +52,7 @@
   <section id="maquete">
     <h2>Maquete 3D</h2>
     <p class="sub">Arraste para girar, role para aproximar. Use os botões da maquete para trocar de vista e ligar ou desligar o telhado e os nomes.</p>
+    <p class="only-mobile">No celular: arraste com um dedo para girar e use dois dedos para aproximar. Para ver melhor, toque em <b>Abrir em tela cheia</b>.</p>
     <iframe class="frame" src="maquete.html" title="Maquete 3D do templo" allowfullscreen></iframe>
     <div class="btns">
       <a class="btn" href="maquete.html" target="_blank" rel="noopener">Abrir em tela cheia</a>
