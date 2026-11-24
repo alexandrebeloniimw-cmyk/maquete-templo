@@ -595,12 +595,10 @@
   // faixa de pedestres na frente da porta do prédio
   for (var zk = 0; zk < 6; zk++) rect(302 + zk * 15, 1076, 302 + zk * 15 + 8, 1106, 0.05, 0.012, C.white, { cast: false });
 
-  // ---------- Rua com carros estacionados ----------
+  // ---------- Rua com 2 carros estacionados ----------
   (function(){
-    [-700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300].forEach(function(x, i){
-      if (x < 480 || x > 720) car(x, 1905, 0);            // lado da calçada (sem tapar o portão)
-      car(x + 90, 2015, Math.PI);                          // lado oposto
-    });
+    car(150, 1905, 0);            // lado da calçada
+    car(780, 2015, Math.PI);      // lado oposto
   })();
 
   // ---------- Telhados ----------

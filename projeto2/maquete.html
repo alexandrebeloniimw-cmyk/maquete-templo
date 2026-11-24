@@ -761,12 +761,10 @@
   for (var rr = 0; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);
   pSign(423, 922);
 
-  // ---------- Rua com carros estacionados ----------
+  // ---------- Rua com 2 carros estacionados ----------
   (function(){
-    [-700, -500, -300, -100, 100, 300, 500, 700, 900, 1100, 1300].forEach(function(x, i){
-      if (x < 480 || x > 720) car(x, 1905, 0);            // lado da calçada (sem tapar o portão)
-      car(x + 90, 2015, Math.PI);                          // lado oposto
-    });
+    car(150, 1905, 0);            // lado da calçada
+    car(780, 2015, Math.PI);      // lado oposto
   })();
 
   // ---------- Telhados ----------
