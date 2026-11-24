@@ -588,16 +588,19 @@
     board.position.set(X(xpx), 2.1, Z(ypx) + 0.06); root.add(board);
     var back = board.clone(); back.rotation.y = Math.PI; back.position.z = Z(ypx) - 0.06; root.add(back);
   }
-  // Estacionamento 1: 5 vagas horizontais (frente para a direita)
-  for (var i = 0; i <= 5; i++) line(50, 1200 + i * 100, 250, 1200 + i * 100);
-  line(50, 1200, 50, 1700); line(250, 1200, 250, 1700);
-  for (var r = 0; r < 5; r++) car(150, 1200 + r * 100 + 50, 0);
-  pSign(279, 1222);
-  // Estacionamento 2: 8 vagas verticais (4 fileiras x 2), frente para a nave (deslocado para trás: começa em y=900)
-  for (var j = 0; j <= 4; j++) line(450, 900 + j * 200, 690, 900 + j * 200);
-  [450, 570, 690].forEach(function(xv){ line(xv, 900, xv, 1700); });
-  for (var rr = 0; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);
-  pSign(423, 922);
+  // PROJETO 1 — estacionamento reorganizado: 14 vagas (8 + 6) em 90°, com corredor de circulação no meio.
+  // Lado esquerdo: 8 vagas (x50..250), carros de frente para o muro oeste. Lado direito: 6 vagas (x490..690, y900..1500), carros de frente para o muro leste;
+  // abaixo delas fica livre a entrada de veículos vinda do portão. Corredor de circulação: x250..490.
+  var EY = 900, EP = 100;
+  for (var i = 0; i <= 8; i++) line(50, EY + i * EP, 250, EY + i * EP);
+  line(50, EY, 50, EY + 8 * EP); line(250, EY, 250, EY + 8 * EP);
+  for (var r = 0; r < 8; r++) car(150, EY + r * EP + 50, Math.PI);
+  for (var j = 0; j <= 6; j++) line(490, EY + j * EP, 690, EY + j * EP);
+  line(490, EY, 490, EY + 6 * EP); line(690, EY, 690, EY + 6 * EP);
+  for (var rr = 0; rr < 6; rr++) car(590, EY + rr * EP + 50, 0);
+  pSign(262, 922); pSign(478, 922);
+  // faixa de pedestres na frente da porta do prédio
+  for (var zk = 0; zk < 6; zk++) rect(302 + zk * 15, 915, 302 + zk * 15 + 8, 945, 0.05, 0.012, C.white, { cast: false });
 
   // ---------- Telhados ----------
   var roofMat = new THREE.MeshStandardMaterial({ color: C.roof, roughness: 0.8, side: THREE.DoubleSide });
@@ -792,7 +795,7 @@
   label('Hall', 330, 800, 2.4, 1.2); label('Escada', 635, 826, 3.2, 1.6); label('Entrada do prédio', 345, 884, 3.4, 3.2);
   label('Sala 1 (2º andar)', 178, 817, 5.6, 3.0); label('Sala 2 (2º andar)', 440, 817, 5.6, 3.0); label('Corredor (2º andar)', 300, 914, 4.8, 3.4);
   label('Bebedouro', 440, 780, 2.0, 2.0);
-  label('Estacionamento 1', 150, 1680, 2.2, 3.0); label('Estacionamento 2', 570, 1735, 2.2, 3.0);
+  label('Vagas da esquerda (8)', 150, 1330, 2.2, 3.2); label('Vagas da direita (6)', 590, 1200, 2.2, 3.2); label('Corredor de circulação', 370, 1620, 1.4, 3.6);
   label('Pátio', 370, 1450, 2.4, 1.8);
   label('Portão principal', 580, 1760, 3.8, 3.4);
   label('Calçada', 220, 1815, 1.2, 1.8);
