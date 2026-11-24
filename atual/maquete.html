@@ -461,6 +461,14 @@
       g.position.set(xf, y, Z(py)); g.rotation.y = dir > 0 ? 0 : Math.PI; root.add(g);
     }
     [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); ventilador(X(700) - 0.11, -1, py, 2.5); });
+    // ---- 2 ar-condicionados (split) na parede que divide a nave e o pátio (face interna, voltados para a nave) ----
+    var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
+    [X(170), X(600)].forEach(function(sx){
+      var zf = Z(720) - 0.125;
+      box(1.15, 0.3, 0.22, 0, sx, 2.5, zf - 0.12, null, { material: splitBranco });   // branco (emissivo leve para não escurecer na sombra)
+      box(1.0, 0.03, 0.02, 0x9aa0a6, sx, 2.4, zf - 0.235, null, { cast: false });
+      box(0.04, 0.03, 0.01, 0x44d17a, sx + 0.45, 2.55, zf - 0.232, null, { cast: false });
+    });
 
   })();
   muro(false, X(40), Z(1240), (1760 - 720) * S, BH, 0.22); muro(false, X(700), Z(1240), (1760 - 720) * S, BH, 0.22);   // Muro à esquerda / à direita
