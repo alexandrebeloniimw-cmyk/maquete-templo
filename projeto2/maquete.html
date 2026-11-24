@@ -589,7 +589,7 @@
 
   // ---------- Banheiros (box, vasos, pia, corredor) e Salas externas ----------
   rect(50, 730, 255, 880, 0.0, 0.1, C.bath, { cast: false });                // PROJETO 2: banheiros (trocados de lugar com a Sala de Apoio)
-  rect(410, 730, 590, 880, 0.0, 0.1, 0xe3ddd0, { cast: false });                // PROJETO 2: Hall (porcelanato claro)
+  rect(255, 722, 700, 884, 0.0, 0.1, 0xe3ddd0, { cast: false });                // PROJETO 2: Hall (corredor grande aberto, porcelanato claro)
   rect(50, 880, 205, 1030, 0.0, 0.1, C.salaExt, { cast: false });
   rect(50, 1030, 205, 1180, 0.0, 0.1, C.salaExt, { cast: false });
   rect(205, 880, 255, 1480, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda (PROJETO 2: prolongada até a Cantina)
@@ -608,8 +608,7 @@
   
   winFrame(false, 205, 1146);
   // ---- PROJETO 2: HALL (x410..590, y730..880), no lugar da antiga Sala de Apoio; acesso aberto pelo saguão ----
-  hwall(880, 410, 590, BH, [], 'HALF'); vwall(410, 730, 880, BH, [{ a: 814, b: 874, lh: 2.3 }], 'HALF'); vwall(590, 730, 880, BH, [], 'HALF'); hwall(730, 410, 590, BH, [win(500)], 'HALF');
-  winFrame(true, 730, 500);
+  winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
   hwall(805, 50, 255, BH, [], 'HALF');
   doorLeaf(false, 255, 752.25, 0.86, 2.08, 0.18); doorLeaf(true, 880, 235.5, 0.72, 2.08, 0.14);   // Feminino: porta pelo saguão; Masculino: porta própria pela varanda (acesso independente)
@@ -627,16 +626,16 @@
     box(0.5, 0.03, 0.2, 0xbcd5e8, X(200), 0.865, Z(sy + 7.5), null, { cast: false });
     vwall(224, y0 + 4, y0 + 53, 2.4, [], 'HALF', 0.08);
   });
-  // ---- Hall: banco estofado, painel de avisos, vaso, tapete, luminária ----
+  // ---- Hall (corredor grande aberto): banco, painel de avisos na fachada, vaso, tapete ----
   (function(){
-    box(0.45, 0.45, 1.6, 0x8fa3ad, X(577), 0.28, Z(792)); box(0.12, 0.55, 1.6, 0x8fa3ad, X(587), 0.6, Z(792));
-    box(1.7, 1.0, 0.04, 0xd9c7a8, X(500), 1.5, Z(880) - 0.1 - 0.02); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 2.02, Z(880) - 0.1 - 0.02); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 0.98, Z(880) - 0.1 - 0.02);
-    var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(750)); root.add(pot);
-    var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(750)); root.add(pl);
-    var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.85, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(500), 0.12, Z(805)); root.add(rg);
+    box(0.45, 0.45, 1.6, 0x8fa3ad, X(687), 0.28, Z(815)); box(0.12, 0.55, 1.6, 0x8fa3ad, X(697), 0.6, Z(815));
+    box(1.7, 1.0, 0.04, 0xd9c7a8, X(500), 1.5, Z(889) - 0.13 - 0.03); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 2.02, Z(889) - 0.13 - 0.03); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 0.98, Z(889) - 0.13 - 0.03);
+    var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(748)); root.add(pot);
+    var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(748)); root.add(pl);
+    var rg = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(470), 0.12, Z(805)); root.add(rg);
   })();
   // ---- bebedouro: parede externa dos banheiros (abrigo coberto) ----
-  box(0.3, 1.0, 0.35, 0xcfd8dc, X(410) - 0.09 - 0.15, 0.55, Z(800)); box(0.26, 0.05, 0.3, 0x5b9bd5, X(410) - 0.09 - 0.15, 1.07, Z(800)); box(0.05, 0.12, 0.05, 0x888, X(410) - 0.09 - 0.26, 1.15, Z(800));
+  box(0.35, 1.0, 0.3, 0xcfd8dc, X(255) + 0.09 + 0.175, 0.55, Z(835)); box(0.3, 0.05, 0.26, 0x5b9bd5, X(255) + 0.09 + 0.175, 1.07, Z(835)); box(0.12, 0.12, 0.05, 0x888, X(255) + 0.09 + 0.1, 1.15, Z(835));
 
   // ---------- PROJETO 2: FACHADA moderna (do muro até a parede dos banheiros/salas), com porta de vidro temperado, logo e nome ----------
   (function(){
@@ -896,8 +895,8 @@
     isopor(50, 880, 205, 1030); isopor(50, 1030, 205, 1180); isopor(50, 1180, 205, 1330); isopor(50, 1330, 205, 1480);
     lampRound(127, 955); lampRound(127, 1105); lampRound(127, 1255); lampRound(127, 1405);
     // banheiros (feminino e masculino)
-    isopor(50, 730, 255, 880); isopor(410, 730, 590, 880);   // PROJETO 2: banheiros e Hall
-    lampRound(110, 805); lampRound(200, 805); [455, 545].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
+    isopor(50, 730, 255, 880); isopor(255, 722, 700, 884);   // PROJETO 2: banheiros e Hall
+    lampRound(110, 805); lampRound(200, 805); [310, 400, 490, 580, 665].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
     // salas do anexo e cozinha: laje emboçada branca lisa + luzes
     var lajeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0x8c8c88 });
     [[50, 210], [210, 370], [370, 530], [530, 625], [625, 695]].forEach(function(r){
@@ -938,7 +937,7 @@
   label('Piso da nave', 370, 560, 1.4, 2.6);
   label('Mesa de som', 160, 687, 1.7, 2.4);
   label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
-  label('Hall', 500, 805, 3.0, 1.8); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
+  label('Hall', 470, 805, 3.0, 1.8); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Sala 1 externo', 127, 955, 3.7, 2.6); label('Sala 2 externo', 127, 1105, 3.7, 2.6);
   label('Varanda', 230, 1130, 3.4, 1.6);
   label('Cozinha', 127, 1255, 3.1, 1.9); label('Cantina', 127, 1405, 3.1, 1.9);
@@ -979,7 +978,7 @@
     { id: 'corrnave', name: 'Corredor da nave', g: 'Templo', pos: [-2.48, 1.65, -4.0], tgt: [-2.48, 1.4, -12.0], roof: true, labels: false, fp: true },
     { id: 'bfem', name: 'Banheiro Feminino', g: 'Banheiros e hall', pos: [-2.7, 1.65, -2.16], tgt: [-5.8, 1.2, -2.5], roof: true, labels: false, fp: true },
     { id: 'bmasc', name: 'Banheiro Masculino', g: 'Banheiros e hall', pos: [-2.5, 1.65, -0.64], tgt: [-5.6, 1.2, -1.3], roof: true, labels: false, fp: true },
-    { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [4.1, 1.65, -0.7], tgt: [1.4, 1.2, -2.6], roof: true, labels: false, fp: true },
+    { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'sala1ext', name: 'Sala 1 externo', g: 'Salas externas', pos: [-3.5, 1.65, 2.3], tgt: [-6.0, 1.1, 0.3], roof: true, labels: false, fp: true },
     { id: 'sala2ext', name: 'Sala 2 externo', g: 'Salas externas', pos: [-6.0, 1.65, 4.0], tgt: [-3.3, 1.2, 4.92], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Salas externas', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 11.0], roof: true, labels: false, fp: true },
