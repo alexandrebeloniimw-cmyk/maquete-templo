@@ -389,7 +389,21 @@
   // ---------- Parede do templo externo (nave x pátio): porta dupla e janela ----------
   hwall(720, 40, 700, BH, [{ a: 300, b: 390, lh: 2.1 }, win(520), { a: 645, b: 685, lh: 2.1 }], C.wall, 0.22);
   doorLeaf(true, 720, 665, 0.86, 2.08, 0.22);                                // PROJETO 2: porta de entrada do corredor de acesso ao anexo
-  vwall(630, 225, 720, BH, [], 0xd2d4d7, 0.14);                              // PROJETO 2: parede do corredor (lado da nave/altar)
+  vwall(630, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
+  // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
+  [385, 620].forEach(function(c){
+    var temp = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
+    var met = 0x6b7075, px = X(630), cz = Z(c);
+    [-0.45, 0.45].forEach(function(o){
+      var lz = cz + o;
+      box(0.012, 2.02, 0.84, 0, px, 1.07, lz, null, { material: temp, cast: false });
+      box(0.05, 0.07, 0.88, met, px, 0.05, lz); box(0.05, 0.07, 0.88, met, px, 2.08, lz);
+      [-0.43, 0.43].forEach(function(q){ box(0.05, 2.1, 0.025, met, px, 1.05, lz + q); });
+      var hz = lz + (o < 0 ? 0.36 : -0.36);
+      [0.14, -0.14].forEach(function(f){ box(0.03, 0.8, 0.03, 0xc9ced3, px + f, 1.05, hz); });
+    });
+    box(0.24, 0.07, 1.84, met, px, 2.135, cz);
+  });                              // PROJETO 2: parede do corredor (lado da nave/altar)
   rect(630, 320, 700, 720, 0, 0.1, C.corr, { cast: false });                 // PROJETO 2: piso do corredor
   // revestimento SOMENTE da face interna da nave e do altar: paredes em cinza claro
   (function(){
