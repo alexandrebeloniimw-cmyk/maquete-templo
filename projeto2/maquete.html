@@ -603,6 +603,29 @@
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1180, BH, [], 'HALF');
   vwall(255, 730, 880, BH, [{ a: 730, b: 774.5, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
   vwall(205, 880, 1180, BH, [door(955), door(1090), win(1146)], 'HALF');
+
+  // ---- Salas educacionais externas (Sala 1 e Sala 2): mesa, 6 cadeiras escolares, quadro branco e estante ----
+  (function(){
+    function eduRoom(y0, y1){
+      var yc = (y0 + y1) / 2, wood = 0xd9b98a, blue = 0x3d6fa8, grey = 0x8a8f94;
+      box(1.45, 0.04, 0.8, wood, X(114), 0.74, Z(yc));
+      [[-0.65, -0.34], [0.65, -0.34], [-0.65, 0.34], [0.65, 0.34]].forEach(function(o){ box(0.05, 0.72, 0.05, grey, X(114) + o[0], 0.36, Z(yc) + o[1]); });
+      [92, 114, 136].forEach(function(cx){
+        [-1, 1].forEach(function(sg){
+          var cz = Z(yc) + sg * 0.56;
+          box(0.4, 0.04, 0.4, blue, X(cx), 0.45, cz);
+          box(0.4, 0.38, 0.04, blue, X(cx), 0.68, cz + sg * 0.2);
+          [[-0.17, -0.17], [0.17, -0.17], [-0.17, 0.17], [0.17, 0.17]].forEach(function(o){ box(0.03, 0.43, 0.03, grey, X(cx) + o[0], 0.215, cz + o[1]); });
+        });
+      });
+      box(0.03, 1.0, 1.8, 0xffffff, X(50) + 0.12, 1.5, Z(yc)); box(0.04, 1.06, 0.04, grey, X(50) + 0.12, 1.5, Z(yc) - 0.92); box(0.04, 1.06, 0.04, grey, X(50) + 0.12, 1.5, Z(yc) + 0.92);
+      box(0.06, 0.05, 1.86, grey, X(50) + 0.12, 0.98, Z(yc)); box(0.06, 0.05, 1.86, grey, X(50) + 0.12, 2.02, Z(yc));
+      var ez = Z(y0) + 0.12 + 0.18;
+      box(1.8, 1.8, 0.35, 0xe6c99a, X(145), 0.9, ez); [0.45, 0.9, 1.35].forEach(function(h){ box(1.74, 0.03, 0.33, 0xc9a87c, X(145), h, ez); });
+      [0xc0392b, 0x2e86c1, 0x27ae60, 0xf1c40f].forEach(function(c, i){ box(0.5, 0.3, 0.25, c, X(145) - 0.6 + i * 0.4, 0.62 + (i % 2) * 0.45, ez); });
+    }
+    eduRoom(880, 1030); eduRoom(1030, 1180);
+  })();
   vwall(205, 1180, 1480, BH, [door(1215), win(1290), door(1365), win(1440)], 'HALF');   // PROJETO 2: portas e janelas da Cozinha e da Cantina (lado da varanda)
   [1215, 1365].forEach(function(c){ doorLeaf(false, 205, c); }); [1290, 1440].forEach(function(c){ winFrame(false, 205, c); });   // portas das salas externas + janela da Sala 2 externo (lado da varanda)
   [955, 1090].forEach(function(c){ doorLeaf(false, 205, c); });
