@@ -9,13 +9,16 @@
   :root { --ink:#1f2a37; --muted:#5b6776; --accent:#2f6db5; --bg:#f3f6fa; }
   * { box-sizing:border-box; }
   body { margin:0; font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif; color:var(--ink); background:var(--bg); line-height:1.5; }
-  header { background:linear-gradient(135deg,#2f6db5,#1f4d85); color:#fff; padding:36px 20px; text-align:center; }
-  header h1 { margin:0 0 6px; font-size:clamp(24px,4vw,36px); }
+  header { background:linear-gradient(135deg,#2f6db5,#1f4d85); color:#fff; padding:32px 20px; text-align:center; }
+  header h1 { margin:0 0 6px; font-size:clamp(22px,4vw,34px); }
   header p { margin:0; opacity:.9; }
   nav { position:sticky; top:0; z-index:5; background:#fff; box-shadow:0 2px 10px rgba(30,50,80,.12); display:flex; gap:8px; justify-content:center; flex-wrap:wrap; padding:10px; }
-  nav a { text-decoration:none; color:var(--accent); font-weight:600; padding:8px 16px; border-radius:999px; background:#eef4fb; }
-  nav a:hover { background:var(--accent); color:#fff; }
+  nav button { font:inherit; border:0; cursor:pointer; font-weight:700; letter-spacing:.3px; padding:10px 20px; border-radius:999px; background:#eef4fb; color:var(--accent); }
+  nav button:hover { background:#dce9f7; }
+  nav button.on { background:var(--accent); color:#fff; }
   main { max-width:1100px; margin:0 auto; padding:24px 16px 60px; }
+  .panel { display:none; }
+  .panel.on { display:block; }
   section { background:#fff; border-radius:16px; box-shadow:0 4px 18px rgba(30,50,80,.10); padding:20px; margin-bottom:28px; }
   h2 { margin:0 0 4px; color:#1f4d85; }
   .sub { color:var(--muted); margin:0 0 14px; font-size:14.5px; }
@@ -26,9 +29,11 @@
   .btn { display:inline-block; text-decoration:none; background:var(--accent); color:#fff; padding:10px 18px; border-radius:999px; font-weight:600; font-size:14.5px; }
   .btn.alt { background:#eef4fb; color:var(--accent); }
   .only-mobile { display:none; background:#eef4fb; color:#1f4d85; border-radius:10px; padding:8px 12px; font-size:13.5px; margin:0 0 12px; }
+  .soon { text-align:center; padding:50px 10px; color:var(--muted); }
+  .soon b { display:block; font-size:22px; color:#1f4d85; margin-bottom:6px; }
   @media (max-width:700px){
-    header { padding:24px 14px; }
-    nav { gap:6px; padding:8px; } nav a { padding:9px 14px; font-size:14px; }
+    header { padding:22px 14px; }
+    nav { gap:6px; padding:8px; } nav button { padding:10px 14px; font-size:14px; }
     main { padding:14px 10px 40px; }
     section { padding:14px; border-radius:14px; margin-bottom:18px; }
     .frame { height:68vh; min-height:380px; }
@@ -42,31 +47,76 @@
 <body>
 <header>
   <h1>4ª IMW em Nilópolis · Junta diaconal</h1>
-  <p>Anexo, nave, altar, banheiros, salas externas, pátio e estacionamentos</p>
+  <p>Planta e maquete 3D da obra da igreja</p>
 </header>
-<nav>
-  <a href="#maquete">Maquete 3D</a>
-  <a href="#planta">Planta</a>
+<nav id="tabs">
+  <button data-t="atual" class="on">IGREJA ATUAL</button>
+  <button data-t="projeto1">PROJETO 1</button>
+  <button data-t="projeto2">PROJETO 2</button>
 </nav>
 <main>
-  <section id="maquete">
-    <h2>Maquete 3D</h2>
-    <p class="sub">Arraste para girar, role para aproximar. Use os botões da maquete para trocar de vista e ligar ou desligar o telhado e os nomes.</p>
-    <p class="only-mobile">No celular: arraste com um dedo para girar e use dois dedos para aproximar. Para ver melhor, toque em <b>Abrir em tela cheia</b>.</p>
-    <iframe class="frame" src="maquete.html" title="Maquete 3D do templo" allowfullscreen></iframe>
-    <div class="btns">
-      <a class="btn" href="maquete.html" target="_blank" rel="noopener">Abrir em tela cheia</a>
-    </div>
-  </section>
-  <section id="planta">
-    <h2>Planta baixa</h2>
-    <p class="sub">Planta esquemática do templo, sem medidas.</p>
-    <div class="planta"><a href="planta.png" target="_blank" rel="noopener"><img src="planta.png" alt="Planta baixa do templo"></a></div>
-    <div class="btns">
-      <a class="btn alt" href="planta.png" download>Baixar a planta (PNG)</a>
-    </div>
-  </section>
+
+  <div class="panel on" id="atual">
+    <section>
+      <h2>Igreja atual — Maquete 3D</h2>
+      <p class="sub">Como a igreja é hoje: anexo, nave, altar, banheiros, salas externas, pátio e estacionamentos.</p>
+      <p class="only-mobile">No celular: arraste com um dedo para girar e use dois dedos para aproximar. Para ver melhor, toque em <b>Abrir em tela cheia</b>.</p>
+      <iframe class="frame" data-src="atual/maquete.html" title="Maquete 3D da igreja atual" allowfullscreen></iframe>
+      <div class="btns"><a class="btn" href="atual/maquete.html" target="_blank" rel="noopener">Abrir em tela cheia</a></div>
+    </section>
+    <section>
+      <h2>Igreja atual — Planta baixa</h2>
+      <p class="sub">Planta esquemática, sem medidas.</p>
+      <div class="planta"><a href="atual/planta.png" target="_blank" rel="noopener"><img src="atual/planta.png" alt="Planta baixa da igreja atual" loading="lazy"></a></div>
+      <div class="btns"><a class="btn alt" href="atual/planta.png" download>Baixar a planta (PNG)</a></div>
+    </section>
+  </div>
+
+  <div class="panel" id="projeto1">
+    <section>
+      <h2>Projeto 1 — Maquete 3D</h2>
+      <p class="sub">Nave, altar e anexo continuam iguais. Um prédio de 2 andares toma o lugar da cobertura: térreo com banheiros, bebedouro, hall de entrada e escada interna; 2º andar com Sala 1 e Sala 2. As salas externas e a varanda deixam de existir. Dica: use a vista <b>2º andar</b> da maquete.</p>
+      <p class="only-mobile">No celular: arraste com um dedo para girar e use dois dedos para aproximar. Para ver melhor, toque em <b>Abrir em tela cheia</b>.</p>
+      <iframe class="frame" data-src="projeto1/maquete.html" title="Maquete 3D do Projeto 1" allowfullscreen></iframe>
+      <div class="btns"><a class="btn" href="projeto1/maquete.html" target="_blank" rel="noopener">Abrir em tela cheia</a></div>
+    </section>
+    <section>
+      <h2>Projeto 1 — Planta do térreo</h2>
+      <p class="sub">Terreno completo. O contorno tracejado mostra onde fica o 2º andar.</p>
+      <div class="planta"><a href="projeto1/planta_terreo.png" target="_blank" rel="noopener"><img src="projeto1/planta_terreo.png" alt="Planta do térreo do Projeto 1" loading="lazy"></a></div>
+      <div class="btns"><a class="btn alt" href="projeto1/planta_terreo.png" download>Baixar a planta do térreo (PNG)</a></div>
+    </section>
+    <section>
+      <h2>Projeto 1 — Planta do 2º andar</h2>
+      <p class="sub">Sala 1, Sala 2, corredor e saguão da escada.</p>
+      <div class="planta"><a href="projeto1/planta_2andar.png" target="_blank" rel="noopener"><img src="projeto1/planta_2andar.png" alt="Planta do 2º andar do Projeto 1" loading="lazy"></a></div>
+      <div class="btns"><a class="btn alt" href="projeto1/planta_2andar.png" download>Baixar a planta do 2º andar (PNG)</a></div>
+    </section>
+  </div>
+
+  <div class="panel" id="projeto2">
+    <section>
+      <div class="soon"><b>PROJETO 2</b>Em elaboração. A planta e a maquete aparecerão aqui.</div>
+    </section>
+  </div>
+
 </main>
-<footer>Maquete apenas ilustrativa, para apresentação.</footer>
+<footer>Maquetes apenas ilustrativas, para apresentação.</footer>
+<script>
+(function(){
+  var tabs = document.querySelectorAll('#tabs button');
+  function show(id, push){
+    if (!document.getElementById(id)) id = 'atual';
+    [].forEach.call(tabs, function(b){ b.classList.toggle('on', b.dataset.t === id); });
+    [].forEach.call(document.querySelectorAll('.panel'), function(p){ p.classList.toggle('on', p.id === id); });
+    var f = document.querySelector('#' + id + ' iframe[data-src]');
+    if (f && !f.src){ f.src = f.dataset.src; }
+    if (push) { try { history.replaceState(null, '', '#' + id); } catch(e){} }
+    window.scrollTo(0, 0);
+  }
+  [].forEach.call(tabs, function(b){ b.onclick = function(){ show(b.dataset.t, true); }; });
+  show((location.hash || '#atual').slice(1), false);
+})();
+</script>
 </body>
 </html>
