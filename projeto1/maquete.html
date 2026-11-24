@@ -218,22 +218,23 @@
   // ---------- Terreno, calçada e rua ----------
   var ground = new THREE.Mesh(new THREE.PlaneGeometry(240, 240), mat(C.grass));
   ground.rotation.x = -Math.PI / 2; ground.position.y = -0.02; ground.receiveShadow = true; root.add(ground);
-  // calçada (bege com pedrinhas) entre o portão e a rua
-  box(80, 0.06, (1870 - 1763) * S, C.sidewalk, 0, 0.0, Z((1763 + 1870) / 2), null, { cast: false });
-  box(80, 0.14, 0.12, 0xb9b3a6, 0, 0.0, Z(1870), null, { cast: false });                 // meio-fio
+  // calçada cinza com blocos (pavers de concreto 0,40 x 0,20 m, assentamento em fiada trocada) entre o portão e a rua
+  var swTex = (function(){
+    var cv = document.createElement('canvas'); cv.width = 512; cv.height = 256; var g = cv.getContext('2d');
+    g.fillStyle = '#8f9396'; g.fillRect(0, 0, 512, 256);
+    var tones = ['#c9cbce', '#bfc1c4', '#cdcfd2', '#c4c6c9', '#b9bcbf'], bw = 128, bh = 64, sd = 5;
+    function rn(){ sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+    for (var r = 0; r < 4; r++){ for (var c = -1; c < 5; c++){
+      var x = c * bw + (r % 2 ? bw / 2 : 0), y = r * bh; g.fillStyle = tones[Math.floor(rn() * tones.length)]; g.fillRect(x + 3, y + 3, bw - 6, bh - 6);
+      g.fillStyle = 'rgba(255,255,255,0.10)'; g.fillRect(x + 3, y + 3, bw - 6, 4);
+    } }
+    var t = new THREE.CanvasTexture(cv); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(50, 2.675); t.anisotropy = 4; return t;
+  })();
+  box(80, 0.06, (1870 - 1763) * S, 0, 0, 0.0, Z((1763 + 1870) / 2), null, { cast: false, material: new THREE.MeshStandardMaterial({ map: swTex, roughness: 0.95 }) });
+  box(80, 0.14, 0.12, 0xa4a8ab, 0, 0.0, Z(1870), null, { cast: false });                 // meio-fio de concreto
   // rua Elizeu de Alvarenga
   box(80, 0.04, (2050 - 1870) * S, C.street, 0, 0.0, Z(1960), null, { cast: false });
   for (var d = -16; d < 16; d += 1.5) box(0.9, 0.01, 0.08, C.white, d, 0.045, Z(1960), null, { cast: false });
-  (function(){
-    var n = 420, im = new THREE.InstancedMesh(new THREE.SphereGeometry(0.06, 6, 4), mat(0xb8b09f), n);
-    var o = new THREE.Object3D(), seed = 8;
-    function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-    for (var i = 0; i < n; i++){
-      o.position.set(-14 + rnd() * 28, 0.05, Z(1766) + rnd() * ((1866 - 1766) * S));
-      var s = 0.6 + rnd() * 0.9; o.scale.set(s, 0.45 * s, s * (0.7 + rnd() * 0.4)); o.rotation.y = rnd() * 3; o.updateMatrix(); im.setMatrixAt(i, o.matrix);
-    }
-    im.receiveShadow = true; root.add(im);
-  })();
 
   // ---------- Pisos ----------
   // pátio: cimento queimado (cinza médio, manchado, com juntas de dilatação)
