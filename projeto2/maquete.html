@@ -541,13 +541,18 @@
   rect(50, 805, 255, 880, 0.0, 0.1, C.bath, { cast: false });
   rect(50, 880, 205, 1030, 0.0, 0.1, C.salaExt, { cast: false });
   rect(50, 1030, 205, 1180, 0.0, 0.1, C.salaExt, { cast: false });
-  rect(205, 880, 255, 1180, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda
+  rect(205, 880, 255, 1480, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda (PROJETO 2: prolongada até a Cantina)
+  rect(50, 1180, 205, 1330, 0.0, 0.1, C.salaExt, { cast: false });           // PROJETO 2: Cozinha
+  rect(50, 1330, 205, 1480, 0.0, 0.1, C.salaExt, { cast: false });           // PROJETO 2: Cantina
   hwall(730, 50, 255, BH, [], 'HALF'); hwall(805, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
   hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALF');      // paredes das salas externas: azul mais claro
   hwall(1030, 50, 205, BH, [], 'HALF');        hwall(1180, 50, 205, BH, [], 'HALF');
+  hwall(1330, 50, 205, BH, [], 'HALF'); hwall(1480, 50, 205, BH, [], 'HALF'); vwall(50, 1180, 1480, BH, [], 'HALF');   // PROJETO 2: Cozinha e Cantina
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1180, BH, [], 'HALF');
   vwall(255, 730, 880, BH, [{ a: 730, b: 774.5, lh: 2.1 }, { a: 837.5, b: 880, lh: 2.1 }], 'HALF');   // portas: Feminino (cima) / Masculino (baixo)
-  vwall(205, 880, 1180, BH, [door(955), door(1090), win(1146)], 'HALF');   // portas das salas externas + janela da Sala 2 externo (lado da varanda)
+  vwall(205, 880, 1180, BH, [door(955), door(1090), win(1146)], 'HALF');
+  vwall(205, 1180, 1480, BH, [door(1215), win(1290), door(1365), win(1440)], 'HALF');   // PROJETO 2: portas e janelas da Cozinha e da Cantina (lado da varanda)
+  [1215, 1365].forEach(function(c){ doorLeaf(false, 205, c); }); [1290, 1440].forEach(function(c){ winFrame(false, 205, c); });   // portas das salas externas + janela da Sala 2 externo (lado da varanda)
   [955, 1090].forEach(function(c){ doorLeaf(false, 205, c); });
   doorLeaf(false, 255, 752.25, 0.86, 2.08, 0.18); doorLeaf(false, 255, 858.75, 0.86, 2.08, 0.18);   // portas de madeira dos banheiros (acesso à pia): Feminino / Masculino
   [730, 805].forEach(function(y0){ [y0 + 20.5, y0 + 53.5].forEach(function(cy){ doorLeaf(false, 154, cy, 0.4, 1.68, 0.1); }); });   // portas de madeira dos boxes (acesso aos vasos)
@@ -566,6 +571,22 @@
     vwall(224, y0 + 4, y0 + 53, 2.4, [], 'HALF', 0.08);                              // parede do corredor de acesso do banheiro
   });
   rect(590, 730, 630, 830, 0, 0.95, C.bebedouro);                           // bebedouro (vertical, fino)
+
+  // ---------- PROJETO 2: interior da Cozinha e da Cantina ----------
+  (function(){
+    // Cozinha: bancada com pia e fogão (parede oeste), geladeira, mesa de preparo
+    box(0.5, 0.9, 132 * S, 0xe9e6df, X(67), 0.45 + 0.08, Z(1252));
+    box(0.52, 0.04, 132 * S, 0xb9bcbe, X(67), 0.98, Z(1252));
+    var pia = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.55), mat(0xc9ced3, { metalness: 0.6, roughness: 0.3 })); pia.position.set(X(67), 1.0, Z(1215)); root.add(pia);
+    [1262, 1292].forEach(function(py){ var b = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.03, 16), mat(0x2b2e32)); b.position.set(X(67), 1.01, Z(py)); root.add(b); });
+    box(0.7, 1.8, 0.7, 0xdfe3e6, X(185), 0.98, Z(1202));
+    box(1.1, 0.06, 0.8, 0xb58a5c, X(132), 0.9, Z(1250)); [-0.45, 0.45].forEach(function(o){ [-0.3, 0.3].forEach(function(p){ box(0.05, 0.85, 0.05, 0xdad7d0, X(132) + o, 0.5, Z(1250) + p); }); });
+    // Cantina: balcão de atendimento junto à janela, vitrine, prateleiras
+    box(1.0, 1.05, 76 * S, 0xa87b52, X(175), 0.6, Z(1438)); box(1.1, 0.05, 80 * S, 0xf4f2ec, X(175), 1.15, Z(1438));
+    box(0.5, 0.6, 0.9, 0xd6ecff, X(168), 1.45, Z(1438), null, { material: new THREE.MeshStandardMaterial({ color: 0xcfe6f3, transparent: true, opacity: 0.45, roughness: 0.1 }), cast: false });
+    box(0.35, 1.9, 138 * S, 0xe6c99a, X(61), 1.0, Z(1405)); [0.5, 1.0, 1.5].forEach(function(hh){ box(0.4, 0.04, 138 * S, 0xc9a87c, X(61), hh + 0.1, Z(1405)); });
+    box(0.7, 0.85, 0.7, 0xb58a5c, X(112), 0.5, Z(1412));
+  })();
 
   // ---------- Estacionamentos ----------
   function line(x1, y1, x2, y2){ rect(x1 - 1.5, y1 - 1.5, x2 + 1.5, y2 + 1.5, 0.05, 0.012, C.line, { cast: false }); }
@@ -612,10 +633,10 @@
     var back = board.clone(); back.rotation.y = Math.PI; back.position.z = Z(ypx) - 0.06; root.add(back);
   }
   // Estacionamento 1: 5 vagas horizontais (frente para a direita)
-  for (var i = 0; i <= 5; i++) line(50, 1200 + i * 100, 250, 1200 + i * 100);
-  line(50, 1200, 50, 1700); line(250, 1200, 250, 1700);
-  for (var r = 0; r < 5; r++) car(150, 1200 + r * 100 + 50, 0);
-  pSign(279, 1222);
+  for (var i = 0; i <= 2; i++) line(50, 1500 + i * 100, 250, 1500 + i * 100);   // PROJETO 2: só 2 vagas (Cozinha e Cantina ocupam o restante)
+  line(50, 1500, 50, 1700); line(250, 1500, 250, 1700);
+  for (var r = 0; r < 2; r++) car(150, 1500 + r * 100 + 50, 0);
+  pSign(279, 1522);
   // Estacionamento 2: 8 vagas verticais (4 fileiras x 2), frente para a nave (deslocado para trás: começa em y=900)
   for (var j = 0; j <= 4; j++) line(450, 900 + j * 200, 690, 900 + j * 200);
   [450, 570, 690].forEach(function(xv){ line(xv, 900, xv, 1700); });
@@ -647,6 +668,12 @@
     // laje das salas externas
     var slab = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 300 * S), mat(C.slab));
     slab.position.set(X(127.5), BH + 0.08, Z(1030)); slab.castShadow = true; roofGroup.add(slab);
+    // PROJETO 2: laje da Cozinha/Cantina e prolongamento da varanda
+    var slab2 = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 300 * S), mat(C.slab));
+    slab2.position.set(X(127.5), BH + 0.08, Z(1330)); slab2.castShadow = true; roofGroup.add(slab2);
+    var van2 = new THREE.Mesh(new THREE.BoxGeometry(Math.sqrt((50 * S) * (50 * S) + 0.4 * 0.4), 0.1, 300 * S), ribMat(300 * S / 0.35, 1, true));
+    van2.rotation.z = -Math.atan(0.4 / (50 * S)); van2.position.set(X(230), BH - 0.15, Z(1330)); van2.castShadow = true; van2.receiveShadow = true; roofGroup.add(van2);
+    [1325, 1475].forEach(function(py){ box(0.14, BH - 0.4, 0.14, C.trim, X(252), (BH - 0.4) / 2, Z(py), roofGroup); });
     // cobertura (telhado) sobre os 2 banheiros e o acesso ao bebedouro: abrigo antes da nave (cai para frente)
     var cw = (700 - 46) * S, cd = (884 - 722) * S, drop = 0.35;
     var cob = new THREE.Mesh(new THREE.BoxGeometry(cw, 0.1, Math.sqrt(cd * cd + drop * drop)), ribMat(cw / 0.35, 1));
@@ -671,6 +698,7 @@
     }
     grille(true, 720, 520, 0.14);            // janela da nave (lado do pátio)
     grille(false, 205, 1146, 0.13);          // janela da Sala 2 externa (lado da varanda)
+    grille(false, 205, 1290, 0.13); grille(false, 205, 1440, 0.13);   // PROJETO 2: janelas da Cozinha e da Cantina
     // split (ar-condicionado) na parede; rot = direção da frente
     function split(x, y, z, rot){
       var g = new THREE.Group();
@@ -729,8 +757,8 @@
     });
     [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22); });   // PROJETO 2: corredor
     // salas externas 1 e 2
-    isopor(50, 880, 205, 1030); isopor(50, 1030, 205, 1180);
-    lampRound(127, 955); lampRound(127, 1105);
+    isopor(50, 880, 205, 1030); isopor(50, 1030, 205, 1180); isopor(50, 1180, 205, 1330); isopor(50, 1330, 205, 1480);
+    lampRound(127, 955); lampRound(127, 1105); lampRound(127, 1255); lampRound(127, 1405);
     // banheiros (feminino e masculino)
     isopor(50, 730, 255, 805); isopor(50, 805, 255, 880);
     [767, 842].forEach(function(py){ lamp(100, py, 0.7, 0.2); lamp(205, py, 0.7, 0.2); });
@@ -775,7 +803,8 @@
   label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
   label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Sala 1 externo', 127, 955, 3.7, 2.6); label('Sala 2 externo', 127, 1105, 3.7, 2.6);
-  label('Varanda', 230, 1030, 3.4, 1.6);
+  label('Varanda', 230, 1130, 3.4, 1.6);
+  label('Cozinha', 127, 1255, 3.1, 1.9); label('Cantina', 127, 1405, 3.1, 1.9);
   label('Cobertura (abrigo)', 450, 790, 3.7, 3.0);
   label('Bebedouro', 610, 780, 2.0, 2.0);
   label('Estacionamento 1', 150, 1680, 2.2, 3.0); label('Estacionamento 2', 570, 1735, 2.2, 3.0);
@@ -796,6 +825,7 @@
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false },
     { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
+    { id: 'cantina', name: 'Cozinha e Cantina', pos: [-3.6, 15, 11.2], tgt: [-3.6, 0, 6.2], roof: false, labels: true },
     { id: 'altar',   name: 'Altar',           pos: [-2.5, 3.4, -4.2], tgt: [0, 0.8, -12.6], roof: false, labels: false },
     { id: 'anexo',   name: 'Anexo',           pos: [5, 19, -1],    tgt: [0, 0, -13], roof: false, labels: true },
     { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true }
