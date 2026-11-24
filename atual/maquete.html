@@ -442,6 +442,26 @@
     function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
     [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
     [385, 475, 565, 655].forEach(function(py){ placa(X(700) - 0.11 - 0.03, -1, py); });
+    // ---- Ventiladores de parede (suspensos), entre as placas acústicas ----
+    var fanDark = mat(0x34383d, { roughness: 0.5, metalness: 0.3 }), fanBlade = mat(0xd5d9de, { roughness: 0.5 });
+    function ventilador(xf, dir, py, y){
+      var g = new THREE.Group();
+      function put(geo, m, x, yy, zz, rx, ry, rz, par){ var o = new THREE.Mesh(geo, m); o.position.set(x, yy, zz); if (rx) o.rotation.x = rx; if (ry) o.rotation.y = ry; if (rz) o.rotation.z = rz; (par || g).add(o); return o; }
+      put(new THREE.BoxGeometry(0.04, 0.16, 0.16), fanDark, 0.02, 0, 0);                                  // suporte na parede
+      put(new THREE.BoxGeometry(0.2, 0.04, 0.04), fanDark, 0.12, 0, 0);                                   // braço
+      var head = new THREE.Group(); head.position.set(0.22, 0, 0); head.rotation.z = -0.1; g.add(head);    // cabeça inclinada levemente para baixo
+      put(new THREE.CylinderGeometry(0.065, 0.065, 0.16, 16), fanDark, 0, 0, 0, 0, 0, Math.PI / 2, head);  // motor
+      var blades = new THREE.Group(); blades.position.set(0.14, 0, 0); head.add(blades);
+      for (var i = 0; i < 3; i++){ var bl = new THREE.Group(); bl.rotation.x = i * Math.PI * 2 / 3; put(new THREE.BoxGeometry(0.012, 0.17, 0.07), fanBlade, 0, 0.12, 0, 0.35, 0, 0, bl); blades.add(bl); }   // 3 pás
+      put(new THREE.CylinderGeometry(0.04, 0.04, 0.05, 14), fanDark, 0.14, 0, 0, 0, 0, Math.PI / 2, head);   // cubo
+      var ringG = new THREE.TorusGeometry(0.225, 0.007, 6, 36);                                          // grade de proteção
+      put(ringG, fanDark, 0.24, 0, 0, 0, Math.PI / 2, 0, head); put(ringG, fanDark, 0.06, 0, 0, 0, Math.PI / 2, 0, head);
+      put(new THREE.TorusGeometry(0.11, 0.005, 6, 28), fanDark, 0.24, 0, 0, 0, Math.PI / 2, 0, head);
+      for (var j = 0; j < 8; j++){ var sp = new THREE.Group(); sp.position.set(0.24, 0, 0); sp.rotation.x = j * Math.PI / 8; put(new THREE.BoxGeometry(0.006, 0.45, 0.006), fanDark, 0, 0, 0, 0, 0, 0, sp); head.add(sp); }
+      g.position.set(xf, y, Z(py)); g.rotation.y = dir > 0 ? 0 : Math.PI; root.add(g);
+    }
+    [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); ventilador(X(700) - 0.11, -1, py, 2.5); });
+
   })();
   muro(false, X(40), Z(1240), (1760 - 720) * S, BH, 0.22); muro(false, X(700), Z(1240), (1760 - 720) * S, BH, 0.22);   // Muro à esquerda / à direita
   // Muro com grade na frente (muro de 1 m + grade de 2 m), com o Portão principal
