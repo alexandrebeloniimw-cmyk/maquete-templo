@@ -799,36 +799,99 @@
 
   // ---------- Estacionamentos ----------
   function line(x1, y1, x2, y2){ rect(x1 - 1.5, y1 - 1.5, x2 + 1.5, y2 + 1.5, 0.05, 0.012, C.line, { cast: false }); }
-  var carColors = [0xf2f2f2, 0x2d3e50, 0xb23a3a, 0x8a949c, 0xe3c25b, 0x3f6fa3];
+  // ---------- Carros mais realistas: 3 modelos (hatch, sedã, SUV) com vidros, colunas, rodas com aros, faróis, placas, retrovisores ----------
+  var carTypes = [
+    { L: 3.9,  hood: 0.76, belt: 0.95, roof: 1.42, wsB: 0.78, wsT: 0.32, rwT: -0.98, rwB: -1.62, trunk: 0.86 },    // hatch
+    { L: 4.1,  hood: 0.74, belt: 0.93, roof: 1.38, wsB: 0.82, wsT: 0.30, rwT: -0.72, rwB: -1.32, trunk: 0.84 },    // sedã
+    { L: 3.95, hood: 0.84, belt: 1.04, roof: 1.6, wsB: 0.88, wsT: 0.55, rwT: -1.28, rwB: -1.55, trunk: 1.00 }     // SUV
+  ];
+  var carShared = (function(){
+    var s = {};
+    s.tireG = new THREE.CylinderGeometry(0.335, 0.335, 0.22, 24);
+    s.rimG = new THREE.CylinderGeometry(0.22, 0.22, 0.226, 20);
+    s.hubG = new THREE.CylinderGeometry(0.05, 0.05, 0.236, 12);
+    s.spokeG = new THREE.BoxGeometry(0.045, 0.012, 0.17);
+    s.arcG = new THREE.CylinderGeometry(0.4, 0.4, 0.02, 24);
+    s.tire = new THREE.MeshStandardMaterial({ color: 0x151618, roughness: 0.95 });
+    s.rim = new THREE.MeshStandardMaterial({ color: 0xd3d7db, roughness: 0.25, metalness: 0.85 });
+    s.dark = new THREE.MeshStandardMaterial({ color: 0x0d0e10, roughness: 0.9 });
+    s.plastic = new THREE.MeshStandardMaterial({ color: 0x23262a, roughness: 0.7 });
+    s.chrome = new THREE.MeshStandardMaterial({ color: 0xdfe3e7, roughness: 0.15, metalness: 0.95 });
+    s.glass = new THREE.MeshStandardMaterial({ color: 0x0f1d29, roughness: 0.05, metalness: 0.85, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2 });
+    s.head = new THREE.MeshStandardMaterial({ color: 0xf4f4ee, roughness: 0.2, emissive: 0x8a8470 });
+    s.tail = new THREE.MeshStandardMaterial({ color: 0xc0151b, roughness: 0.3, emissive: 0x60080b });
+    s.amber = new THREE.MeshStandardMaterial({ color: 0xffb02e, roughness: 0.3, emissive: 0x7a4a00 });
+    s.plates = ['BRA1A23', 'RIO4F56', 'NIL7C89', 'IMW2D01'].map(function(txt){
+      var cv = document.createElement('canvas'); cv.width = 128; cv.height = 40; var g = cv.getContext('2d');
+      g.fillStyle = '#f4f4f4'; g.fillRect(0, 0, 128, 40); g.fillStyle = '#1f4aa8'; g.fillRect(0, 0, 128, 10);
+      g.fillStyle = '#222'; g.font = 'bold 24px Arial'; g.textAlign = 'center'; g.textBaseline = 'middle'; g.fillText(txt, 64, 27);
+      g.strokeStyle = '#999'; g.lineWidth = 2; g.strokeRect(1, 1, 126, 38);
+      return new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv) });
+    });
+    return s;
+  })();
+  var carColors = [0xf2f2f2, 0x2d3e50, 0xb23a3a, 0x8a949c, 0xe3c25b, 0x3f6fa3, 0x1c1d20, 0xc9ccd0];
   var carIdx = 0;
   function car(cxpx, cypx, rotY){
-    var g = new THREE.Group();
-    var col = carColors[carIdx++ % carColors.length], W = 1.1;
-    var sh = new THREE.Shape();
-    sh.moveTo(-1.45, 0.2); sh.lineTo(1.45, 0.2);
-    sh.quadraticCurveTo(1.58, 0.22, 1.56, 0.4);          // para-choque dianteiro
-    sh.quadraticCurveTo(1.55, 0.52, 1.3, 0.56);           // capô
-    sh.quadraticCurveTo(0.85, 0.6, 0.55, 0.62);
-    sh.quadraticCurveTo(0.35, 0.92, 0.0, 0.94);           // para-brisa e teto
-    sh.quadraticCurveTo(-0.55, 0.95, -0.8, 0.64);         // vidro traseiro
-    sh.quadraticCurveTo(-1.3, 0.62, -1.5, 0.52);          // porta-malas
-    sh.quadraticCurveTo(-1.6, 0.4, -1.56, 0.28);
-    sh.quadraticCurveTo(-1.55, 0.2, -1.45, 0.2);
-    var body = new THREE.Mesh(bevelGeo(sh, W, 0.07), mat(col, { roughness: 0.35, metalness: 0.35 }));
-    body.castShadow = true; body.receiveShadow = true; g.add(body);
-    var gl = new THREE.Shape();                            // vidros
-    gl.moveTo(0.52, 0.66); gl.quadraticCurveTo(0.34, 0.88, 0.02, 0.9); gl.quadraticCurveTo(-0.5, 0.91, -0.72, 0.66); gl.lineTo(0.52, 0.66);
-    var glass2 = new THREE.Mesh(new THREE.ExtrudeGeometry(gl, { depth: W + 0.02, bevelEnabled: false }), mat(0x1f2f3d, { roughness: 0.1, metalness: 0.5 }));
-    glass2.position.z = -(W + 0.02) / 2; g.add(glass2);
-    [[0.42], [-0.42]].forEach(function(l){                 // faróis
-      var hl = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), mat(0xfff3b0, { emissive: 0x7a6a20 })); hl.scale.set(0.6, 0.8, 1); hl.position.set(1.52, 0.44, l[0]); g.add(hl);
-      var tl = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), mat(0xc22222, { emissive: 0x500000 })); tl.scale.set(0.5, 0.8, 1); tl.position.set(-1.56, 0.42, l[0]); g.add(tl);
+    var k = carIdx++, t = carTypes[k % carTypes.length], col = carColors[k % carColors.length], sh = carShared;
+    var g = new THREE.Group(), W = 1.64, h = t.L / 2;
+    var paint = new THREE.MeshPhysicalMaterial({ color: col, roughness: 0.28, metalness: 0.45, clearcoat: 1.0, clearcoatRoughness: 0.06 });
+    function add(geo, m, x, y, z, cast){ var o = new THREE.Mesh(geo, m); o.position.set(x, y, z); if (cast !== false) o.castShadow = true; o.receiveShadow = true; g.add(o); return o; }
+    function bx(w, hh, d, m, x, y, z){ return add(new THREE.BoxGeometry(w, hh, d), m, x, y, z, false); }
+    // carroceria (perfil lateral extrudado com cantos arredondados)
+    var s = new THREE.Shape();
+    s.moveTo(-h + 0.2, 0.22); s.lineTo(h - 0.2, 0.22);
+    s.quadraticCurveTo(h, 0.22, h, 0.42); s.quadraticCurveTo(h, 0.6, h - 0.1, 0.66);
+    s.lineTo(t.wsB, t.hood); s.lineTo(t.wsT, t.roof - 0.04);
+    s.quadraticCurveTo(t.wsT - 0.04, t.roof, t.wsT - 0.2, t.roof);
+    s.lineTo(t.rwT + 0.2, t.roof);
+    s.quadraticCurveTo(t.rwT, t.roof, t.rwT - 0.05, t.roof - 0.05);
+    s.lineTo(t.rwB, t.trunk); s.lineTo(-h + 0.08, t.trunk - 0.02);
+    s.quadraticCurveTo(-h, t.trunk - 0.04, -h, 0.5); s.quadraticCurveTo(-h, 0.22, -h + 0.2, 0.22);
+    var bgeo = new THREE.ExtrudeGeometry(s, { depth: W - 0.08, bevelEnabled: true, bevelThickness: 0.04, bevelSize: 0.04, bevelOffset: -0.04, bevelSegments: 3, curveSegments: 12 });
+    bgeo.translate(0, 0, -(W - 0.08) / 2); add(bgeo, paint, 0, 0, 0);
+    // vidros: para-brisa, vidro traseiro e 2 vidros laterais por lado (coluna central)
+    function lx(a, b, y){ return a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); }
+    var A = [t.wsB, t.hood], B = [t.wsT, t.roof - 0.04], C = [t.rwT - 0.05, t.roof - 0.05], D = [t.rwB, t.trunk];
+    function slab(pts, depth){
+      var sp = new THREE.Shape(); sp.moveTo(pts[0][0], pts[0][1]); for (var i = 1; i < pts.length; i++) sp.lineTo(pts[i][0], pts[i][1]);
+      var gm = new THREE.ExtrudeGeometry(sp, { depth: depth, bevelEnabled: false }); gm.translate(0, 0, -depth / 2); return gm;
+    }
+    var yb = t.belt, yt = t.roof - 0.13, ya = t.hood + 0.04, yr = t.trunk + 0.04;
+    add(slab([[lx(A, B, ya), ya], [lx(A, B, yt), yt], [lx(A, B, yt) - 0.05, yt], [lx(A, B, ya) - 0.05, ya]], W - 0.24), sh.glass, 0, 0, 0, false);   // para-brisa
+    add(slab([[lx(C, D, yt), yt], [lx(C, D, yr), yr], [lx(C, D, yr) + 0.05, yr], [lx(C, D, yt) + 0.05, yt]], W - 0.24), sh.glass, 0, 0, 0, false);   // vidro traseiro
+    var xfb = lx(A, B, yb) - 0.07, xft = lx(A, B, yt) - 0.07, xrt = lx(C, D, yt) + 0.07, xrb = lx(C, D, yb) + 0.07, xm = (xft + xrt) / 2;
+    [-1, 1].forEach(function(sd){
+      add(slab([[xfb, yb], [xft, yt], [xm + 0.04, yt], [xm + 0.04, yb]], 0.03), sh.glass, 0, 0, sd * (W / 2), false);
+      add(slab([[xm - 0.04, yb], [xm - 0.04, yt], [xrt, yt], [xrb, yb]], 0.03), sh.glass, 0, 0, sd * (W / 2), false);
+      var zs = sd * (W / 2 + 0.006);
+      [xfb - 0.1, xm, xrb + 0.05].forEach(function(dx){ bx(0.012, yb - 0.34, 0.006, sh.dark, dx, 0.34 + (yb - 0.34) / 2, zs); });   // frestas das portas
+      [xm + 0.3, xm - 0.3].forEach(function(dx){ bx(0.13, 0.025, 0.02, sh.chrome, dx, yb - 0.1, zs + sd * 0.006); });                // maçanetas
+      bx(0.12, 0.07, 0.015, sh.plastic, t.wsB - 0.2, yb + 0.02, sd * (W / 2 + 0.09));                                                // retrovisor
+      bx(0.02, 0.03, 0.09, sh.plastic, t.wsB - 0.2, yb - 0.02, sd * (W / 2 + 0.035));
+      bx(h * 2 - 0.8, 0.05, 0.05, sh.dark, 0, 0.26, sd * (W / 2 - 0.02));                                                           // soleira
+      // faróis, setas e lanternas
+      bx(0.05, 0.1, 0.32, sh.head, h - 0.02, 0.58, sd * 0.52);
+      bx(0.05, 0.05, 0.12, sh.amber, h - 0.015, 0.46, sd * 0.68);
+      bx(0.04, 0.12, 0.32, sh.tail, -h, t.trunk - 0.14, sd * 0.56);
+      // rodas
+      [[h - 0.78], [-h + 0.78]].forEach(function(p){
+        var wz = sd * (W / 2 - 0.08);
+        add(sh.arcG, sh.dark, p[0], 0.335, sd * (W / 2 + 0.002), false).rotation.x = Math.PI / 2;
+        var wg = new THREE.Group(); wg.position.set(p[0], 0.335, wz); wg.rotation.x = Math.PI / 2;
+        var tr = new THREE.Mesh(sh.tireG, sh.tire); tr.castShadow = true; wg.add(tr);
+        wg.add(new THREE.Mesh(sh.rimG, sh.rim)); wg.add(new THREE.Mesh(sh.hubG, sh.dark));
+        for (var i = 0; i < 5; i++){ var sp = new THREE.Mesh(sh.spokeG, sh.rim); sp.position.y = sd * 0.118; sp.position.x = 0; sp.rotation.y = i * Math.PI * 2 / 5; sp.position.set(0, sd * 0.118, 0); wg.add(sp); }
+        g.add(wg);
+      });
     });
-    var wheelG = new THREE.CylinderGeometry(0.25, 0.25, 0.2, 18), wm = mat(0x1b1d21), hub = new THREE.CylinderGeometry(0.12, 0.12, 0.215, 12), hm = mat(0xc9cdd2, { metalness: 0.6, roughness: 0.3 });
-    [[0.95, 0.5], [0.95, -0.5], [-0.95, 0.5], [-0.95, -0.5]].forEach(function(p){
-      var w = new THREE.Mesh(wheelG, wm); w.rotation.x = Math.PI / 2; w.position.set(p[0], 0.25, p[1]); w.castShadow = true; g.add(w);
-      var h = new THREE.Mesh(hub, hm); h.rotation.x = Math.PI / 2; h.position.set(p[0], 0.25, p[1]); g.add(h);
-    });
+    // grade, para-choques, sob o carro, placas
+    bx(0.04, 0.1, 0.5, sh.dark, h - 0.005, 0.5, 0); bx(0.045, 0.02, 0.5, sh.chrome, h, 0.55, 0);
+    bx(0.07, 0.15, W - 0.12, sh.plastic, h - 0.015, 0.31, 0); bx(0.07, 0.14, W - 0.12, sh.plastic, -h + 0.015, 0.31, 0);
+    bx(h * 2 - 0.5, 0.1, W - 0.3, sh.dark, 0, 0.2, 0);
+    var pl = sh.plates, p1 = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.125), pl[k % pl.length]); p1.position.set(h + 0.003, 0.4, 0); p1.rotation.y = Math.PI / 2; g.add(p1);
+    var p2 = new THREE.Mesh(new THREE.PlaneGeometry(0.4, 0.125), pl[(k + 1) % pl.length]); p2.position.set(-h - 0.003, t.trunk - 0.3, 0); p2.rotation.y = -Math.PI / 2; g.add(p2);
+    if (t.roof > 1.6) [-1, 1].forEach(function(sd){ bx(t.wsT - t.rwT - 0.3, 0.03, 0.04, sh.dark, (t.wsT + t.rwT) / 2, t.roof + 0.025, sd * 0.62); });   // rack do SUV
     g.position.set(X(cxpx), 0.05, Z(cypx)); g.rotation.y = rotY; root.add(g);
   }
   function pSign(xpx, ypx){
