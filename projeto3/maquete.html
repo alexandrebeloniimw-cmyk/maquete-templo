@@ -33,17 +33,17 @@
   .hint { padding:9px 18px 12px; font-size:12px; color:#5b6776; border-top:1px solid #e6ecf3; background:#f7f9fc; line-height:1.35; }
   #tTour { background:#1f5fa8; color:#fff; }
   #tTour.on { background:#c0392b; }
-  #tourCard { position:absolute; left:50%; bottom:18px; transform:translateX(-50%); width:min(560px,92%); background:rgba(12,24,44,.88); color:#fff; border-radius:16px; padding:14px 18px 12px; box-shadow:0 10px 30px rgba(0,0,0,.35); backdrop-filter:blur(6px); z-index:20; display:none; }
-  #tourCard .tn { font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.7; }
-  #tourCard h3 { margin:2px 0 4px; font-size:21px; font-weight:700; }
-  #tourCard p { margin:0 0 10px; font-size:15px; line-height:1.4; opacity:.94; }
-  #tourCard .tb { display:flex; align-items:center; gap:8px; }
-  #tourCard .tb button { background:rgba(255,255,255,.16); color:#fff; padding:7px 13px; font-size:13px; font-weight:600; }
-  #tourCard .tb button:hover { background:rgba(255,255,255,.3); }
+  #tourCard { position:absolute; left:14px; bottom:14px; width:min(340px,calc(100% - 28px)); background:rgba(12,24,44,.72); color:#fff; border-radius:14px; padding:10px 14px 9px; box-shadow:0 6px 20px rgba(0,0,0,.28); backdrop-filter:blur(5px); z-index:20; display:none; }
+  #tourCard .tn { font-size:10.5px; letter-spacing:.08em; text-transform:uppercase; opacity:.65; }
+  #tourCard h3 { margin:1px 0 3px; font-size:16px; font-weight:700; line-height:1.2; }
+  #tourCard p { margin:0 0 8px; font-size:12.5px; line-height:1.35; opacity:.92; }
+  #tourCard .tb { display:flex; align-items:center; gap:6px; }
+  #tourCard .tb button { background:rgba(255,255,255,.16); color:#fff; padding:0; width:30px; height:26px; font-size:12px; font-weight:700; border-radius:8px; }
+  #tourCard .tb button:hover { background:rgba(255,255,255,.32); }
   #tourCard .tb .sp { flex:1; }
-  #tourBar { height:4px; background:rgba(255,255,255,.2); border-radius:3px; margin-bottom:10px; overflow:hidden; }
+  #tourBar { height:3px; background:rgba(255,255,255,.2); border-radius:3px; margin-bottom:7px; overflow:hidden; }
   #tourBar i { display:block; height:100%; width:0; background:#6fb4ff; }
-  @media (max-width:760px){ #tourCard { bottom:10px; padding:11px 14px 10px; } #tourCard h3 { font-size:17px; } #tourCard p { font-size:13.5px; margin-bottom:8px; } }
+  @media (max-width:760px){ #tourCard { left:8px; bottom:8px; width:calc(100% - 16px); padding:8px 12px 8px; } #tourCard h3 { font-size:14.5px; } #tourCard p { font-size:12px; margin-bottom:6px; } }
   .bar { display:none; }
   @media (max-width:760px){
     #app { flex-direction:column; }
@@ -67,7 +67,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="c"></canvas><div id="tourCard"><div id="tourBar"><i></i></div><div class="tn" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tb"><button id="tourPrev">◀ Anterior</button><button id="tourPause">⏸ Pausar</button><button id="tourNext">Próximo ▶</button><span class="sp"></span><button id="tourExit">✕ Sair</button></div></div></div>
+  <div id="stage"><canvas id="c"></canvas><div id="tourCard"><div id="tourBar"><i></i></div><div class="tn" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tb"><button id="tourPrev" title="Anterior">◀</button><button id="tourPause" title="Pausar">⏸</button><button id="tourNext" title="Próximo">▶</button><span class="sp"></span><button id="tourExit" title="Sair">✕</button></div></div></div>
   <aside id="side">
     <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Maquete 3: 2º andar no anexo (Multiuso, WC, Biblioteca, Sala de Reuniões e Copa, com passarela vazada sobre o corredor aberto ao céu) com escada na Sala 4; Cantina com balcão de atendimento e telhado de policarbonato; Cozinha e Sala de Apoio com vidro temperado; porta de vidro mais larga no corredor do anexo; bebedouro na outra ponta do Hall; Estacionamento 1 com 4 vagas e fachada com 2 portas de vidro</p></div>
     <div class="tools">
@@ -1754,16 +1754,16 @@
       timer = setTimeout(function(){ show(i + 1); }, rem);
       (function loop(){ var f = Math.min(1, (performance.now() - t0) / DWELL); fill.style.width = (f * 100) + '%'; if (f < 1 && active && !paused) raf = requestAnimationFrame(loop); })();
     }
-    function off(){ var st = document.getElementById('stage'), w = st.clientWidth, h = st.clientHeight; if (w && h){ camera.setViewOffset(w, h, 0, h * 0.09, w, h); camera.updateProjectionMatrix(); need = 40; } }   // sobe a imagem para o cartão não cobrir o ambiente
+    function off(){ var st = document.getElementById('stage'), w = st.clientWidth, h = st.clientHeight; if (w && h){ camera.setViewOffset(w, h, 0, h * 0.03, w, h); camera.updateProjectionMatrix(); need = 40; } }   // sobe a imagem para o cartão não cobrir o ambiente
     window.addEventListener('resize', function(){ if (active) off(); });
-    function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸ Pausar'; off(); show(0); }
+    function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸'; off(); show(0); }
     function stop(){ active = false; renderer.clippingPlanes = []; camera.clearViewOffset(); camera.updateProjectionMatrix(); need = 40; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
     btn.onclick = function(){ active ? stop() : start(); };
     document.getElementById('tourExit').onclick = stop;
     document.getElementById('tourNext').onclick = function(){ show(i + 1); };
     document.getElementById('tourPrev').onclick = function(){ show(i - 1); };
     document.getElementById('tourPause').onclick = function(){
-      paused = !paused; this.textContent = paused ? '▶ Continuar' : '⏸ Pausar';
+      paused = !paused; this.textContent = paused ? '▶' : '⏸';
       if (paused){ rem = Math.max(500, DWELL - (performance.now() - t0)); clearTimeout(timer); cancelAnimationFrame(raf); } else { t0 = performance.now() - (DWELL - rem); schedule(); }
     };
     if (/[#&?]passeio/.test(location.href)) setTimeout(start, 1200);
