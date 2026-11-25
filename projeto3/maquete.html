@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, Cantina com balcão de atendimento e telhado de policarbonato, Cozinha e Sala de Apoio com vidro da metade para cima, escada na Sala 4, porta de vidro mais larga no corredor do anexo, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Maquete 3: 2º andar no anexo (Multiuso, WC, Biblioteca, Sala de Reuniões, Copa e Recepção) com escada na Sala 4; Cantina com balcão de atendimento e telhado de policarbonato; Cozinha e Sala de Apoio com vidro temperado; porta de vidro mais larga no corredor do anexo; bebedouro na outra ponta do Hall; Estacionamento 1 com 4 vagas e fachada com 2 portas de vidro</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -574,12 +574,6 @@
       slanted(xe - sw / 2 - 0.01, 4 * rr + 0.93, zmax - nT * td / 2, 0.04, 0.04, th, null, 0xc9ced3);  // corrimãos
       slanted(xw + sw / 2 + 0.01, 12 * rr + 0.93, zmin + land + nT * td / 2, 0.04, 0.04, -th, null, 0xc9ced3);
       box(xe - xw - sw, 0.9, 0.012, 0, (xe + xw) / 2, 8 * rr + 0.45, zmin + land, null, { material: tempWinMat, cast: false });   // guarda-corpo do patamar
-      // patamar de chegada do 2º andar (sobre a parede do corredor) com guarda-corpo de vidro
-      var pz0 = zmax, pd = 0.9;
-      box(sw + 0.1, 0.16, pd, 0xb9b9c3, xw, BH + 0.08, pz0 + pd / 2 - 0.04);
-      box(0.012, 0.8, pd, 0, xw - sw / 2 - 0.05, BH + 0.16 + 0.4, pz0 + pd / 2 - 0.04, null, { material: tempWinMat, cast: false });
-      box(0.012, 0.8, pd, 0, xw + sw / 2 + 0.05, BH + 0.16 + 0.4, pz0 + pd / 2 - 0.04, null, { material: tempWinMat, cast: false });
-      box(sw + 0.1, 0.8, 0.012, 0, xw, BH + 0.16 + 0.4, pz0 + pd - 0.04, null, { material: tempWinMat, cast: false });
       var upl = (function(){ var cv = document.createElement('canvas'); cv.width = 256; cv.height = 64; var g = cv.getContext('2d'); g.fillStyle = '#23262a'; g.fillRect(0, 0, 256, 64); g.fillStyle = '#ffffff'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('2º andar', 128, 44); return new THREE.CanvasTexture(cv); })();
       var upm = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.175), new THREE.MeshBasicMaterial({ map: upl })); upm.position.set(xw, 2.25, zmax - 0.1); upm.rotation.y = Math.PI; root.add(upm);   // placa "2º andar" (para quem sobe)
     })();
@@ -1009,6 +1003,127 @@
     car(780, 2015, Math.PI);      // lado oposto
   })();
 
+  // ---------- MAQUETE 3: 2º ANDAR do anexo (x40..700, y40..225): Multiuso, WC, Biblioteca, Sala de Reuniões da Junta Diaconal, Copa e Recepção ----------
+  (function(){
+    var F = BH + 0.16, UH = 2.9, TOP = F + UH;
+    var dk = 0x23262a, wh = 0xf4f2ec, oak = 0xc4986a, walnut = 0x7a5a3a, steelc = 0xc9ced3;
+    var frost = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.62, roughness: 0.9 });
+    var glowM = new THREE.MeshStandardMaterial({ color: 0xfff1c9, emissive: 0xffe2a8, emissiveIntensity: 0.9 });
+    var rs = 7; function rnd(){ rs = (rs * 16807) % 2147483647; return rs / 2147483647; }
+    function ub(horiz, fixed, mid, len, ya, yb, th, color, material){
+      if (yb - ya <= 0.001 || len <= 0.001) return;
+      var o = material ? { material: material, cast: false } : {};
+      if (horiz) box(len, yb - ya, th, color, X(mid), (ya + yb) / 2, Z(fixed), null, o); else box(th, yb - ya, len, color, X(fixed), (ya + yb) / 2, Z(mid), null, o);
+    }
+    function mull(horiz, fixed, a, b, ya, yb, step, th){ var n = Math.max(1, Math.round((b - a) * S / step)); for (var k = 0; k <= n; k++) ub(horiz, fixed, a + k * (b - a) / n, 0.05, ya, yb, th, dk); }
+    // paredes do 2º andar: 'ext' (faixa de vidro contínua), 'glass' (divisória de vidro com perfis pretos e faixa jateada), 'solid' (branca)
+    function uwall(horiz, fixed, a1, a2, kind, gaps){
+      gaps = (gaps || []).slice().sort(function(p, q){ return p.a - q.a; });
+      var th = kind === 'ext' ? 0.22 : kind === 'solid' ? 0.12 : 0.05;
+      function seg(a, b){
+        if (b - a <= 0.5) return;
+        var len = (b - a) * S, mid = (a + b) / 2;
+        if (kind === 'ext'){
+          ub(horiz, fixed, mid, len, F, F + 0.9, th, wh);
+          ub(horiz, fixed, mid, len, F + 0.9, TOP - 0.45, 0.04, 0, tempWinMat);
+          ub(horiz, fixed, mid, len, F + 0.9, F + 0.96, 0.12, dk); ub(horiz, fixed, mid, len, TOP - 0.51, TOP - 0.45, 0.12, dk);
+          mull(horiz, fixed, a, b, F + 0.9, TOP - 0.45, 1.8, 0.12);
+          ub(horiz, fixed, mid, len, TOP - 0.45, TOP, th, wh);
+        } else if (kind === 'solid'){ ub(horiz, fixed, mid, len, F, TOP, th, wh); }
+        else {
+          ub(horiz, fixed, mid, len, F, TOP, 0.03, 0, tempWinMat);
+          ub(horiz, fixed, mid, len, F + 1.15, F + 1.6, 0.036, 0, frost);
+          ub(horiz, fixed, mid, len, F, F + 0.05, th + 0.03, dk); ub(horiz, fixed, mid, len, TOP - 0.05, TOP, th + 0.03, dk);
+          mull(horiz, fixed, a, b, F, TOP, 1.3, th + 0.03);
+        }
+      }
+      var cur = a1;
+      gaps.forEach(function(g){
+        seg(cur, g.a);
+        var len = (g.b - g.a) * S, mid = (g.a + g.b) / 2;
+        if (kind === 'glass') ub(horiz, fixed, mid, len, F + 2.1, TOP, 0.03, 0, tempWinMat); else ub(horiz, fixed, mid, len, F + 2.1, TOP, th, wh);
+        ub(horiz, fixed, mid, len, F + 2.08, F + 2.14, 0.08, dk);
+        if (g.leaf === 'white'){ ub(horiz, fixed, mid, len - 0.04, F, F + 2.08, 0.04, wh); ub(horiz, fixed, mid + 0.3 / S, 0.03, F + 0.95, F + 1.25, 0.08, dk); }
+        else {
+          ub(horiz, fixed, mid, len - 0.04, F + 0.02, F + 2.08, 0.012, 0, tempWinMat);
+          [-1, 1].forEach(function(s){ ub(horiz, fixed, mid + s * (len / 2 - 0.02) / S, 0.04, F, F + 2.1, 0.05, dk); });
+          ub(horiz, fixed, mid, len, F, F + 0.05, 0.05, dk); ub(horiz, fixed, mid + 0.3 / S, 0.025, F + 0.9, F + 1.5, 0.07, steelc);
+        }
+        cur = g.b;
+      });
+      seg(cur, a2);
+    }
+    // laje do piso (com o vão da escada) e acabamentos
+    var xa = X(40) - 0.11, xb = X(700) + 0.11, za = Z(40) - 0.11, zb = Z(225) + 0.09;
+    var hx0 = X(580) + 0.08, hx1 = hx0 + 0.8, hz1 = Z(155) - 0.08, hz0 = Z(40) + 0.11 + (hz1 - (Z(40) + 0.11) - 1.4);
+    [[xa, xb, za, hz0], [xa, xb, hz1, zb], [xa, hx0, hz0, hz1], [hx1, xb, hz0, hz1]].forEach(function(q){ box(q[1] - q[0], 0.12, q[3] - q[2], 0xd8d4cb, (q[0] + q[1]) / 2, F - 0.06, (q[2] + q[3]) / 2); });
+    function fl(x1, y1, x2, y2, col){ box((x2 - x1) * S, 0.02, (y2 - y1) * S, col, X((x1 + x2) / 2), F + 0.01, Z((y1 + y2) / 2), null, { cast: false }); }
+    fl(40, 40, 200, 225, 0xc4986a); fl(200, 40, 280, 155, 0xcfd8dc); fl(280, 40, 430, 155, 0x9aa0a6); fl(430, 40, 580, 155, 0xa57c52);
+    fl(580, 40, 700, 81, 0xe3e1db); fl(624, 81, 700, 155, 0xe3e1db); fl(200, 155, 700, 225, 0xe3e1db);
+    // paredes
+    uwall(true, 40, 40, 700, 'ext'); uwall(true, 225, 40, 700, 'ext'); uwall(false, 40, 40, 225, 'ext'); uwall(false, 700, 40, 225, 'ext');
+    uwall(false, 200, 40, 155, 'solid'); uwall(false, 200, 155, 225, 'glass', [{ a: 168, b: 213 }]);
+    uwall(true, 155, 200, 280, 'solid', [{ a: 217.5, b: 262.5, leaf: 'white' }]); uwall(false, 280, 40, 155, 'solid');
+    uwall(true, 155, 280, 430, 'glass', [{ a: 332.5, b: 377.5 }]); uwall(false, 430, 40, 155, 'glass');
+    uwall(true, 155, 430, 580, 'glass', [{ a: 482.5, b: 527.5 }]); uwall(false, 580, 40, 155, 'glass');
+    uwall(false, 624, 81, 155, 'glass'); uwall(true, 155, 624, 700, 'glass', [{ a: 632, b: 677 }]);
+    // guarda-corpo de vidro no lado norte do vão da escada
+    box(hx1 - hx0, 1.0, 0.03, 0, (hx0 + hx1) / 2, F + 0.5, hz0, null, { material: tempWinMat, cast: false }); box(hx1 - hx0, 0.04, 0.05, dk, (hx0 + hx1) / 2, F + 1.0, hz0);
+    // cobertura moderna (some junto com o telhado): forro, laje com beiral, platibanda grafite, spots
+    var cx = (xa + xb) / 2, cz = (za + zb) / 2, RW = xb - xa + 0.7, RD = zb - za + 0.7;
+    box(xb - xa, 0.1, zb - za, 0xffffff, cx, TOP + 0.05, cz, roofGroup, { cast: false });
+    box(RW, 0.18, RD, 0xe9e6df, cx, TOP + 0.19, cz, roofGroup);
+    box(RW, 0.32, 0.06, dk, cx, TOP + 0.19, za - 0.35, roofGroup); box(RW, 0.32, 0.06, dk, cx, TOP + 0.19, zb + 0.35, roofGroup);
+    box(0.06, 0.32, RD, dk, xa - 0.35, TOP + 0.19, cz, roofGroup); box(0.06, 0.32, RD, dk, xb + 0.35, TOP + 0.19, cz, roofGroup);
+    [[85, 70], [85, 140], [85, 200], [160, 70], [160, 140], [160, 200], [240, 98], [320, 70], [390, 70], [320, 120], [390, 120], [470, 70], [540, 70], [470, 125], [540, 125], [602, 60], [660, 60], [660, 120], [230, 190], [310, 190], [400, 190], [490, 190], [570, 190], [640, 190], [680, 190]].forEach(function(q){
+      var sp = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 16), glowM); sp.position.set(X(q[0]), TOP - 0.01, Z(q[1])); roofGroup.add(sp);
+    });
+    // móveis
+    function chair(x, z, dir, col){ box(0.4, 0.04, 0.4, col, x, F + 0.45, z); box(0.4, 0.4, 0.04, col, x, F + 0.7, z + dir * 0.19); [-0.17, 0.17].forEach(function(o){ box(0.03, 0.43, 0.36, dk, x + o, F + 0.215, z, null, { cast: false }); }); }
+    function signTex(txt, w, h, bg, fg, fs){ var cv = document.createElement('canvas'); cv.width = w; cv.height = h; var g = cv.getContext('2d'); g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = fg; g.font = 'bold ' + fs + 'px sans-serif'; g.textAlign = 'center'; g.fillText(txt, w / 2, h * 0.66); return new THREE.CanvasTexture(cv); }
+    // Multiuso (x40..200, y40..225): tablado, tela de projeção sobre painel ripado, púlpito e 20 cadeiras
+    box(105 * S, 0.12, 28 * S, oak, X(120), F + 0.06, Z(58)); box(0.5, 1.0, 0.4, walnut, X(150), F + 0.62, Z(62));
+    for (var rk = 0; rk < 16; rk++) box(0.05, 2.4, 0.04, walnut, X(120) - 1.2 + rk * 0.16, F + 1.4, Z(40) + 0.11 + 0.025);
+    box(2.0, 1.15, 0.03, 0xf8f8f8, X(120), F + 1.75, Z(40) + 0.11 + 0.07, null, { cast: false });
+    box(0.3, 0.1, 0.3, dk, X(120), TOP - 0.3, Z(125), roofGroup); box(0.02, 0.3, 0.02, dk, X(120), TOP - 0.15, Z(125), roofGroup);
+    for (var cr = 0; cr < 4; cr++) for (var cc = 0; cc < 5; cc++) chair(X(70 + cc * 25), Z(92 + cr * 26), 1, (cr + cc) % 2 ? 0x3d4249 : 0x8fa3ad);
+    [[85, 150], [160, 150]].forEach(function(q){ var rg = new THREE.Mesh(new THREE.TorusGeometry(0.4, 0.022, 10, 40), glowM); rg.rotation.x = Math.PI / 2; rg.position.set(X(q[0]), TOP - 0.6, Z(q[1] + 20)); root.add(rg); box(0.01, 0.6, 0.01, dk, X(q[0]), TOP - 0.3, Z(q[1] + 20), roofGroup); });
+    // WC
+    box(0.38, 0.4, 0.55, wh, X(222), F + 0.2, Z(62)); box(0.38, 0.4, 0.18, wh, X(222), F + 0.6, Z(46)); box(0.5, 0.8, 0.36, wh, X(268), F + 0.4, Z(64)); box(0.4, 0.03, 0.26, 0xbcd5e8, X(268), F + 0.815, Z(64), null, { cast: false }); box(0.6, 0.8, 0.02, 0xdde9ef, X(268), F + 1.5, Z(44), null, { cast: false });
+    // Biblioteca (x280..430): estante de parede com livros, mesa de leitura, tapete e pendentes globo
+    var sx = X(355), sz = Z(40) + 0.11 + 0.16;
+    box(2.5, 0.05, 0.32, walnut, sx, F + 0.05, sz); box(0.05, 2.1, 0.32, walnut, sx - 1.25, F + 1.05, sz); box(0.05, 2.1, 0.32, walnut, sx + 1.25, F + 1.05, sz); box(2.5, 0.05, 0.32, walnut, sx, F + 2.1, sz);
+    var bc = [0x2f6db5, 0xc0392b, 0xe0a43a, 0x2fa38f, 0x6b4f9a, 0xf4f2ec, 0x3d4249];
+    for (var lv = 0; lv < 4; lv++){
+      box(2.45, 0.04, 0.32, walnut, sx, F + 0.1 + (lv + 1) * 0.5, sz);
+      var bx = -1.2; while (bx < 1.15){ var bw = 0.04 + rnd() * 0.04, bh = 0.26 + rnd() * 0.16; box(bw, bh, 0.22, bc[Math.floor(rnd() * bc.length)], sx + bx + bw / 2, F + 0.12 + lv * 0.5 + bh / 2 + 0.02, sz, null, { cast: false }); bx += bw + 0.005; }
+    }
+    box(2.2, 0.012, 1.5, 0x6b7f8c, X(355), F + 0.026, Z(104), null, { cast: false });
+    box(1.6, 0.05, 0.8, oak, X(355), F + 0.74, Z(104)); [-0.7, 0.7].forEach(function(o){ box(0.05, 0.72, 0.7, dk, X(355) + o, F + 0.37, Z(104)); });
+    [-0.4, 0.4].forEach(function(o){ chair(X(355) + o, Z(104) - 0.65, -1, 0xe0a43a); chair(X(355) + o, Z(104) + 0.65, 1, 0x2fa38f); });
+    [-0.5, 0.5].forEach(function(o){ var gb = new THREE.Mesh(new THREE.SphereGeometry(0.13, 14, 12), glowM); gb.position.set(X(355) + o, TOP - 0.85, Z(104)); root.add(gb); box(0.01, 0.7, 0.01, dk, X(355) + o, TOP - 0.4, Z(104), roofGroup); });
+    // Sala de Reuniões da Junta Diaconal (x430..580): mesa de carvalho com 10 cadeiras, TV sobre aparador, pendente linear de LED
+    var mcx = X(505), mcz = Z(100);
+    box(2.4, 0.05, 0.95, oak, mcx, F + 0.74, mcz); [-1, 1].forEach(function(o){ box(0.06, 0.72, 0.8, dk, mcx + o, F + 0.37, mcz); });
+    for (var mk = 0; mk < 5; mk++){ chair(mcx - 0.96 + mk * 0.48, mcz - 0.68, -1, 0x3d4249); chair(mcx - 0.96 + mk * 0.48, mcz + 0.68, 1, 0x3d4249); }
+    box(1.5, 0.85, 0.04, 0x16191c, mcx, F + 1.6, Z(40) + 0.11 + 0.03); box(1.6, 0.5, 0.4, walnut, mcx, F + 0.25, Z(40) + 0.11 + 0.2);
+    var ln = box(1.9, 0.05, 0.08, 0, mcx, TOP - 0.55, mcz, null, { material: glowM, cast: false }); box(0.01, 0.55, 0.01, dk, mcx - 0.8, TOP - 0.27, mcz, roofGroup); box(0.01, 0.55, 0.01, dk, mcx + 0.8, TOP - 0.27, mcz, roofGroup);
+    // Copa (L ao redor do vão da escada): bancada, pia, cafeteira, geladeira, mesa alta com 2 banquetas e banco com almofadas
+    var ex = X(700) - 0.11 - 0.3;
+    box(0.6, 0.9, 1.2, 0xe9e6df, ex, F + 0.45, Z(112)); box(0.64, 0.04, 1.24, dk, ex, F + 0.92, Z(112)); box(0.4, 0.06, 0.5, steelc, ex, F + 0.94, Z(98)); box(0.3, 0.35, 0.35, 0x15171a, ex, F + 1.12, Z(128));
+    box(0.7, 1.8, 0.7, 0xdfe3e6, X(700) - 0.11 - 0.35, F + 0.9, Z(40) + 0.11 + 0.35);
+    var tb = new THREE.Mesh(new THREE.CylinderGeometry(0.35, 0.35, 0.04, 20), mat(oak)); tb.position.set(X(650), F + 1.05, Z(115)); root.add(tb); box(0.06, 1.03, 0.06, dk, X(650), F + 0.52, Z(115));
+    [-1, 1].forEach(function(o){ var st = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.05, 16), mat(0xc0392b)); st.position.set(X(650) + o * 0.55, F + 0.72, Z(115)); root.add(st); box(0.04, 0.7, 0.04, dk, X(650) + o * 0.55, F + 0.36, Z(115)); });
+    box(1.5, 0.45, 0.45, oak, X(602), F + 0.225, Z(40) + 0.11 + 0.225); [-0.45, 0.45].forEach(function(o){ box(0.4, 0.12, 0.12, 0xe0a43a, X(602) + o, F + 0.5, Z(40) + 0.11 + 0.12); });
+    // Recepção/corredor: banco, vaso de planta, placa luminosa
+    box(1.6, 0.45, 0.4, oak, X(662), F + 0.225, Z(225) - 0.09 - 0.2); box(1.6, 0.1, 0.42, 0x3d4249, X(662), F + 0.5, Z(225) - 0.09 - 0.2);
+    var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.5, 14), mat(0xe6e2d8)); pot.position.set(X(692), F + 0.25, Z(208)); root.add(pot);
+    var plant = new THREE.Mesh(new THREE.SphereGeometry(0.3, 12, 10), mat(0x4f8a45)); plant.scale.set(1, 1.6, 1); plant.position.set(X(692), F + 0.9, Z(208)); root.add(plant);
+    var sgn = new THREE.Mesh(new THREE.PlaneGeometry(1.7, 0.42), new THREE.MeshBasicMaterial({ map: signTex('JUNTA DIACONAL · 2º ANDAR', 1024, 256, '#23262a', '#fff1c9', 84) })); sgn.position.set(X(700) - 0.13, F + 1.9, Z(185)); sgn.rotation.y = -Math.PI / 2; root.add(sgn);
+    // rótulos dos ambientes (aparecem com o botão Nomes)
+    label('Sala Multiuso', 120, 130, 5.4, 2.0); label('WC', 240, 98, 5.0, 0.9); label('Biblioteca', 355, 98, 5.4, 1.7); label('Sala de Reuniões', 505, 98, 5.4, 2.2); label('Copa', 662, 60, 5.0, 1.0); label('Recepção 2º andar', 640, 190, 5.2, 2.2);
+  })();
+
   // ---------- Telhados ----------
   var roofMat = new THREE.MeshStandardMaterial({ color: C.roof, roughness: 0.8, side: THREE.DoubleSide });
   var gableMat = new THREE.MeshStandardMaterial({ color: C.wall, roughness: 0.9 });
@@ -1023,13 +1138,13 @@
     return new THREE.MeshStandardMaterial({ map: t, roughness: 0.55, metalness: 0.35, side: THREE.DoubleSide });
   }
   (function(){
-    var W = 660 * S + 0.9, D = 680 * S + 0.9, rise = 2.5;
+    var W = 660 * S + 0.9, D = (720 - 225) * S + 0.45 - 0.09, rise = 2.5;   // MAQUETE 3: o telhado de duas águas agora cobre só a nave (do anexo, y225, até a frente)
     var shape = new THREE.Shape();
     shape.moveTo(-W / 2, 0); shape.lineTo(W / 2, 0); shape.lineTo(0, rise); shape.lineTo(-W / 2, 0);
     var geo = new THREE.ExtrudeGeometry(shape, { depth: D, bevelEnabled: false });
     geo.translate(0, 0, -D / 2);
     var m = new THREE.Mesh(geo, [gableMat, roofMat]);
-    m.position.set(0, BH, Z((40 + 720) / 2)); m.castShadow = true; m.receiveShadow = true;
+    m.position.set(0, BH, (Z(225) + 0.09 + Z(720) + 0.45) / 2); m.castShadow = true; m.receiveShadow = true;
     roofGroup.add(m);
     // laje das salas externas
     var slab = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 220 * S), mat(C.slab));   // MAQUETE 3: laje só sobre a Cozinha (y880..1100)
@@ -1222,6 +1337,13 @@
     { id: 'apoiohall', name: 'Sala de Apoio às Mamães (Hall)', g: 'Banheiros e hall', pos: [1.5, 1.65, -1.55], tgt: [3.8, 1.1, -1.4], roof: true, labels: false, fp: true },
     { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
+    { id: 'a2geral', name: '2º andar · visão de cima', g: '2º andar', pos: [1.0, 16, -7.0], tgt: [0.6, 3.2, -15.6], roof: false, labels: true },
+    { id: 'a2ext', name: '2º andar · volume externo', g: '2º andar', pos: [5.5, 9.5, -4.5], tgt: [0.5, 4.5, -15.0], roof: true, labels: false },
+    { id: 'a2cor', name: '2º andar · corredor e recepção', g: '2º andar', pos: [-5.0, 4.8, -14.25], tgt: [6.2, 4.7, -14.25], roof: true, labels: false, fp: true },
+    { id: 'a2reun', name: '2º andar · Sala de Reuniões', g: '2º andar', pos: [1.5, 4.8, -16.1], tgt: [3.9, 4.3, -16.1], roof: true, labels: false, fp: true },
+    { id: 'a2bib', name: '2º andar · Biblioteca', g: '2º andar', pos: [0.9, 4.8, -14.9], tgt: [-1.0, 4.2, -16.8], roof: true, labels: false, fp: true },
+    { id: 'a2mult', name: '2º andar · Sala Multiuso', g: '2º andar', pos: [-3.6, 4.8, -14.2], tgt: [-5.4, 4.2, -16.6], roof: true, labels: false, fp: true },
+    { id: 'a2esc', name: '2º andar · chegada da escada', g: '2º andar', pos: [4.7, 4.8, -13.9], tgt: [4.7, 4.3, -15.6], roof: true, labels: false, fp: true },
     { id: 'cozvidro', name: 'Cozinha (vidro, da varanda)', g: 'Pátio (ambientes)', pos: [-0.9, 1.7, 1.9], tgt: [-3.3, 1.9, 1.9], roof: true, labels: false, fp: true },
     { id: 'cantinaf', name: 'Cantina (balcão, da varanda)', g: 'Pátio (ambientes)', pos: [-0.8, 1.7, 5.2], tgt: [-3.3, 1.5, 6.0], roof: true, labels: false, fp: true },
     { id: 'cozinhae', name: 'Cozinha', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 0.5], tgt: [-6.0, 1.1, 3.4], roof: true, labels: false, fp: true },
