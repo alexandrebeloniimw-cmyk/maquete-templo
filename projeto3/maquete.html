@@ -748,9 +748,10 @@
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
     [125, 385, 592].forEach(function(cx){
       acBox(X(cx), 2.45, Z(40) + 0.11 + 0.1);                                                   // split na parede do fundo
+      box(1.5, 0.85, 0.04, 0x16191c, X(cx), 1.5, Z(40) + 0.11 + 0.02);                          // tela
+      if (cx !== 125) return;                                                                      // Etapa 80: Salas 2 e 3 sem mesa e sem cadeiras (os 3 bancos são a medida da sala)
       box(1.3, 0.05, 0.55, 0xb58a5c, X(cx), 0.76, Z(115)); [-0.55, 0.55].forEach(function(o){ box(0.05, 0.72, 0.5, 0xdad7d0, X(cx) + o, 0.4, Z(115)); });
       [-0.4, 0, 0.4].forEach(function(o){ box(0.4, 0.04, 0.4, 0x3d4249, X(cx) + o, 0.45, Z(135)); box(0.4, 0.38, 0.04, 0x3d4249, X(cx) + o, 0.66, Z(135) + 0.19); box(0.06, 0.43, 0.06, 0x8a8f94, X(cx) + o, 0.22, Z(135)); });
-      box(1.5, 0.85, 0.04, 0x16191c, X(cx), 1.5, Z(40) + 0.11 + 0.02);                          // tela
     });
     // banheiro acessível (PCD) do anexo (x200..280, y50..155 ≈ 1,6 × 2,1 m): vaso, barras de apoio, lavatório
     var bar = 0xc9ced3;
@@ -1671,25 +1672,26 @@
         var bb = new THREE.Box3().setFromObject(o); if (bb.isEmpty()) return;
         var cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2, L = bb.max.z - bb.min.z;
         if (!inX(cx) || cz < zb - 0.45 || cz > zf + 0.05 || bb.min.y > 7.5) return;
+        if (bb.max.y < BH + 0.05 && cx > X(285) && cx < X(690) && L < 4.5) return;   // Etapa 80: tudo do térreo das Salas 2 e 3 (paredes, piso, forro, janelas, luzes) fica no tamanho de 3 bancos (≈ 2,1 m de fundo)
         var box = o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.rotation.x && !o.rotation.y && !o.rotation.z;
         if (box && L >= 1.9){                                              // paredes divisórias, pisos, lajes, forros: esticam para trás
           var z0 = f(bb.min.z), z1 = f(bb.max.z); o.scale.z *= (z1 - z0) / L; o.position.z = (z0 + z1) / 2; return;
         }
         if (Math.abs(cx - xW[0]) < 0.2 || Math.abs(cx - xW[1]) < 0.2) return;   // paredes externas e janelas laterais ficam
-        if (cz >= zb + 0.3 && bb.max.y < 2.2 && cx > X(285) && cx < X(690)) return;   // Etapa 79: mobília (mesa, cadeiras, pessoas) das Salas 2 e 3 do térreo fica onde estava; os 2,10 m novos ficam livres atrás dela
         o.position.z += (cz < zb + 0.3 ? -D : f(cz) - cz);                   // fundos: recuam; móveis e peças: acompanham proporcionalmente
       });
     });
+    box(X(700) - X(280), BH, 0.22, C.wall, (X(280) + X(700)) / 2, BH / 2, zb - D, root);   // Etapa 80: parede dos fundos do térreo, fechando o espaço atrás das Salas 2 e 3
     xW.forEach(function(xw){                                               // paredes externas laterais prolongadas (térreo e 2º andar)
       box(0.22, BH, D, C.wall, xw, BH / 2, zb - D / 2, root);
       box(0.22, 2.9, D, C.wall, xw, BH + 0.16 + 1.45, zb - D / 2, root);
     });
-    views.forEach(function(v){ if (v.tgt[2] > zb - 0.4 && v.tgt[2] < zf && v.pos[2] > zb - 0.4 && v.pos[2] < zb + 6 && inX(v.tgt[0])) v.tgt[2] = f(v.tgt[2]); });
+    views.forEach(function(v){ if (v.tgt[2] > zb - 0.4 && v.tgt[2] < zf && v.pos[2] > zb - 0.4 && v.pos[2] < zb + 6 && inX(v.tgt[0]) && !(v.tgt[0] > X(285) && v.tgt[0] < X(690) && v.tgt[1] < 2.5)) v.tgt[2] = f(v.tgt[2]); });
     return { f: f };
   })();
   // ---------- MAQUETE 3 (Etapa 78): 3 bancos iguais aos da nave (mesmo tamanho, passo de 0,71 m) nas salas 2 e 3 do anexo (térreo), para conferir a nova profundidade ----------
   (function(){
-    var zIn = Z(-10) - 105 * S + 0.11;                                       // face interna da parede dos fundos das salas
+    var zIn = Z(-10) + 0.11;                                       // face interna da parede dos fundos das salas
     var estofado = mat(0x7b8189, { roughness: 0.95 });
     [385, 592.5].forEach(function(px){
       var cx = X(px);
