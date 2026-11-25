@@ -970,10 +970,23 @@
     sh.quadraticCurveTo(-1.55, 0.2, -1.45, 0.2);
     var body = new THREE.Mesh(bevelGeo(sh, W, 0.07), mat(col, { roughness: 0.35, metalness: 0.35 }));
     body.castShadow = true; body.receiveShadow = true; g.add(body);
-    var gl = new THREE.Shape();                            // vidros
-    gl.moveTo(0.52, 0.66); gl.quadraticCurveTo(0.34, 0.88, 0.02, 0.9); gl.quadraticCurveTo(-0.5, 0.91, -0.72, 0.66); gl.lineTo(0.52, 0.66);
-    var glass2 = new THREE.Mesh(new THREE.ExtrudeGeometry(gl, { depth: W + 0.02, bevelEnabled: false }), mat(0x1f2f3d, { roughness: 0.1, metalness: 0.5 }));
-    glass2.position.z = -(W + 0.02) / 2; g.add(glass2);
+    // MAQUETE 3 (Etapa 48): vidros e janelas — vidros laterais (frente/trás separados pela coluna B), para-brisa, vidro traseiro, molduras, maçanetas, frestas das portas e retrovisores
+    var carGlass = new THREE.MeshStandardMaterial({ color: 0x6f9bb5, transparent: true, opacity: 0.78, roughness: 0.05, metalness: 0.6, side: THREE.DoubleSide });
+    var trim = mat(0x15181b, { roughness: 0.6 });
+    var sp = new THREE.Shape(); sp.moveTo(0.5, 0.69); sp.quadraticCurveTo(0.33, 0.87, 0.02, 0.89); sp.quadraticCurveTo(-0.5, 0.9, -0.69, 0.69); sp.lineTo(0.5, 0.69);
+    [1, -1].forEach(function(sd){
+      var pane = new THREE.Mesh(new THREE.ExtrudeGeometry(sp, { depth: 0.03, bevelEnabled: false }), carGlass); pane.position.z = sd > 0 ? W / 2 - 0.01 : -W / 2 - 0.02; g.add(pane);
+      var fr = new THREE.Mesh(new THREE.ExtrudeGeometry(sp, { depth: 0.012, bevelEnabled: false }), trim); fr.scale.set(1.04, 1.07, 1); fr.position.set(-0.01, -0.04, sd > 0 ? W / 2 - 0.018 : -W / 2 - 0.012); g.add(fr);
+      var zz = sd * (W / 2 + 0.015);
+      var pil = new THREE.Mesh(new THREE.BoxGeometry(0.07, 0.24, 0.04), mat(0x15181b)); pil.position.set(-0.04, 0.79, zz); g.add(pil);
+      [[0.5, 0.2, 0.52], [-0.5, 0.2, 0.62]].forEach(function(s){ var sm = new THREE.Mesh(new THREE.BoxGeometry(0.012, s[2] - s[1] > 0 ? 0.36 : 0.36, 0.012), trim); sm.position.set(s[0], 0.43, zz); g.add(sm); });   // fresta das portas
+      [0.12, -0.78].forEach(function(hx){ var hd = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.025, 0.03), mat(0xc9cdd2, { metalness: 0.7, roughness: 0.3 })); hd.position.set(hx, 0.6, zz + sd * 0.01); g.add(hd); });
+      var mr = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.08), mat(col, { roughness: 0.35, metalness: 0.35 })); mr.position.set(0.52, 0.7, sd * (W / 2 + 0.07)); g.add(mr);
+    });
+    var ws = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.016, W - 0.16), carGlass); ws.rotation.z = Math.atan2(0.31, -0.35); ws.position.set(0.345 + 0.004, 0.79 + 0.004, 0); g.add(ws);   // para-brisa
+    var rw = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.016, W - 0.16), carGlass); rw.rotation.z = Math.atan2(0.29, 0.3); rw.position.set(-0.64 - 0.004, 0.79 + 0.004, 0); g.add(rw);   // vidro traseiro
+    var gr = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.12, W - 0.5), trim); gr.position.set(1.57, 0.4, 0); g.add(gr);   // grade frontal
+    var pl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.3), mat(0xf4f4f4)); pl.position.set(-1.6, 0.34, 0); g.add(pl);   // placa traseira
     [[0.42], [-0.42]].forEach(function(l){                 // faróis
       var hl = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), mat(0xfff3b0, { emissive: 0x7a6a20 })); hl.scale.set(0.6, 0.8, 1); hl.position.set(1.52, 0.44, l[0]); g.add(hl);
       var tl = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), mat(0xc22222, { emissive: 0x500000 })); tl.scale.set(0.5, 0.8, 1); tl.position.set(-1.56, 0.42, l[0]); g.add(tl);
@@ -1338,6 +1351,8 @@
     { id: 'cantina', name: 'Cozinha e Cantina', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
     { id: 'apoio',   name: 'Hall e banheiros', pos: [-1.0, 17, 4.5], tgt: [-1.0, 0, -1.8], roof: false, labels: true },
     { id: 'anexosalas', name: 'Salas do anexo', pos: [0.6, 12, -8.6], tgt: [0.6, 0, -15.2], roof: false, labels: true },
+    { id: 'carrosd', name: 'Veículos · detalhe', g: 'Panorama', pos: [0.4, 2.0, 7.2], tgt: [4.4, 0.6, 10.2], roof: true, labels: false },
+    { id: 'carrosd2', name: 'Veículos · frente e vidros', g: 'Panorama', pos: [6.0, 1.9, 8.6], tgt: [3.2, 0.7, 10.6], roof: true, labels: false },
     { id: 'fachadaf', name: 'Fachada · de frente', g: 'Panorama', pos: [2.15, 2.1, 9.5], tgt: [2.15, 2.0, -0.2], roof: true, labels: false },
     { id: 'fachada', name: 'Fachada', pos: [1.8, 3.6, 12], tgt: [0.4, 1.9, -0.3], roof: true, labels: false },
     { id: 'altar',   name: 'Altar',           pos: [-2.5, 3.4, -4.2], tgt: [0, 0.8, -12.6], roof: false, labels: false },
