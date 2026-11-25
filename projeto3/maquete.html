@@ -564,6 +564,31 @@
     box(0.16, 0.12, 1.3, met, px, 2.16, (z0 + z1) / 2);                                              // caixa do trilho superior
     box(0.03, 0.5, 0.03, 0xe3e6e9, px - 0.07, 1.05, z1 - pw + 0.1);                                  // puxador da folha móvel
   })();
+  // MAQUETE 3 (Etapa 58): câmeras de segurança pequenas (tipo bullet, com suporte, quebra-sol, lente e LED vermelho) em pontos estratégicos
+  (function(){
+    var cb = mat(0xeeeeec, { roughness: 0.4 }), dk = mat(0x1a1c1f, { roughness: 0.3 }), lensM = new THREE.MeshStandardMaterial({ color: 0x0a1626, roughness: 0.05, metalness: 0.9 }), redM = new THREE.MeshBasicMaterial({ color: 0xff2b2b });
+    function cam(xw, h, zw, dx, dz){   // posição na parede (m) e direção horizontal do olhar (dx,dz)
+      var g = new THREE.Group(); g.position.set(xw, h, zw); g.rotation.y = Math.atan2(-dz, dx); g.scale.setScalar(1.4);
+      var br = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.05, 0.05), dk); br.position.set(-0.02, 0, 0); g.add(br);
+      var tilt = new THREE.Group(); tilt.rotation.z = -0.3; tilt.position.set(0.04, -0.02, 0); g.add(tilt);
+      var body = new THREE.Mesh(new THREE.CylinderGeometry(0.036, 0.036, 0.2, 14), cb); body.rotation.z = Math.PI / 2; body.position.set(0.1, 0, 0); body.castShadow = true; tilt.add(body);
+      var hood = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.012, 0.09), cb); hood.position.set(0.1, 0.045, 0); tilt.add(hood);
+      var lens = new THREE.Mesh(new THREE.CylinderGeometry(0.028, 0.028, 0.012, 12), lensM); lens.rotation.z = Math.PI / 2; lens.position.set(0.203, 0, 0); tilt.add(lens);
+      var led = new THREE.Mesh(new THREE.SphereGeometry(0.008, 6, 6), redM); led.position.set(0.19, 0.03, 0.025); tilt.add(led);
+      root.add(g);
+    }
+    // pátio (muros laterais, entre as arandelas)
+    [1045, 1345, 1645].forEach(function(py){ cam(X(700) - 0.11, 2.55, Z(py), -1, 0.3); });
+    cam(X(40) + 0.11, 2.55, Z(1375), 1, -0.3);
+    // nave (parede esquerda) e corredor lateral (parede direita)
+    cam(X(40) + 0.11, 2.7, Z(255), 1, 0.45); cam(X(40) + 0.11, 2.7, Z(690), 1, -0.45);
+    cam(X(700) - 0.11, 2.7, Z(300), -1, 0.6); cam(X(700) - 0.11, 2.7, Z(650), -1, -0.6);
+    // hall
+    cam(X(700) - 0.11, 2.6, Z(780), -1, 0.15); cam(X(255) + 0.1, 2.6, Z(770), 1, 0.15);
+    // anexo: corredor (parede divisória com a nave) e salas
+    cam(X(300), 2.6, Z(225) - 0.09, 0.5, -1); cam(X(560), 2.6, Z(225) - 0.09, -0.5, -1);
+    cam(X(125), 2.55, Z(40) + 0.12, 0, 1); cam(X(505), 2.55, Z(40) + 0.12, 0, 1);
+  })();
   (function(){
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
     [125, 355, 505].forEach(function(cx){
@@ -1417,6 +1442,8 @@
     { id: 'banheiros', name: 'Banheiros e varanda', pos: [9, 8, 12], tgt: [-4, 0.8, 1.5], roof: false, labels: false },
     { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false, fp: true },
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false, fp: true },
+    { id: 'camsp', name: 'Câmeras · pátio', g: 'Panorama', pos: [4.2, 2.0, 4.0], tgt: [6.4, 2.55, 2.9], roof: true, labels: false, fp: true },
+    { id: 'camsn', name: 'Câmeras · nave', g: 'Panorama', pos: [-4.5, 2.1, -11.6], tgt: [-6.4, 2.7, -12.9], roof: true, labels: false, fp: true },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false, fp: true },
     { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
     { id: 'cantina', name: 'Cozinha e Cantina', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
