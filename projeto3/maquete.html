@@ -133,7 +133,7 @@
   var sun = new THREE.DirectionalLight(0xffeccf, 0.78);
   sun.position.set(22, 30, 19);
   sun.castShadow = true;
-  sun.shadow.mapSize.set(SMALL ? 1024 : 4096, SMALL ? 1024 : 4096); sun.shadow.radius = 2.5;
+  sun.shadow.mapSize.set(SMALL ? 1024 : 2048, SMALL ? 1024 : 2048); sun.shadow.radius = 2.5;
   var sc = sun.shadow.camera; sc.left = -32; sc.right = 32; sc.top = 34; sc.bottom = -30; sc.near = 1; sc.far = 130;
   sun.shadow.bias = -0.0004;
   scene.add(sun);
@@ -589,8 +589,19 @@
     var shirts = [0x2f6db5, 0xc0392b, 0xf2f2f2, 0x3d8b6e, 0xe0a83a, 0x7b4fa3, 0x222a36, 0xd97ba0, 0x8fb4d9, 0x58606a];
     var pantsC = [0x232b3a, 0x3b3f46, 0x5a4a3a, 0x1d1d1f, 0x44566e, 0x2a2f2a];
     var n = 0;
-    function cl(c, r){ return new THREE.MeshStandardMaterial({ color: c, roughness: r || 0.85 }); }
+    var clCache = {};
+    function cl(c, r){ var k = c + '_' + (r || 0.85); return clCache[k] || (clCache[k] = new THREE.MeshStandardMaterial({ color: c, roughness: r || 0.85 })); }
     function cyl(r1, r2, h, m, x, y, z, rx, rz){ var q = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, 12), m); q.position.set(x, y, z); if (rx) q.rotation.x = rx; if (rz) q.rotation.z = rz; q.castShadow = true; return q; }
+    var crowdMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), crowdParts = [];
+    function mergeBy(g){   // junta todas as peças da pessoa em UMA malha com cores por vértice (bem menos chamadas de desenho)
+      g.updateMatrixWorld(true); var P = [], N = [], C = [], len = 0;
+      g.traverse(function(o){ if (o.isMesh){ var geo = o.geometry.clone(); geo.applyMatrix4(o.matrixWorld); geo = geo.index ? geo.toNonIndexed() : geo; var pa = geo.attributes.position.array, na = geo.attributes.normal.array, col = o.material.color, ca = new Float32Array(pa.length);
+        for (var i = 0; i < pa.length; i += 3){ ca[i] = col.r; ca[i+1] = col.g; ca[i+2] = col.b; } P.push(pa); N.push(na); C.push(ca); len += pa.length; } });
+      var PP = new Float32Array(len), NN = new Float32Array(len), CC = new Float32Array(len), off = 0;
+      P.forEach(function(a, i){ PP.set(a, off); NN.set(N[i], off); CC.set(C[i], off); off += a.length; });
+      var bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(PP, 3)); bg.setAttribute('normal', new THREE.BufferAttribute(NN, 3)); bg.setAttribute('color', new THREE.BufferAttribute(CC, 3));
+      var out = new THREE.Group(), mm = new THREE.Mesh(bg, crowdMat); mm.castShadow = true; out.add(mm); return out;
+    }
     // px,py na planta; fy = altura do piso; th = direção do olhar (0 = +z, PI = -z, PI/2 = +x, -PI/2 = -x); pose: 'stand' | 'sit' | 'talk'
     function person(px, py, fy, th, pose, sc){
       var i = n++, skin = cl(skins[(i * 3 + 1) % skins.length], 0.6), shirt = cl(shirts[(i * 7 + 2) % shirts.length]), pants = cl(pantsC[(i * 5 + 1) % pantsC.length]), hair = cl(hairs[(i * 11 + 3) % hairs.length], 0.9), shoe = cl(0x16171a, 0.6);
@@ -623,7 +634,9 @@
         if (pose === 'sit') arm.rotation.x = -0.95; else if (pose === 'talk' && s === 1){ arm.rotation.x = -1.2; arm.rotation.z = -0.25; } else arm.rotation.z = s * 0.06;
         up.add(arm);
       });
-      g.position.set(X(px), fy, Z(py)); g.rotation.y = th; g.scale.setScalar(sc || 1); root.add(g); peopleList.push(g);
+      g = mergeBy(g); g.position.set(X(px), fy, Z(py)); g.rotation.y = th; g.scale.setScalar(sc || 1);
+      if (py > 230){ g.updateMatrix(); var gg = g.children[0].geometry; gg.applyMatrix4(g.matrix); crowdParts.push(gg); }   // fora do anexo: tudo numa única malha
+      else { root.add(g); peopleList.push(g); }
     }
     var N = -Math.PI, PI = Math.PI;
     // nave: fiéis sentados nos bancos (olhando para o altar) — [fileira, banco, posições em px dentro do banco]
@@ -644,6 +657,11 @@
     // anexo: corredor e Sala Multiuso (professora com crianças)
     person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 78, 0.0, 0, 'talk');
     [[85, 105], [120, 112], [155, 105], [105, 128], [140, 130]].forEach(function(q){ person(q[0], q[1], 0.0, PI, 'stand', 0.6); });
+    (function(){ var len = 0; crowdParts.forEach(function(gm){ len += gm.attributes.position.array.length; });
+      var PP = new Float32Array(len), NN = new Float32Array(len), CC = new Float32Array(len), off = 0;
+      crowdParts.forEach(function(gm){ PP.set(gm.attributes.position.array, off); NN.set(gm.attributes.normal.array, off); CC.set(gm.attributes.color.array, off); off += gm.attributes.position.array.length; });
+      var bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(PP, 3)); bg.setAttribute('normal', new THREE.BufferAttribute(NN, 3)); bg.setAttribute('color', new THREE.BufferAttribute(CC, 3));
+      var cm = new THREE.Mesh(bg, crowdMat); cm.castShadow = true; root.add(cm); peopleList.push(cm); })();
   })();
   // MAQUETE 3 (Etapa 58): câmeras de segurança pequenas (tipo bullet, com suporte, quebra-sol, lente e LED vermelho) em pontos estratégicos
   (function(){
@@ -1590,7 +1608,7 @@
    [370, 1100, 3.6, 0xfff0d8, 1.0, 16], [370, 1350, 3.6, 0xfff0d8, 1.0, 16],                                                                     // pátio
    [560, 1150, 3.4, 0xfff0d8, 1.0, 15], [560, 1450, 3.4, 0xfff0d8, 1.0, 15], [560, 1700, 3.4, 0xfff0d8, 1.0, 15],                                // estacionamentos
    [480, 885, 3.4, 0xeaf4ff, 1.2, 14]].forEach(function(q){                                                                                      // fachada
-    var l = new THREE.PointLight(q[3], 0, q[5], 1.6); l.position.set(X(q[0]), q[2], Z(q[1])); l.userData.k = q[4]; scene.add(l); nightLights.push(l);
+    var l = new THREE.PointLight(q[3], 0, q[5], 1.6); l.position.set(X(q[0]), q[2], Z(q[1])); l.userData.k = q[4]; nightLights.push(l);   // só entram na cena à noite (luzes apagadas pesariam em todos os materiais)
   });
   (function(){
     var n = 450, pos = new Float32Array(n * 3);
@@ -1607,7 +1625,7 @@
     sun.color.set(on ? 0x9db4ff : 0xffeccf); sun.intensity = on ? 0.1 : 0.78;
     hemi.color.set(on ? 0x6f86c8 : 0xffffff); hemi.intensity = on ? 0.12 : 0.08;
     inner.intensity = on ? 0.0 : 0.28;
-    nightLights.forEach(function(l){ l.intensity = on ? l.userData.k * 0.7 : 0; });
+    nightLights.forEach(function(l){ l.intensity = on ? l.userData.k * 0.7 : 0; if (on) scene.add(l); else scene.remove(l); });
     nightStars.visible = on;
     scene.traverse(function(o){ if (o.material){ [].concat(o.material).forEach(function(m){ m.needsUpdate = true; }); } });
     var b = document.getElementById('tNight'); b.classList.toggle('on', on); b.textContent = on ? '☀️ Ver o dia' : '🌙 Ver a noite';
