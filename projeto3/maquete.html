@@ -775,7 +775,7 @@
   rect(50, 880, 205, 1100, 0.0, 0.1, C.salaExt, { cast: false });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
   rect(50, 1100, 205, 1240, 0.0, 0.1, C.salaExt, { cast: false });           // MAQUETE 3: Lanchonete
   hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
-  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [{ a: 207, b: 253, lh: 2.1 }], 'HALF');      // paredes das salas externas: azul mais claro
+  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALF');   // MAQUETE 3: porta do Masculino pela varanda retirada (vão fechado)      // paredes das salas externas: azul mais claro
   hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [], 'HALF');   // MAQUETE 3: Cozinha (divisória para a Cantina em vidro da metade para cima) e Cantina
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1240, BH, [], 'HALF');
   vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
@@ -787,7 +787,7 @@
   winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
   hwall(805, 50, 255, BH, [], 'HALF');
-  doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(false, 255, 842.5, 0.86, 2.08, 0.18); doorLeaf(true, 880, 230, 0.86, 2.08, 0.14);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
+  doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(false, 255, 842.5, 0.86, 2.08, 0.18);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
   [730, 805].forEach(function(y0, bi){
     // 2 cabines (≈ 0,67 × 1,75 m) ao fundo, com divisórias padrão e porta de cabine; pia + espelho na área de acesso (sem corredor interno)
     var xb = 54, xf = 142, cabs = [[y0 + 4, y0 + 37.5], [y0 + 37.5, y0 + 71]];
