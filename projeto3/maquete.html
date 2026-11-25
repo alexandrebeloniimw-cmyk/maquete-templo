@@ -1672,7 +1672,6 @@
         var bb = new THREE.Box3().setFromObject(o); if (bb.isEmpty()) return;
         var cx = (bb.min.x + bb.max.x) / 2, cz = (bb.min.z + bb.max.z) / 2, L = bb.max.z - bb.min.z;
         if (!inX(cx) || cz < zb - 0.45 || cz > zf + 0.05 || bb.min.y > 7.5) return;
-        if (bb.max.y < BH + 0.05 && cx > X(285) && cx < X(690) && L < 4.5) return;   // Etapa 80: tudo do térreo das Salas 2 e 3 (paredes, piso, forro, janelas, luzes) fica no tamanho de 3 bancos (≈ 2,1 m de fundo)
         var box = o.isMesh && o.geometry && o.geometry.type === 'BoxGeometry' && !o.rotation.x && !o.rotation.y && !o.rotation.z;
         if (box && L >= 1.9){                                              // paredes divisórias, pisos, lajes, forros: esticam para trás
           var z0 = f(bb.min.z), z1 = f(bb.max.z); o.scale.z *= (z1 - z0) / L; o.position.z = (z0 + z1) / 2; return;
@@ -1681,12 +1680,11 @@
         o.position.z += (cz < zb + 0.3 ? -D : f(cz) - cz);                   // fundos: recuam; móveis e peças: acompanham proporcionalmente
       });
     });
-    box(X(700) - X(280), BH, 0.22, C.wall, (X(280) + X(700)) / 2, BH / 2, zb - D, root);   // Etapa 80: parede dos fundos do térreo, fechando o espaço atrás das Salas 2 e 3
     xW.forEach(function(xw){                                               // paredes externas laterais prolongadas (térreo e 2º andar)
       box(0.22, BH, D, C.wall, xw, BH / 2, zb - D / 2, root);
       box(0.22, 2.9, D, C.wall, xw, BH + 0.16 + 1.45, zb - D / 2, root);
     });
-    views.forEach(function(v){ if (v.tgt[2] > zb - 0.4 && v.tgt[2] < zf && v.pos[2] > zb - 0.4 && v.pos[2] < zb + 6 && inX(v.tgt[0]) && !(v.tgt[0] > X(285) && v.tgt[0] < X(690) && v.tgt[1] < 2.5)) v.tgt[2] = f(v.tgt[2]); });
+    views.forEach(function(v){ if (v.tgt[2] > zb - 0.4 && v.tgt[2] < zf && v.pos[2] > zb - 0.4 && v.pos[2] < zb + 6 && inX(v.tgt[0])) v.tgt[2] = f(v.tgt[2]); });
     return { f: f };
   })();
   // ---------- MAQUETE 3 (Etapa 78): 3 bancos iguais aos da nave (mesmo tamanho, passo de 0,71 m) nas salas 2 e 3 do anexo (térreo), para conferir a nova profundidade ----------
