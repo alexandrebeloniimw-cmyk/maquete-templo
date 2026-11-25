@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo e Sala 1 esticada com porta de vidro</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães no Hall (com TV)</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -513,7 +513,7 @@
   })();
   (function(){
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
-    [125, 355, 505].forEach(function(cx){
+    [125, 355, 505, 637].forEach(function(cx){
       acBox(X(cx), 2.45, Z(40) + 0.11 + 0.1);                                                   // split na parede do fundo
       box(1.3, 0.05, 0.55, 0xb58a5c, X(cx), 0.76, Z(115)); [-0.55, 0.55].forEach(function(o){ box(0.05, 0.72, 0.5, 0xdad7d0, X(cx) + o, 0.4, Z(115)); });
       [-0.4, 0, 0.4].forEach(function(o){ box(0.4, 0.04, 0.4, 0x3d4249, X(cx) + o, 0.45, Z(135)); box(0.4, 0.38, 0.04, 0x3d4249, X(cx) + o, 0.66, Z(135) + 0.19); box(0.06, 0.43, 0.06, 0x8a8f94, X(cx) + o, 0.22, Z(135)); });
@@ -525,12 +525,7 @@
     box(0.04, 0.04, 0.8, bar, X(204), 0.85, Z(74)); box(0.04, 0.04, 0.6, bar, X(236), 0.85, Z(73)); box(0.7, 0.04, 0.04, bar, X(221), 0.85, Z(54));
     box(0.5, 0.8, 0.36, C.white, X(267), 0.4, Z(61)); box(0.4, 0.03, 0.26, 0xbcd5e8, X(267), 0.815, Z(61), null, { cast: false });
     box(0.6, 0.8, 0.02, 0, X(267), 1.5, Z(52), null, { material: new THREE.MeshStandardMaterial({ color: 0xdde9ef, roughness: 0.05, metalness: 0.8 }), cast: false });
-    // Sala de Apoio às Mamães (x580..695, y50..155 ≈ 2,3 × 2,1 m): 2 poltronas de amamentação, trocador, lavatório, ar-condicionado
-    [603, 643].forEach(function(px){ box(0.7, 0.45, 0.65, 0x8fa3ad, X(px) + 0.1, 0.3, Z(78)); box(0.14, 0.55, 0.65, 0x8fa3ad, X(px) - 0.22, 0.6, Z(78)); box(0.12, 0.18, 0.65, 0x7b8f99, X(px) + 0.45, 0.5, Z(78)); });
-    box(0.45, 0.9, 1.1, 0xf4f2ec, X(682), 0.45, Z(82)); box(0.45, 0.06, 1.1, 0xbcd9ef, X(682), 0.93, Z(82));
-    box(0.56, 0.85, 0.36, 0xf4f2ec, X(679), 0.425, Z(131)); var ps2 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps2.position.set(X(679), 0.88, Z(131)); root.add(ps2);
-    acBox(X(638), 2.45, Z(40) + 0.11 + 0.1);
-    var rg2 = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.02, 32), mat(0xf0e4d2, { roughness: 1 })); rg2.position.set(X(635), 0.12, Z(115)); root.add(rg2);
+    // Sala 4 (x580..695, y50..155): sala de aula (ex-Apoio, que foi para o Hall)
     // bebedouro do anexo, na parede do corredor (lado do altar), perto do saguão
     box(0.8, 1.0, 0.36, 0xcfd8dc, X(620), 0.5, Z(225) - 0.09 - 0.18); box(0.7, 0.05, 0.3, 0x5b9bd5, X(620), 1.02, Z(225) - 0.09 - 0.18); box(0.05, 0.12, 0.05, 0x888, X(620), 1.1, Z(225) - 0.09 - 0.1);
   })();
@@ -742,10 +737,32 @@
   // ---- Hall (corredor grande aberto): banco, painel de avisos na fachada, vaso, tapete ----
   (function(){
     box(0.45, 0.45, 1.6, 0x8fa3ad, X(687), 0.28, Z(815)); box(0.12, 0.55, 1.6, 0x8fa3ad, X(697), 0.6, Z(815));
-    box(1.7, 1.0, 0.04, 0xd9c7a8, X(500), 1.5, Z(889) - 0.13 - 0.03); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 2.02, Z(889) - 0.13 - 0.03); box(1.78, 0.05, 0.05, 0x7a5a3a, X(500), 0.98, Z(889) - 0.13 - 0.03);
+    // painel de avisos: agora na face externa (leste) da Sala de Apoio do Hall
+    (function(){ var px = X(560) + 0.11 + 0.03, pz = Z(828); box(0.04, 1.0, 1.7, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.78, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.78, 0x7a5a3a, px, 0.98, pz); })();
     var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(748)); root.add(pot);
     var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(748)); root.add(pl);
-    var rg = new THREE.Mesh(new THREE.CylinderGeometry(1.2, 1.2, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(470), 0.12, Z(805)); root.add(rg);
+    var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(335), 0.12, Z(810)); root.add(rg);
+  })();
+
+  // ---- MAQUETE 3: Sala de Apoio às Mamães no Hall (x410..560, y772..884 ≈ 3,0 × 2,2 m), no lugar do painel de avisos, com TV ----
+  (function(){
+    rect(410, 772, 560, 884, 0.1, 0.02, 0xe8d9c0, { cast: false });
+    hwall(772, 410, 560, BH, [door(450)]);
+    vwall(410, 772, 884, BH, []);
+    vwall(560, 772, 884, BH, []);
+    doorLeaf(true, 772, 450);
+    var tx = X(560) - 0.11;
+    box(0.05, 0.78, 1.34, 0x2a2d31, tx - 0.03, 1.55, Z(828));                       // moldura da TV
+    var tvm = new THREE.MeshBasicMaterial({ color: 0x35506a });
+    box(0.02, 0.7, 1.26, 0, tx - 0.065, 1.55, Z(828), null, { material: tvm, cast: false });   // tela ligada (transmissão do culto)
+    box(0.06, 0.12, 0.5, 0x2a2d31, tx - 0.05, 0.95, Z(828));                       // suporte
+    [803, 853].forEach(function(py){
+      box(0.7, 0.45, 0.65, 0x8fa3ad, X(432) + 0.1, 0.3, Z(py)); box(0.14, 0.55, 0.65, 0x8fa3ad, X(432) - 0.22, 0.6, Z(py)); box(0.12, 0.18, 0.65, 0x7b8f99, X(432) + 0.45, 0.5, Z(py));
+    });
+    box(1.1, 0.9, 0.45, 0xf4f2ec, X(497), 0.45, Z(884) - 0.13 - 0.25); box(1.1, 0.06, 0.45, 0xbcd9ef, X(497), 0.93, Z(884) - 0.13 - 0.25);   // trocador (parede sul)
+    box(0.56, 0.85, 0.36, 0xf4f2ec, X(535), 0.425, Z(772) + 0.11 + 0.2); var ps3 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps3.position.set(X(535), 0.88, Z(772) + 0.11 + 0.2); root.add(ps3);   // lavatório
+    box(0.95, 0.28, 0.2, 0xf4f4f2, X(490), 2.45, Z(772) + 0.11 + 0.1);               // ar-condicionado
+    var rg3 = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.02, 32), mat(0xf0e4d2, { roughness: 1 })); rg3.position.set(X(480), 0.13, Z(828)); root.add(rg3);
   })();
   // ---- bebedouro: parede externa dos banheiros (abrigo coberto) ----
   box(0.35, 1.0, 0.3, 0xcfd8dc, X(255) + 0.09 + 0.175, 0.55, Z(835)); box(0.3, 0.05, 0.26, 0x5b9bd5, X(255) + 0.09 + 0.175, 1.07, Z(835)); box(0.12, 0.12, 0.05, 0x888, X(255) + 0.09 + 0.1, 1.15, Z(835));
@@ -1047,13 +1064,13 @@
     labelGroup.add(sp);
   }
   label('Anexo ao templo', 370, 100, 6.4, 4.0);
-  label('Sala 1', 125, 100, 4.0, 1.7); label('Banheiro PCD', 240, 100, 3.4, 1.9); label('Sala 2', 355, 100, 4.0, 1.7); label('Sala 3', 505, 100, 4.0, 1.7); label('Apoio às Mamães', 637, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
+  label('Sala 1', 125, 100, 4.0, 1.7); label('Banheiro PCD', 240, 100, 3.4, 1.9); label('Sala 2', 355, 100, 4.0, 1.7); label('Sala 3', 505, 100, 4.0, 1.7); label('Sala 4', 637, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
   label('Altar', 160, 250, 2.6, 1.5); label('Plataforma 2', 335, 252, 2.3, 2.6); label('Plataforma 1', 335, 297, 1.6, 2.6);
   label('Bateria', 560, 255, 3.1, 1.5); label('Teclado', 110, 258, 3.0, 1.5); label('Guitarra', 262, 255, 3.0, 1.5); label('Baixo', 292, 255, 3.4, 1.3); label('Microfones', 375, 262, 3.0, 2.0);
   label('Piso da nave', 370, 560, 1.4, 2.6);
   label('Mesa de som', 160, 687, 1.7, 2.4);
   label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
-  label('Hall', 470, 805, 3.0, 1.8); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
+  label('Hall', 335, 805, 3.0, 1.8); label('Apoio às Mamães', 485, 800, 2.8, 1.0); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Varanda', 230, 1060, 3.4, 1.6);
   label('Cozinha', 127, 1000, 3.1, 1.9); label('Lanchonete', 127, 1170, 3.4, 1.9);
   label('Cobertura (abrigo)', 332, 790, 3.7, 3.0);
@@ -1093,6 +1110,7 @@
     { id: 'corrnave', name: 'Corredor da nave', g: 'Templo', pos: [-2.48, 1.65, -4.0], tgt: [-2.48, 1.4, -12.0], roof: true, labels: false, fp: true },
     { id: 'bfem', name: 'Banheiro Feminino', g: 'Banheiros e hall', pos: [-2.7, 1.65, -2.16], tgt: [-5.8, 1.2, -2.5], roof: true, labels: false, fp: true },
     { id: 'bmasc', name: 'Banheiro Masculino', g: 'Banheiros e hall', pos: [-2.5, 1.65, -0.64], tgt: [-5.6, 1.2, -1.3], roof: true, labels: false, fp: true },
+    { id: 'apoiohall', name: 'Sala de Apoio às Mamães (Hall)', g: 'Banheiros e hall', pos: [1.2, 1.65, -2.2], tgt: [3.7, 1.3, -1.44], roof: true, labels: false, fp: true },
     { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
     { id: 'cozinhae', name: 'Cozinha', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 0.5], tgt: [-6.0, 1.1, 3.4], roof: true, labels: false, fp: true },
@@ -1101,7 +1119,7 @@
     { id: 'sala1a', name: 'Sala 1 (anexo)', g: 'Anexo', pos: [-3.8, 1.65, -15.04], tgt: [-6.2, 1.3, -16.5], roof: true, labels: false, fp: true },
     { id: 'wcanexo', name: 'Banheiro acessível (anexo)', g: 'Anexo', pos: [-2.0, 1.65, -15.04], tgt: [-3.1, 1.1, -16.6], roof: true, labels: false, fp: true },
     { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [0.7, 1.65, -15.04], tgt: [-1.5, 1.3, -16.5], roof: true, labels: false, fp: true },
-    { id: 'apoiofp', name: 'Sala de Apoio às Mamães (anexo)', g: 'Anexo', pos: [6.2, 1.65, -15.06], tgt: [4.8, 1.1, -16.7], roof: true, labels: false, fp: true },
+    { id: 'apoiofp', name: 'Sala 4 (anexo)', g: 'Anexo', pos: [6.2, 1.65, -15.06], tgt: [4.8, 1.1, -16.7], roof: true, labels: false, fp: true },
     { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [3.8, 1.65, -15.04], tgt: [1.5, 1.3, -16.5], roof: true, labels: false, fp: true },
   ];
   var bar = document.getElementById('views');
