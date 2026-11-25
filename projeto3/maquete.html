@@ -1018,8 +1018,11 @@
   rect(255, 722, 700, 884, 0.0, 0.1, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: floorTex(2, [232, 226, 212], '#c4bba8', (445 * S) / 1.6, (162 * S) / 1.6, true), roughness: 0.3, envMapIntensity: 0.7 }) });   // Hall: porcelanato polido 80 x 80
   rect(50, 1240, 255, 1300, 0.0, 0.08, C.varanda, { cast: false });         // Etapa 73: piso do abrigo de atendimento (lado do Estacionamento 1)
   rect(205, 880, 255, 1240, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda (PROJETO 2: prolongada até a Cantina)
-  rect(50, 880, 205, 1100, 0.0, 0.1, C.salaExt, { cast: false });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
-  rect(50, 1100, 205, 1240, 0.0, 0.1, C.salaExt, { cast: false });           // MAQUETE 3: Lanchonete
+  // Etapa 86 (realismo): piso de cerâmica clara 40 x 40 cm na Cozinha e na Cantina (antes: salmão liso)
+  var kitMat = new THREE.MeshStandardMaterial({ map: floorTex(2, [226, 220, 208], '#a9a396', (155 * S) / 0.8, (220 * S) / 0.8, false), roughness: 0.35, envMapIntensity: 0.55 });
+  var kitMat2 = new THREE.MeshStandardMaterial({ map: floorTex(2, [226, 220, 208], '#a9a396', (155 * S) / 0.8, (140 * S) / 0.8, false), roughness: 0.35, envMapIntensity: 0.55 });
+  rect(50, 880, 205, 1100, 0.0, 0.1, 0, { cast: false, material: kitMat });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
+  rect(50, 1100, 205, 1240, 0.0, 0.1, 0, { cast: false, material: kitMat2 });           // MAQUETE 3: Lanchonete
   hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
   hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALF');   // MAQUETE 3: porta do Masculino pela varanda retirada (vão fechado)      // paredes das salas externas: azul mais claro
   hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [{ a: 110, b: 195, sill: 1.1, lh: 2.2, open: true }], 'HALF');   // Etapa 73: janela de vendas voltada para o Estacionamento 1
@@ -1236,16 +1239,45 @@
     box(0.52, 0.04, 150 * S, 0xb9bcbe, X(67), 0.98, Z(1000));
     var pia = new THREE.Mesh(new THREE.BoxGeometry(0.4, 0.08, 0.7), mat(0xc9ced3, { metalness: 0.6, roughness: 0.3 })); pia.position.set(X(67), 1.0, Z(950)); root.add(pia);
     [1000, 1020, 1040, 1060].forEach(function(py, n){ var b = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.11, 0.03, 16), mat(0x2b2e32)); b.position.set(X(67), 1.01, Z(py)); root.add(b); });
-    box(0.5, 0.35, 1.2, 0xb9bcbe, X(67), 2.05, Z(1030)); box(0.2, 0.5, 0.3, 0xb9bcbe, X(60), 2.4, Z(1030));
+    box(0.5, 0.35, 1.2, 0, X(67), 2.05, Z(1030), null, { material: mat(0xc6cace, { metalness: 0.75, roughness: 0.28, envMapIntensity: 0.9 }) }); box(0.2, 0.5, 0.3, 0, X(60), 2.4, Z(1030), null, { material: mat(0xc6cace, { metalness: 0.75, roughness: 0.28, envMapIntensity: 0.9 }) });   // coifa de inox
     [945, 1000].forEach(function(py){ box(0.3, 0.7, 50 * S, 0xe6c99a, X(58), 1.95, Z(py)); });
     box(0.7, 1.8, 0.7, 0xdfe3e6, X(185), 0.98, Z(1080)); box(0.7, 1.8, 0.7, 0xdfe3e6, X(185), 0.98, Z(1045));
     box(0.9, 0.06, 2.0, 0xb58a5c, X(130), 0.92, Z(990)); [-0.4, 0.4].forEach(function(o){ [-0.9, 0.9].forEach(function(p){ box(0.05, 0.9, 0.05, 0xdad7d0, X(130) + o, 0.47, Z(990) + p); }); });
     box(0.9, 0.04, 2.0, 0xdad7d0, X(130), 0.3, Z(990));
+    // Etapa 86: cozinha mais real — inox, portas dos armários com puxadores, torneira, panelas, geladeiras com portas e puxadores
+    (function(){
+      var inox = mat(0xc6cace, { metalness: 0.75, roughness: 0.28, envMapIntensity: 0.9 }), cr = mat(0xd4d8dc, { metalness: 0.8, roughness: 0.2 }), cooktop = mat(0x17191c, { roughness: 0.15, metalness: 0.2 });
+      box(0.54, 0.012, 3.02, 0, X(67), 1.006, Z(1000), null, { material: inox, cast: false });                          // tampo de inox
+      box(0.46, 0.014, 0.82, 0, X(67), 1.016, Z(1030), null, { material: cooktop, cast: false });                       // vidro do cooktop
+      [1000, 1020, 1040, 1060].forEach(function(py){ var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.075, 0.075, 0.012, 12), mat(0x6b7077, { roughness: 0.4, metalness: 0.5 })); rg.position.set(X(67), 1.026, Z(py)); root.add(rg); });
+      for (var d = 0; d < 6; d++){ var dz = Z(1000) - 1.25 + d * 0.5; box(0.012, 0.62, 0.46, 0xd6d2c8, X(67) + 0.255, 0.56, dz, null, { cast: false }); box(0.02, 0.014, 0.14, 0, X(67) + 0.268, 0.82, dz, null, { material: cr, cast: false }); }   // portas e puxadores
+      var tv = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.26, 8), cr); tv.position.set(X(67) - 0.2, 1.14, Z(950)); root.add(tv);
+      var ts = new THREE.Mesh(new THREE.CylinderGeometry(0.012, 0.012, 0.26, 8), cr); ts.rotation.x = Math.PI / 2; ts.position.set(X(67) - 0.08, 1.27, Z(950)); root.add(ts);   // torneira
+      var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.14, 0.14, 0.16, 12), mat(0x9aa0a6, { metalness: 0.7, roughness: 0.3 })); pot.position.set(X(67), 1.11, Z(1000)); root.add(pot);       // panela
+      var pan = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.11, 0.05, 12), mat(0x25272b, { roughness: 0.5 })); pan.position.set(X(67), 1.06, Z(1040)); root.add(pan); box(0.22, 0.02, 0.04, 0x25272b, X(67) + 0.2, 1.07, Z(1040));   // frigideira
+      var kt = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.12, 0.14, 12), mat(0xc0392b, { roughness: 0.4 })); kt.position.set(X(67), 1.09, Z(1060)); root.add(kt);                              // panela vermelha
+      [1080, 1045].forEach(function(py, k){ var fx = X(185) - 0.355; box(0.012, 0.012, 0.68, 0x8a9096, fx, 1.18, Z(py), null, { cast: false }); box(0.03, 0.5, 0.03, 0, fx - 0.02, 1.5, Z(py) + 0.25, null, { material: cr, cast: false }); box(0.03, 0.4, 0.03, 0, fx - 0.02, 0.8, Z(py) + 0.25, null, { material: cr, cast: false }); });   // geladeiras: junta das portas e puxadores
+      [945, 1000].forEach(function(py){ var fx = X(58) + 0.158; box(0.012, 0.66, 0.012, 0xb8a47c, fx, 1.95, Z(py), null, { cast: false }); [-0.1, 0.1].forEach(function(o){ box(0.02, 0.12, 0.014, 0, fx + 0.01, 1.8, Z(py) + o, null, { material: cr, cast: false }); }); });   // portas dos armários altos
+      box(0.92, 0.012, 2.02, 0, X(130), 0.955, Z(990), null, { material: inox, cast: false });                          // ilha: tampo de inox
+      box(0.34, 0.025, 0.5, 0xd9b98a, X(130), 0.98, Z(980), null, { cast: false });                                    // tábua de corte
+      var bw = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.1, 0.1, 12), mat(0xf1efe9, { roughness: 0.4 })); bw.position.set(X(130) + 0.15, 1.01, Z(1030)); root.add(bw);    // tigela
+    })();
     // Lanchonete (y1100..1240): balcão de atendimento junto à janela, vitrine, prateleiras, mesa
     box(1.0, 1.05, 66 * S, 0xa87b52, X(175), 0.6, Z(1200)); box(1.1, 0.05, 70 * S, 0xf4f2ec, X(175), 1.15, Z(1200));
     box(0.5, 0.6, 0.9, 0xd6ecff, X(168), 1.45, Z(1200), null, { material: new THREE.MeshStandardMaterial({ color: 0xcfe6f3, transparent: true, opacity: 0.45, roughness: 0.1 }), cast: false });
     box(0.35, 1.9, 120 * S, 0xe6c99a, X(61), 1.0, Z(1170)); [0.5, 1.0, 1.5].forEach(function(hh){ box(0.4, 0.04, 120 * S, 0xc9a87c, X(61), hh + 0.1, Z(1170)); });
     box(0.7, 0.85, 0.7, 0xb58a5c, X(112), 0.5, Z(1145));
+    // Etapa 86: cantina mais real — salgados e bolos na vitrine, cafeteira, caixa registradora, potes nas prateleiras e banquetas
+    (function(){
+      var sd = 17; function rn(){ sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+      var food = [0xd9a441, 0xa8672a, 0xf2e6d0, 0xc98a3a, 0xe8c27a, 0x8a4b2a];
+      for (var k = 0; k < 9; k++){ var fz = Z(1200) - 0.38 + (k % 3) * 0.38, fy = 1.205 + Math.floor(k / 3) * 0.0; var it = new THREE.Mesh(new THREE.SphereGeometry(0.06, 6, 4), mat(food[k % food.length], { roughness: 0.7 })); it.scale.set(1.3, 0.7, 1); it.position.set(X(168) + (Math.floor(k / 3) - 1) * 0.14, 1.2, fz); root.add(it); }
+      box(0.46, 0.012, 1.0, 0xe9e6df, X(168), 1.173, Z(1200), null, { cast: false });                                       // bandeja
+      box(0.3, 0.38, 0.28, 0x2b2e33, X(160), 1.35, Z(1178)); box(0.31, 0.04, 0.29, 0xc9ced3, X(160), 1.56, Z(1178), null, { cast: false });       // cafeteira
+      box(0.28, 0.14, 0.26, 0x2b2e33, X(178), 1.25, Z(1224)); box(0.2, 0.14, 0.02, 0x7fb8d6, X(178) + 0.0, 1.38, Z(1224) - 0.08, null, { cast: false });   // caixa registradora
+      for (var r = 0; r < 3; r++) for (var c = 0; c < 6; c++){ var cc = [0xc0392b, 0xf2d56b, 0x3d8b6e, 0x2f6db5, 0xf4f1e8, 0xd97ba0][Math.floor(rn() * 6)]; box(0.16, 0.14 + rn() * 0.08, 0.14, cc, X(61) + 0.0, [0.5, 1.0, 1.5][r] + 0.19, Z(1170) - 1.0 + c * 0.38 + 0.1, null, { cast: false }); }   // potes e produtos
+      [Z(1130), Z(1162)].forEach(function(bz){ var st = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.17, 0.05, 12), mat(0xb5814f, { roughness: 0.6 })); st.position.set(X(112), 0.62, bz + (bz < Z(1145) ? -0.55 : 0.55)); root.add(st); var lg = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.6, 6), mat(0x2b2e33)); lg.position.set(X(112), 0.3, bz + (bz < Z(1145) ? -0.55 : 0.55)); root.add(lg); });   // banquetas
+    })();
     // MAQUETE 3: balcão de atendimento da Cantina (abertura y1165..1235 na parede da varanda): bancada externa com tampo de madeira, painel grafite, pendentes, letreiro LED e cardápio
     var cx0 = X(205) + 0.08, cz = Z(1200);
     box(0.4, 1.06, 1.5, 0x30343a, cx0 + 0.2, 0.53, cz); box(0.5, 0.05, 1.56, 0xb5814f, cx0 + 0.25, 1.085, cz); box(0.02, 0.9, 1.5, 0xb5814f, cx0 + 0.41, 0.55, cz, null, { cast: false });
@@ -1648,7 +1680,11 @@
   function tree(x, z, s){
     var t = new THREE.Group();
     var trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.15 * s, 0.2 * s, 1.2 * s, 8), mat(0x7a5a3a)); trunk.position.y = 0.6 * s; trunk.castShadow = true; t.add(trunk);
-    var crown = new THREE.Mesh(new THREE.SphereGeometry(1.1 * s, 14, 12), mat(0x6fa860)); crown.position.y = 1.9 * s; crown.castShadow = true; t.add(crown);
+    var crown = new THREE.Mesh(new THREE.SphereGeometry(1.0 * s, 10, 8), mat(0x6fa860)); crown.position.y = 2.0 * s; crown.castShadow = true; t.add(crown);
+    // Etapa 86: copa irregular (4 massas de folhas em verdes diferentes) e ramos
+    [[0.7, 1.7, 0.2, 0.7, 0x5e9a52], [-0.65, 1.8, -0.3, 0.65, 0x7bb06a], [0.1, 2.7, -0.2, 0.62, 0x6aa85b], [-0.2, 1.6, 0.7, 0.55, 0x58924d]].forEach(function(q){
+      var lb = new THREE.Mesh(new THREE.SphereGeometry(q[3] * s, 8, 6), mat(q[4])); lb.position.set(q[0] * s, q[1] * s, q[2] * s); lb.castShadow = true; t.add(lb); });
+    [[0.35, 0.45], [-0.3, -0.5]].forEach(function(q){ var br = new THREE.Mesh(new THREE.CylinderGeometry(0.04 * s, 0.07 * s, 0.9 * s, 6), mat(0x6d4f33)); br.position.set(q[0] * s, 1.45 * s, 0); br.rotation.z = -q[1]; t.add(br); });
     t.position.set(x, 0, z); root.add(t);
   }
   [[-9.5,-16],[-10.5,-8],[-9.2,0],[-10,8],[-9.3,14],[9.6,-15],[10.5,-6],[9.4,2],[10.2,10],[9.5,14]].forEach(function(p, i){ tree(p[0], p[1], 0.9 + (i % 3) * 0.15); });
