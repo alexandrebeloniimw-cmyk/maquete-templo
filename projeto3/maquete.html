@@ -904,12 +904,14 @@
   // ---------- Banheiros (box, vasos, pia, corredor) e Salas externas ----------
   rect(50, 730, 255, 880, 0.0, 0.1, C.bath, { cast: false });                // PROJETO 2: banheiros (trocados de lugar com a Sala de Apoio)
   rect(255, 722, 700, 884, 0.0, 0.1, 0xe3ddd0, { cast: false });                // PROJETO 2: Hall (corredor grande aberto, porcelanato claro)
+  rect(50, 1240, 255, 1300, 0.0, 0.08, C.varanda, { cast: false });         // Etapa 73: piso do abrigo de atendimento (lado do Estacionamento 1)
   rect(205, 880, 255, 1240, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda (PROJETO 2: prolongada até a Cantina)
   rect(50, 880, 205, 1100, 0.0, 0.1, C.salaExt, { cast: false });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
   rect(50, 1100, 205, 1240, 0.0, 0.1, C.salaExt, { cast: false });           // MAQUETE 3: Lanchonete
   hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
   hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALF');   // MAQUETE 3: porta do Masculino pela varanda retirada (vão fechado)      // paredes das salas externas: azul mais claro
-  hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [], 'HALF');   // MAQUETE 3: Cozinha (divisória para a Cantina em vidro da metade para cima) e Cantina
+  hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [{ a: 110, b: 195, sill: 1.1, lh: 2.2, open: true }], 'HALF');   // Etapa 73: janela de vendas voltada para o Estacionamento 1
+  // MAQUETE 3: Cozinha (divisória para a Cantina em vidro da metade para cima) e Cantina
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1240, BH, [], 'HALF');
   vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
 
@@ -1118,7 +1120,24 @@
     function signTex(txt, w, h, bg, fg, fs){ var cv = document.createElement('canvas'); cv.width = w; cv.height = h; var g = cv.getContext('2d'); g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = fg; g.font = 'bold ' + fs + 'px sans-serif'; g.textAlign = 'center'; g.fillText(txt, w / 2, h * 0.68); return new THREE.CanvasTexture(cv); }
     var sg = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.4), new THREE.MeshBasicMaterial({ map: signTex('CANTINA', 512, 136, '#23262a', '#fff1c9', 78) })); sg.position.set(cx0 + 0.045, 2.6, cz); sg.rotation.y = Math.PI / 2; root.add(sg);
     box(0.03, 0.46, 1.56, 0x23262a, cx0 + 0.01, 2.6, cz, null, { cast: false });
-    var mn = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.75), new THREE.MeshBasicMaterial({ map: signTex('CARDÁPIO', 512, 256, '#1b1d20', '#ffffff', 54) })); mn.position.set(X(127.5), 1.9, Z(1240) - 0.09); mn.rotation.y = Math.PI; root.add(mn);
+    var mn = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.75), new THREE.MeshBasicMaterial({ map: signTex('CARDÁPIO', 512, 256, '#1b1d20', '#ffffff', 54) })); mn.position.set(X(78), 1.9, Z(1240) - 0.09); mn.rotation.y = Math.PI; root.add(mn);
+    // Etapa 73: janela de vendas da Cantina voltada para o Estacionamento 1: bancada externa, moldura, placa e abrigo de policarbonato
+    (function(){
+      var sx0 = X(152), sz0 = Z(1240), wl = 85 * S, al = 0x23262a;
+      box(wl + 0.1, 0.05, 0.05, al, sx0, 1.1, sz0 + 0.03); box(wl + 0.1, 0.05, 0.05, al, sx0, 2.2, sz0 + 0.03); box(0.05, 1.1, 0.05, al, sx0 - wl / 2 - 0.02, 1.65, sz0 + 0.03); box(0.05, 1.1, 0.05, al, sx0 + wl / 2 + 0.02, 1.65, sz0 + 0.03);
+      box(wl + 0.2, 0.05, 0.5, 0xb5814f, sx0, 1.085, sz0 + 0.3); box(wl + 0.1, 1.06, 0.4, 0x30343a, sx0, 0.53, sz0 + 0.28);
+      for (var rq = 0; rq < 12; rq++) box(0.06, 0.85, 0.03, 0xb5814f, sx0 - wl / 2 + 0.07 + rq * (wl - 0.14) / 11, 0.55, sz0 + 0.49, null, { cast: false });
+      box(wl + 0.1, 0.04, 0.4, 0x23262a, sx0, 1.19, sz0 - 0.25);   // tampo interno
+      var sg2 = new THREE.Mesh(new THREE.PlaneGeometry(1.6, 0.4), new THREE.MeshBasicMaterial({ map: signTex('CANTINA · VENDAS', 640, 160, '#23262a', '#fff1c9', 78) })); sg2.position.set(sx0, 2.62, sz0 + 0.06); root.add(sg2);
+      box(1.66, 0.46, 0.03, al, sx0, 2.62, sz0 + 0.035, null, { cast: false });
+      var d2 = 60 * S, w2 = 212 * S, drop2 = 0.14, g2 = new THREE.Group(); g2.position.set(X(156), BH + 0.09, Z(1270)); g2.rotation.x = Math.atan(drop2 / d2);
+      var pc2 = new THREE.Mesh(new THREE.BoxGeometry(w2, 0.03, d2), new THREE.MeshStandardMaterial({ color: 0xcfeef2, transparent: true, opacity: 0.5, roughness: 0.2, metalness: 0.1, side: THREE.DoubleSide })); pc2.castShadow = false; g2.add(pc2);
+      for (var k2 = 0; k2 <= 6; k2++){ var cb2 = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, d2), mat(al)); cb2.position.set(-w2 / 2 + k2 * w2 / 6, 0.03, 0); g2.add(cb2); }
+      [-d2 / 2, d2 / 2].forEach(function(zz){ var rb2 = new THREE.Mesh(new THREE.BoxGeometry(w2 + 0.04, 0.05, 0.05), mat(al)); rb2.position.set(0, 0.04, zz); g2.add(rb2); });
+      roofGroup.add(g2);
+      [58, 204, 254].forEach(function(px){ box(0.08, BH - 0.06, 0.08, al, X(px), (BH - 0.06) / 2, Z(1297), roofGroup); });
+      [100, 152, 204].forEach(function(px){ var pd2 = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.17, 0.2, 18), new THREE.MeshStandardMaterial({ color: 0x23262a, emissive: 0xffd9a0, emissiveIntensity: 0.55 })); pd2.position.set(X(px), 2.5, Z(1270)); root.add(pd2); box(0.012, 0.4, 0.012, al, X(px), BH + 0.0, Z(1270), roofGroup); });
+    })();
     [1180, 1200, 1220].forEach(function(py){ var pd = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.17, 0.2, 18), new THREE.MeshStandardMaterial({ color: 0x23262a, emissive: 0xffd9a0, emissiveIntensity: 0.55 })); pd.position.set(X(175), 2.4, Z(py)); root.add(pd); box(0.012, 0.6, 0.012, 0x23262a, X(175), 2.8, Z(py), roofGroup); });
   })();
 
@@ -1549,9 +1568,9 @@
     { id: 'camsn', name: 'Câmeras · nave', g: 'Panorama', pos: [-4.5, 2.1, -11.6], tgt: [-6.4, 2.7, -12.9], roof: true, labels: false, fp: true },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false, fp: true },
     { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
-    { id: 'cantina', name: 'Cozinha e Cantina', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
+    { id: 'cantina', name: 'Cozinha e Cantina (de cima)', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
     { id: 'apoio',   name: 'Hall e banheiros', pos: [-1.0, 17, 4.5], tgt: [-1.0, 0, -1.8], roof: false, labels: true },
-    { id: 'anexosalas', name: 'Salas do anexo', pos: [0.6, 12, -8.6], tgt: [0.6, 0, -15.2], roof: false, labels: true },
+    { id: 'anexosalas', name: 'Anexo · salas (térreo, de cima)', pos: [0.6, 12, -8.6], tgt: [0.6, 0, -15.2], roof: false, labels: true },
     { id: 'carrosd', name: 'Veículos · detalhe', g: 'Panorama', pos: [0.4, 2.0, 7.2], tgt: [4.4, 0.6, 10.2], roof: true, labels: false },
     { id: 'carrosf', name: 'Veículos · para-brisa e vidro traseiro', g: 'Panorama', pos: [3.7, 1.35, 3.6], tgt: [2.9, 0.75, 6.2], roof: true, labels: false, fp: true },
     { id: 'carrosd2', name: 'Veículos · frente e vidros', g: 'Panorama', pos: [6.0, 1.9, 8.6], tgt: [3.2, 0.7, 10.6], roof: true, labels: false },
@@ -1575,16 +1594,18 @@
     { id: 'apoiohall', name: 'Sala de Apoio às Mamães (Hall)', g: 'Banheiros e hall', pos: [1.5, 1.65, -1.55], tgt: [3.8, 1.1, -1.4], roof: true, labels: false, fp: true },
     { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
-    { id: 'a2geral', name: '2º andar · visão de cima', g: '2º andar', pos: [1.0, 16, -7.0], tgt: [0.6, 3.2, -15.6], roof: false, labels: true },
+    { id: 'a2geral', name: '2º andar · Biblioteca e Reuniões (de cima)', g: '2º andar', pos: [1.0, 16, -7.0], tgt: [0.6, 3.2, -15.6], roof: false, labels: true },
     { id: 'a2ext', name: '2º andar · volume externo', g: '2º andar', pos: [5.5, 9.5, -4.5], tgt: [0.5, 4.5, -15.0], roof: true, labels: false },
     { id: 'a2cor', name: '2º andar · passarela vazada', g: '2º andar', pos: [-3.0, 4.75, -15.42], tgt: [6.2, 4.5, -15.42], roof: true, labels: false, fp: true },
-    { id: 'corabe', name: 'Anexo · corredor aberto ao céu', g: 'Anexo', pos: [-2.9, 1.65, -14.9], tgt: [4.5, 3.4, -14.9], roof: true, labels: false, fp: true },
-    { id: 'a2reun', name: '2º andar · Sala de Reuniões', g: '2º andar', pos: [3.0, 4.8, -17.1], tgt: [5.6, 4.3, -17.1], roof: true, labels: false, fp: true },
+    { id: 'corabe', name: 'Anexo · corredor aberto ao céu e passarela', g: 'Anexo', pos: [-2.9, 1.65, -14.9], tgt: [4.5, 3.4, -14.9], roof: true, labels: false, fp: true },
+    { id: 'a2reun', name: '2º andar · Sala de Reuniões e Copa', g: '2º andar', pos: [3.0, 4.8, -17.1], tgt: [5.6, 4.3, -17.1], roof: true, labels: false, fp: true },
     { id: 'a2bib', name: '2º andar · Biblioteca', g: '2º andar', pos: [0.9, 4.8, -15.9], tgt: [-1.0, 4.2, -17.8], roof: true, labels: false, fp: true },
     { id: 'a2mult', name: '2º andar · Sala Multiuso', g: '2º andar', pos: [-3.6, 4.8, -15.2], tgt: [-5.4, 4.2, -17.6], roof: true, labels: false, fp: true },
     { id: 'a2esc', name: '2º andar · chegada da escada', g: '2º andar', pos: [2.0, 4.85, -14.35], tgt: [-1.2, 4.5, -14.55], roof: true, labels: false, fp: true },
     { id: 'cozvidro', name: 'Cozinha (vidro, da varanda)', g: 'Pátio (ambientes)', pos: [-0.9, 1.7, 1.9], tgt: [-3.3, 1.9, 1.9], roof: true, labels: false, fp: true },
-    { id: 'cantinaf', name: 'Cantina (balcão, da varanda)', g: 'Pátio (ambientes)', pos: [-0.8, 1.7, 5.2], tgt: [-3.3, 1.5, 6.0], roof: true, labels: false, fp: true },
+    { id: 'cantinaf', name: 'Cantina · balcão da varanda', g: 'Pátio (ambientes)', pos: [-0.8, 1.7, 5.2], tgt: [-3.3, 1.5, 6.0], roof: true, labels: false, fp: true },
+    { id: 'cantinav', name: 'Cantina · janela de vendas (estacionamento)', g: 'Pátio (ambientes)', pos: [-4.4, 1.8, 10.8], tgt: [-4.4, 1.5, 6.8], roof: true, labels: false, fp: true },
+    { id: 'cantinavalto', name: 'Cantina · atendimento dos 2 lados (de cima)', g: 'Pátio (ambientes)', pos: [-1.0, 7.5, 11.0], tgt: [-4.4, 0.8, 5.6], roof: false, labels: false },
     { id: 'cozinhae', name: 'Cozinha', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 0.5], tgt: [-6.0, 1.1, 3.4], roof: true, labels: false, fp: true },
     { id: 'cantinae', name: 'Cantina', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 4.3], tgt: [-6.2, 1.1, 6.4], roof: true, labels: false, fp: true },
     { id: 'anexocorr', name: 'Corredor do anexo (leste-oeste)', g: 'Anexo', pos: [-5.8, 1.65, -14.64], tgt: [6.4, 1.5, -14.64], roof: true, labels: false, fp: true },
@@ -1592,7 +1613,7 @@
     { id: 'sala1a', name: 'Sala 1 (anexo)', g: 'Anexo', pos: [-3.8, 1.65, -16.04], tgt: [-6.2, 1.3, -17.5], roof: true, labels: false, fp: true },
     { id: 'wcanexo', name: 'Banheiro acessível (anexo)', g: 'Anexo', pos: [-2.0, 1.65, -16.04], tgt: [-3.1, 1.1, -17.6], roof: true, labels: false, fp: true },
     { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [0.7, 1.65, -16.04], tgt: [-1.5, 1.3, -17.5], roof: true, labels: false, fp: true },
-    { id: 'escadafp', name: 'Escada de acesso ao 2º andar', g: 'Anexo', pos: [5.7, 1.65, -15.3], tgt: [1.0, 2.2, -14.1], roof: true, labels: false, fp: true },
+    { id: 'escadafp', name: 'Escada reta de acesso ao 2º andar', g: 'Anexo', pos: [5.7, 1.65, -15.3], tgt: [1.0, 2.2, -14.1], roof: true, labels: false, fp: true },
     { id: 'escadaalto', name: 'Escada (de cima)', g: 'Anexo', pos: [5.8, 4.6, -15.4], tgt: [1.0, 1.2, -14.0], roof: false, labels: false },
     { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [5.7, 1.65, -16.04], tgt: [3.5, 1.3, -17.5], roof: true, labels: false, fp: true },
   ];
@@ -1707,7 +1728,8 @@
       ['geral', 'Visão geral do projeto', 'O templo completo: pátio com estacionamento, nave, hall coberto, cozinha e cantina, e o anexo com 2º andar.', 0],
       ['fachadaf', 'Fachada', 'Fachada moderna com a logo da 4ª IMW, ripado cinza, duas portas de vidro temperado e iluminação em LED.', 0],
       ['pespatio', 'Pátio e estacionamentos', 'Entrada ampla pelo portão, vagas organizadas dos dois lados e caminho direto até a fachada.', 0],
-      ['cantinaf', 'Cozinha e Cantina', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento e cobertura de policarbonato, voltadas para a varanda.', 0, [[2.0,9.6,10.6],[-4.9,0.3,2.8]]],
+      ['cantinaf', 'Cozinha e Cantina (varanda)', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento na varanda e cobertura de policarbonato.', 0, [[2.0,9.6,10.6],[-4.9,0.3,2.8]]],
+      ['cantinav', 'Cantina · atendimento dos 2 lados', 'Nova janela de vendas voltada para o Estacionamento 1: a cantina atende pela varanda e por este lado, com abrigo de policarbonato para o público.', 0, [[-1.2,5.6,11.0],[-4.4,0.9,6.4], true]],
       ['hallfp', 'Hall de recepção', 'Espaço aberto e livre que liga o pátio à nave, aos banheiros e ao corredor do anexo.', 0, [[2.2,11,2.5],[2.2,0,-2.0]]],
       ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
@@ -1718,7 +1740,7 @@
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
       ['anexot', 'Anexo · térreo', 'Vista de cima das salas do térreo: Sala 1, banheiro acessível e as Salas 2 e 3, voltadas para o corredor aberto.', 0, [[0.3,12.5,-14.4],[0.3,0,-17.0], false, 3.02]],
       ['sala2a', 'Salas do anexo (térreo)', 'Salas de aula com ar-condicionado, tela e mobiliário; ao lado, o banheiro acessível (PCD).', 0, [[-3.55,2.75,-14.75],[-5.8,0.3,-17.4]]],
-      ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca, Sala de Reuniões da Junta Diaconal e WC, com passarela vazada sobre o corredor.', 0, [[2.7,12,-14.2],[2.7,3.3,-17.0]]],
+      ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca e Sala de Reuniões com Copa, alinhadas às salas do térreo, com passarela vazada sobre o corredor.', 0, [[2.7,12,-14.2],[2.7,3.3,-17.0]]],
       ['a2mult', '2º andar · Sala Multiuso', 'Sala Multiuso com tela de projeção, painel ripado e cadeiras, para aulas, reuniões e eventos.', 0, [[-4.9,12,-13.0],[-4.9,3.3,-16.5]]],
       ['fachadaf', 'À noite · fachada', 'O mesmo projeto iluminado: a fachada com a logo e as luzes de LED.', 1],
       ['noitegeral', 'À noite · pátio, hall, nave e anexo', 'Todo o conjunto à noite: pátio e estacionamentos, hall, nave e anexo com os ambientes iluminados.', 1, [[11,24,27],[0,0,-6], false]]
