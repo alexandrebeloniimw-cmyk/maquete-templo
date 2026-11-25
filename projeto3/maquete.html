@@ -671,7 +671,7 @@
     person(570, 1210, 0.04, PI, 'stand'); person(585, 1630, 0.04, N / 2, 'stand'); person(545, 1712, 0.04, PI / 2, 'talk'); person(588, 1716, 0.04, N / 2, 'stand');   // na entrada do pátio, logo após o portão (saíram do carro vermelho do Estacionamento 1)
     // anexo: corredor e Sala Multiuso (professora com crianças)
     person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 78, 0.0, 0, 'talk');
-    [[85, 105], [120, 112], [155, 105], [105, 128], [140, 130]].forEach(function(q){ person(q[0], q[1], 0.0, PI, 'stand', 0.6); });
+    [[80, 160], null, [115, 176], [150, 160], [98, 198]].forEach(function(q){ if (!q){ n++; return; } person(q[0], q[1], 0.0, PI, 'stand', 0.6); });   // null = criança de blusa rosa retirada (mantém as cores das demais)   // Etapa 70: crianças afastadas da mesa (a de blusa rosa foi retirada)
     (function(){ var len = 0; crowdParts.forEach(function(gm){ len += gm.attributes.position.array.length; });
       var PP = new Float32Array(len), NN = new Float32Array(len), CC = new Float32Array(len), off = 0;
       crowdParts.forEach(function(gm){ PP.set(gm.attributes.position.array, off); NN.set(gm.attributes.normal.array, off); CC.set(gm.attributes.color.array, off); off += gm.attributes.position.array.length; });
