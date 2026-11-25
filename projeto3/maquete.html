@@ -97,7 +97,7 @@
     <div class="tools">
   <button id="tTour">▶ Passeio guiado</button>
   <button id="tRoof" class="on">🏠 Telhado</button>
-  <button id="tLabels" class="on">🏷 Nomes</button>
+  <button id="tLabels">🏷 Nomes</button>
   <button id="tSpin">🔄 Girar</button>
   <button id="tPeople" class="on">🧍 Pessoas</button>
   <button id="tNight">🌙 Ver a noite</button>
@@ -218,7 +218,7 @@
 
   var root = new THREE.Group(); scene.add(root);
   var roofGroup = new THREE.Group(); scene.add(roofGroup);
-  var labelGroup = new THREE.Group(); scene.add(labelGroup);
+  var labelGroup = new THREE.Group(); labelGroup.visible = false; scene.add(labelGroup);
   var forroGroup = new THREE.Group(); scene.add(forroGroup);      // forros e luzes (somem junto com o telhado)
 
   function box(w, h, d, color, x, y, z, parent, o){
@@ -1746,7 +1746,7 @@
     current = v.id;
     [].forEach.call(bar.children, function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
     if (v.roof !== undefined) setRoof(v.roof); else setRoof(true);
-    if (v.labels !== undefined) setLabels(v.labels);
+    // Etapa 83: nomes só aparecem quando a pessoa clica em Nomes (as vistas não ligam mais)
     var p1 = new THREE.Vector3().fromArray(v.pos), t1 = new THREE.Vector3().fromArray(v.tgt);
     if (instant){ camera.position.copy(p1); controls.target.copy(t1); controls.update(); return; }
     anim = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: p1, t1: t1 };
