@@ -1676,6 +1676,7 @@
           var z0 = f(bb.min.z), z1 = f(bb.max.z); o.scale.z *= (z1 - z0) / L; o.position.z = (z0 + z1) / 2; return;
         }
         if (Math.abs(cx - xW[0]) < 0.2 || Math.abs(cx - xW[1]) < 0.2) return;   // paredes externas e janelas laterais ficam
+        if (cz >= zb + 0.3 && bb.max.y < 2.2 && cx > X(285) && cx < X(690)) return;   // Etapa 79: mobília (mesa, cadeiras, pessoas) das Salas 2 e 3 do térreo fica onde estava; os 2,10 m novos ficam livres atrás dela
         o.position.z += (cz < zb + 0.3 ? -D : f(cz) - cz);                   // fundos: recuam; móveis e peças: acompanham proporcionalmente
       });
     });
