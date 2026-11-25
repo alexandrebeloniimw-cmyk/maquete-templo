@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -722,7 +722,7 @@
   hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [{ a: 207, b: 253, lh: 2.1 }], 'HALF');      // paredes das salas externas: azul mais claro
   hwall(1100, 50, 205, BH, [], 'HALF'); hwall(1240, 50, 205, BH, [], 'HALF');   // MAQUETE 3: Cozinha e Lanchonete
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1240, BH, [], 'HALF');
-  vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
+  vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
 
   vwall(205, 880, 1240, BH, [door(930), win(985), door(1135), win(1200)], 'HALF');   // MAQUETE 3: portas e janelas da Cozinha e da Lanchonete (lado da varanda)
   tempWindow(false, 205, 985, 60);   // MAQUETE 3: janela da Cozinha em vidro temperado
@@ -731,7 +731,7 @@
   winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
   hwall(805, 50, 255, BH, [], 'HALF');
-  doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(true, 880, 230, 0.86, 2.08, 0.14);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
+  doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(false, 255, 842.5, 0.86, 2.08, 0.18); doorLeaf(true, 880, 230, 0.86, 2.08, 0.14);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
   [730, 805].forEach(function(y0, bi){
     // 2 cabines (≈ 0,67 × 1,75 m) ao fundo, com divisórias padrão e porta de cabine; pia + espelho na área de acesso (sem corredor interno)
     var xb = 54, xf = 142, cabs = [[y0 + 4, y0 + 37.5], [y0 + 37.5, y0 + 71]];
@@ -773,7 +773,7 @@
     box(0.36, 0.26, 0.45, 0x2b2e32, mx, 1.07, Z(832)); box(0.02, 0.18, 0.3, 0x15171a, mx - 0.19, 1.07, Z(832), null, { cast: false });   // micro-ondas
   })();
   // ---- bebedouro: parede externa dos banheiros (abrigo coberto) ----
-  box(0.35, 1.0, 0.3, 0xcfd8dc, X(255) + 0.09 + 0.175, 0.55, Z(835)); box(0.3, 0.05, 0.26, 0x5b9bd5, X(255) + 0.09 + 0.175, 1.07, Z(835)); box(0.12, 0.12, 0.05, 0x888, X(255) + 0.09 + 0.1, 1.15, Z(835));
+  box(0.35, 1.0, 0.3, 0xcfd8dc, X(698) - 0.175, 0.55, Z(759)); box(0.3, 0.05, 0.26, 0x5b9bd5, X(698) - 0.175, 1.07, Z(759)); box(0.12, 0.12, 0.05, 0x888, X(698) - 0.1, 1.15, Z(759));   // MAQUETE 3: bebedouro na outra extremidade do Hall (muro leste)
 
   // ---------- PROJETO 2: FACHADA moderna (do muro até a parede dos banheiros/salas), com porta de vidro temperado, logo e nome ----------
   (function(){
@@ -1082,7 +1082,7 @@
   label('Varanda', 230, 1060, 3.4, 1.6);
   label('Cozinha', 127, 1000, 3.1, 1.9); label('Lanchonete', 127, 1170, 3.4, 1.9);
   label('Cobertura (abrigo)', 332, 790, 3.7, 3.0);
-  label('Bebedouro', 375, 800, 2.0, 2.0);
+  label('Bebedouro', 668, 757, 2.0, 2.0);
   label('Estacionamento 1', 150, 1680, 2.2, 3.0); label('Estacionamento 2', 570, 1735, 2.2, 3.0);
   label('Pátio', 370, 1450, 2.4, 1.8);
   label('Portão principal', 580, 1760, 3.8, 3.4);
