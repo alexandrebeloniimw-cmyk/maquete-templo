@@ -573,10 +573,9 @@
     function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
     [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
     [458, 547, 636].forEach(function(py){ placa(X(600) - 0.07 - 0.03, -1, py); });
-    // Etapa 92: altar com 1 painel acústico em cada parede (oeste, leste e fundo), mesmo modelo da nave, um pouco mais alto por causa da plataforma
+    // Etapa 92: altar com painel acústico nas paredes oeste e leste (o do fundo, parede altar × anexo, foi excluído na Etapa 93), mesmo modelo da nave, um pouco mais alto por causa da plataforma
     function placaAltar(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.9, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.9, Z(py), null, { cast: false }); }
     placaAltar(X(40) + 0.11 + 0.03, 1, 272); placaAltar(X(600) - 0.07 - 0.03, -1, 272);
-    (function(){ var zf = Z(225) + 0.133 + 0.03; box(0.8, 1.9, 0.06, pc, X(250), 1.9, zf, null, { cast: false }); box(0.7, 1.8, 0.02, pf, X(250), 1.9, zf + 0.035, null, { cast: false }); })();   // fundo, à esquerda do letreiro
     // ---- Ventiladores de parede (suspensos), entre as placas acústicas ----
     var fanDark = mat(0x34383d, { roughness: 0.5, metalness: 0.3 }), fanBlade = mat(0xd5d9de, { roughness: 0.5 });
     function ventilador(xf, dir, py, y){
