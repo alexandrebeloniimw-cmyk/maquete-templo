@@ -913,7 +913,7 @@
   // Estacionamento 2: 8 vagas verticais (4 fileiras x 2), frente para a nave (deslocado para trás: começa em y=900)
   for (var j = 0; j <= 4; j++) line(450, 900 + j * 200, 690, 900 + j * 200);
   [450, 570, 690].forEach(function(xv){ line(xv, 900, xv, 1700); });
-  for (var rr = 0; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);
+  for (var rr = 1; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);   // MAQUETE 3: os 2 carros da 1ª fileira (junto à porta da fachada) foram retirados; as vagas ficam livres
   pSign(423, 922);
 
   // ---------- Rua com 2 carros estacionados ----------
