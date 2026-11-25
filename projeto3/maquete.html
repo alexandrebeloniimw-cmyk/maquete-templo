@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, Cantina com balcão de atendimento e telhado de policarbonato, Cozinha com vidro da metade para cima, escada na Sala 4, porta de vidro mais larga no corredor do anexo, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, Cantina com balcão de atendimento e telhado de policarbonato, Cozinha e Sala de Apoio com vidro da metade para cima, escada na Sala 4, porta de vidro mais larga no corredor do anexo, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -807,7 +807,7 @@
   (function(){
     box(0.45, 0.45, 1.6, 0x8fa3ad, X(687), 0.28, Z(815)); box(0.12, 0.55, 1.6, 0x8fa3ad, X(697), 0.6, Z(815));
     // painel de avisos: agora na face externa (leste) da Sala de Apoio do Hall
-    (function(){ var px = X(560) + 0.11 + 0.03, pz = Z(844); box(0.04, 1.0, 1.4, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 0.98, pz); })();
+    (function(){ var px = X(560) + 0.09, pz = Z(844); box(0.04, 1.0, 1.4, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 0.98, pz); })();
     var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(748)); root.add(pot);
     var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(748)); root.add(pl);
     var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(335), 0.12, Z(810)); root.add(rg);
@@ -815,15 +815,26 @@
 
   // ---- MAQUETE 3: Sala de Apoio às Mamães no Hall, em horizontal (x430..560, y804..884 ≈ 2,6 × 1,6 m): poltrona, trocador, pia e micro-ondas ----
   (function(){
-    rect(430, 804, 560, 884, 0.1, 0.02, 0xe8d9c0, { cast: false });
-    hwall(804, 430, 560, BH, [door(465)]);
-    vwall(430, 804, 884, BH, [win(845)]);   // janela de vidro temperado voltada para o Hall
-    tempWindow(false, 430, 845, 60);
-    vwall(560, 804, 884, BH, []);
+    rect(430, 804, 560, 884, 0.1, 0.02, 0xcfcac2, { cast: false });   // piso de microcimento claro
+    // paredes: azulejo até a metade (1,5 m) e vidro temperado da metade para cima, com perfis pretos (norte, oeste e leste; a sul é a fachada)
+    hwall(804, 430, 560, BH, [door(465)], 'GLASSUP');
+    vwall(430, 804, 884, BH, [], 'GLASSUP');
+    vwall(560, 804, 884, BH, [], 'GLASSUP');
     doorLeaf(true, 804, 465);
-    box(0.7, 0.45, 0.65, 0x8fa3ad, X(450) + 0.1, 0.3, Z(835)); box(0.14, 0.55, 0.65, 0x8fa3ad, X(450) - 0.22, 0.6, Z(835)); box(0.12, 0.18, 0.65, 0x7b8f99, X(450) + 0.45, 0.5, Z(835));   // poltrona de amamentação
-    box(1.1, 0.9, 0.45, 0xf4f2ec, X(520), 0.45, Z(884) - 0.13 - 0.25); box(1.1, 0.06, 0.45, 0xbcd9ef, X(520), 0.93, Z(884) - 0.13 - 0.25);   // trocador (parede sul)
-    box(0.56, 0.85, 0.36, 0xf4f2ec, X(515), 0.425, Z(804) + 0.11 + 0.2); var ps3 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps3.position.set(X(515), 0.88, Z(804) + 0.11 + 0.2); root.add(ps3);   // pia
+    // design: faixa de vidro jateado (privacidade na altura dos olhos, 1,55–2,05 m) nas 3 paredes de vidro
+    var fr = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.62, roughness: 0.9 });
+    gbox(true, 804, (488 + 560) / 2, (560 - 488) * S, 0.5, 0.036, 1.8, 0, fr);
+    gbox(false, 430, 844, 80 * S, 0.5, 0.036, 1.8, 0, fr);
+    gbox(false, 560, 844, 80 * S, 0.5, 0.036, 1.8, 0, fr);
+    // design: ripado de madeira na parede da fachada (atrás do trocador) e pendente circular de LED
+    for (var rk = 0; rk < 26; rk++) box(0.05, 1.75, 0.04, 0xb5814f, X(433) + rk * 0.098 + 0.05, 1.83, Z(884) - 0.07, null, { cast: false });
+    box(2.55, 0.05, 0.05, 0x23262a, X(495), 0.93, Z(884) - 0.07, null, { cast: false }); box(2.55, 0.05, 0.05, 0x23262a, X(495), 2.72, Z(884) - 0.07, null, { cast: false });
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.022, 10, 40), new THREE.MeshStandardMaterial({ color: 0xfff1c9, emissive: 0xffe2a8, emissiveIntensity: 0.9 })); ring.rotation.x = Math.PI / 2; ring.position.set(X(495), 2.5, Z(844)); root.add(ring);
+    [0, 2.1, 4.2].forEach(function(a){ box(0.01, 0.5, 0.01, 0x23262a, X(495) + 0.34 * Math.cos(a), 2.75, Z(844) + 0.34 * Math.sin(a), null, { cast: false }); });
+    box(0.7, 0.45, 0.65, 0xc9835f, X(450) + 0.1, 0.3, Z(835)); box(0.14, 0.55, 0.65, 0xc9835f, X(450) - 0.22, 0.6, Z(835)); box(0.12, 0.18, 0.65, 0xb06f4e, X(450) + 0.45, 0.5, Z(835));   // poltrona de amamentação (terracota)
+    [[0.35, 0.28], [0.35, -0.28], [-0.15, 0.28], [-0.15, -0.28]].forEach(function(q){ box(0.03, 0.08, 0.03, 0x23262a, X(450) + q[0] - 0.05, 0.04, Z(835) + q[1]); });   // pés pretos
+    box(1.1, 0.9, 0.45, 0xf4f2ec, X(520), 0.45, Z(884) - 0.13 - 0.25); box(1.1, 0.06, 0.45, 0xbcd9ef, X(520), 0.93, Z(884) - 0.13 - 0.25); box(1.12, 0.04, 0.47, 0xb5814f, X(520), 0.89, Z(884) - 0.13 - 0.25);   // trocador (parede sul) com friso de madeira
+    box(0.56, 0.85, 0.36, 0xf4f2ec, X(515), 0.425, Z(804) + 0.11 + 0.2); var ps3 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps3.position.set(X(515), 0.88, Z(804) + 0.11 + 0.2); root.add(ps3); box(0.03, 0.22, 0.03, 0x15171a, X(515), 1.02, Z(804) + 0.11 + 0.06); box(0.03, 0.03, 0.12, 0x15171a, X(515), 1.12, Z(804) + 0.11 + 0.1);   // pia com torneira preta
     var mx = X(560) - 0.11 - 0.25;
     box(0.5, 0.9, 0.6, 0xe9e6df, mx, 0.45, Z(832)); box(0.52, 0.04, 0.62, 0xb9bcbe, mx, 0.92, Z(832));          // balcão
     box(0.36, 0.26, 0.45, 0x2b2e32, mx, 1.07, Z(832)); box(0.02, 0.18, 0.3, 0x15171a, mx - 0.19, 1.07, Z(832), null, { cast: false });   // micro-ondas
