@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro, corredor de acesso mais largo, Sala 1 esticada e Sala de Apoio às Mamães reduzida e em horizontal, no Hall, Cantina com balcão de atendimento e telhado de policarbonato, Cozinha com vidro da metade para cima, escada na Sala 4, porta de vidro mais larga no corredor do anexo, bebedouro na outra ponta do Hall, porta do Banheiro Masculino pelo Hall, e janelas de vidro temperado na Cozinha e na Sala de Apoio</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -193,7 +193,26 @@
   var T = 0.16, BH = 3.0, DOORH = 2.1;     // BH = altura padrão das paredes (3 m); porta 2,10 m
   var glass = new THREE.MeshStandardMaterial({ color: 0x9fd0ee, transparent: true, opacity: 0.45, roughness: 0.2, metalness: 0.1 });
   // caixa de parede; color 'HALF' = metade de baixo com ladrilhinhos e metade de cima azul claro
+  // MAQUETE 3: parede 'GLASSUP' = azulejo até a metade (1,5 m) e, da metade para cima, vidro temperado em faixas longas com perfis pretos
+  function gbox(horiz, fixed, mid, along, hg, th, y, color, material){
+    var o = material ? { material: material, cast: false } : {};
+    if (horiz) box(along, hg, th, color, X(mid), y, Z(fixed), null, o); else box(th, hg, along, color, X(fixed), y, Z(mid), null, o);
+  }
   function wbox(horiz, mid, fixed, len, y0, hh, tt, color, material){
+    if (color === 'GLASSUP' && !material){
+      var ya = Math.min(y0 + hh, 1.5);
+      if (ya > y0 + 0.001){ var p0 = ya - y0; gbox(horiz, fixed, mid, len, p0, tt, y0 + p0 / 2, 0, tileMat(len / 0.5, p0 / 0.5)); }
+      var yb = Math.max(y0, 1.5), y1 = y0 + hh;
+      if (y1 > yb + 0.001){
+        var p1 = y1 - yb, dk = 0x23262a;
+        gbox(horiz, fixed, mid, len, p1, 0.03, yb + p1 / 2, 0, tempWinMat);
+        gbox(horiz, fixed, mid, len, 0.06, 0.1, yb + 0.03, dk);
+        if (y1 >= BH - 0.001) gbox(horiz, fixed, mid, len, 0.06, 0.1, y1 - 0.03, dk);
+        var n = Math.max(1, Math.round(len / 2.0));
+        for (var k = 0; k <= n; k++) gbox(horiz, fixed, mid + (-len / 2 + k * len / n) / S, 0.05, p1, 0.1, yb + p1 / 2, dk);
+      }
+      return null;
+    }
     if (color === 'HALF' && !material){
       [[y0, Math.min(y0 + hh, 1.5), true], [Math.max(y0, 1.5), y0 + hh, false]].forEach(function(q){
         var ph = q[1] - q[0]; if (ph <= 0.001) return;
@@ -216,7 +235,7 @@
       if (mesh && material === glass) mesh.castShadow = false;
     }
     piece(lh, h, null);
-    if (g.sill){ piece(0, g.sill, null); piece(g.sill, lh, glass); }
+    if (g.sill){ piece(0, g.sill, null); if (!g.open) piece(g.sill, lh, glass); }
   }
   function wall(horiz, fixed, a1, a2, h, gaps, color, thick){
     gaps = (gaps || []).slice().sort(function(p, q){ return p.a - q.a; });
@@ -525,7 +544,7 @@
   })();
   (function(){
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
-    [125, 355, 505, 637].forEach(function(cx){
+    [125, 355, 505].forEach(function(cx){
       acBox(X(cx), 2.45, Z(40) + 0.11 + 0.1);                                                   // split na parede do fundo
       box(1.3, 0.05, 0.55, 0xb58a5c, X(cx), 0.76, Z(115)); [-0.55, 0.55].forEach(function(o){ box(0.05, 0.72, 0.5, 0xdad7d0, X(cx) + o, 0.4, Z(115)); });
       [-0.4, 0, 0.4].forEach(function(o){ box(0.4, 0.04, 0.4, 0x3d4249, X(cx) + o, 0.45, Z(135)); box(0.4, 0.38, 0.04, 0x3d4249, X(cx) + o, 0.66, Z(135) + 0.19); box(0.06, 0.43, 0.06, 0x8a8f94, X(cx) + o, 0.22, Z(135)); });
@@ -537,15 +556,52 @@
     box(0.04, 0.04, 0.8, bar, X(204), 0.85, Z(74)); box(0.04, 0.04, 0.6, bar, X(236), 0.85, Z(73)); box(0.7, 0.04, 0.04, bar, X(221), 0.85, Z(54));
     box(0.5, 0.8, 0.36, C.white, X(267), 0.4, Z(61)); box(0.4, 0.03, 0.26, 0xbcd5e8, X(267), 0.815, Z(61), null, { cast: false });
     box(0.6, 0.8, 0.02, 0, X(267), 1.5, Z(52), null, { material: new THREE.MeshStandardMaterial({ color: 0xdde9ef, roughness: 0.05, metalness: 0.8 }), cast: false });
-    // Sala 4 (x580..695, y50..155): sala de aula (ex-Apoio, que foi para o Hall)
+    // MAQUETE 3: Sala 4 (x580..695, y50..155) = escada em U (degraus de madeira flutuantes, longarina de aço, guarda-corpo de vidro) para o 2º andar; sobe pelo lado leste e volta pelo lado oeste
+    (function(){
+      var xmin = X(580) + 0.08, xmax = X(700) - 0.11, zmin = Z(40) + 0.11, zmax = Z(155) - 0.08;
+      var rr = (BH + 0.16) / 16, sw = 0.8, td = 0.2, nT = 7, land = (zmax - zmin) - nT * td, wood = 0xb5814f, steel = 0x23262a;
+      var xe = xmax - sw / 2, xw = xmin + sw / 2, th = Math.atan(rr / td), L = Math.sqrt(Math.pow(nT * td, 2) + Math.pow(nT * rr, 2));
+      for (var i = 1; i <= nT; i++){
+        box(sw, 0.05, td - 0.01, wood, xe, i * rr - 0.025, zmax - td * (i - 0.5));
+        box(sw, 0.05, td - 0.01, wood, xw, (8 + i) * rr - 0.025, zmin + land + td * (i - 0.5));
+      }
+      box(xmax - xmin, 0.06, land, wood, (xmin + xmax) / 2, 8 * rr - 0.03, zmin + land / 2);       // patamar intermediário
+      function slanted(x, yc, zc, w, h, rx, material, col){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, L), material || mat(col)); m.position.set(x, yc, zc); m.rotation.x = rx; m.castShadow = !material; root.add(m); }
+      slanted(xe, 4 * rr - 0.14, zmax - nT * td / 2, 0.06, 0.16, th, null, steel);                  // longarinas centrais
+      slanted(xw, 12 * rr - 0.14, zmin + land + nT * td / 2, 0.06, 0.16, -th, null, steel);
+      slanted(xe - sw / 2 - 0.01, 4 * rr + 0.45, zmax - nT * td / 2, 0.012, 0.9, th, tempWinMat);    // guarda-corpos de vidro (lado do vão)
+      slanted(xw + sw / 2 + 0.01, 12 * rr + 0.45, zmin + land + nT * td / 2, 0.012, 0.9, -th, tempWinMat);
+      slanted(xe - sw / 2 - 0.01, 4 * rr + 0.93, zmax - nT * td / 2, 0.04, 0.04, th, null, 0xc9ced3);  // corrimãos
+      slanted(xw + sw / 2 + 0.01, 12 * rr + 0.93, zmin + land + nT * td / 2, 0.04, 0.04, -th, null, 0xc9ced3);
+      box(xe - xw - sw, 0.9, 0.012, 0, (xe + xw) / 2, 8 * rr + 0.45, zmin + land, null, { material: tempWinMat, cast: false });   // guarda-corpo do patamar
+      // patamar de chegada do 2º andar (sobre a parede do corredor) com guarda-corpo de vidro
+      var pz0 = zmax, pd = 0.9;
+      box(sw + 0.1, 0.16, pd, 0xb9b9c3, xw, BH + 0.08, pz0 + pd / 2 - 0.04);
+      box(0.012, 0.8, pd, 0, xw - sw / 2 - 0.05, BH + 0.16 + 0.4, pz0 + pd / 2 - 0.04, null, { material: tempWinMat, cast: false });
+      box(0.012, 0.8, pd, 0, xw + sw / 2 + 0.05, BH + 0.16 + 0.4, pz0 + pd / 2 - 0.04, null, { material: tempWinMat, cast: false });
+      box(sw + 0.1, 0.8, 0.012, 0, xw, BH + 0.16 + 0.4, pz0 + pd - 0.04, null, { material: tempWinMat, cast: false });
+      var upl = (function(){ var cv = document.createElement('canvas'); cv.width = 256; cv.height = 64; var g = cv.getContext('2d'); g.fillStyle = '#23262a'; g.fillRect(0, 0, 256, 64); g.fillStyle = '#ffffff'; g.font = 'bold 34px sans-serif'; g.textAlign = 'center'; g.fillText('2º andar', 128, 44); return new THREE.CanvasTexture(cv); })();
+      var upm = new THREE.Mesh(new THREE.PlaneGeometry(0.7, 0.175), new THREE.MeshBasicMaterial({ map: upl })); upm.position.set(xw, 2.25, zmax - 0.1); upm.rotation.y = Math.PI; root.add(upm);   // placa "2º andar" (para quem sobe)
+    })();
     // bebedouro do anexo, na parede do corredor (lado do altar), perto do saguão
     box(0.8, 1.0, 0.36, 0xcfd8dc, X(620), 0.5, Z(225) - 0.09 - 0.18); box(0.7, 0.05, 0.3, 0x5b9bd5, X(620), 1.02, Z(225) - 0.09 - 0.18); box(0.05, 0.12, 0.05, 0x888, X(620), 1.1, Z(225) - 0.09 - 0.1);
   })();
   hwall(225, 40, 700, BH, [door(665)], C.wall, 0.18);                        // Parede divisor nave e anexo; porta do anexo
 
   // ---------- Parede do templo externo (nave x pátio): porta dupla e janela ----------
-  hwall(720, 40, 700, BH, [win(500), { a: 300, b: 390, lh: 2.1 }, { a: 645, b: 685, lh: 2.1 }], C.wall, 0.22);   // PROJETO 2: janela da nave para a Sala de Apoio (x150); janela antiga de x520 removida (banheiros)
-  doorLeaf(true, 720, 665, 0.86, 2.08, 0.22);                                // PROJETO 2: porta de entrada do corredor de acesso ao anexo
+  hwall(720, 40, 700, BH, [win(500), { a: 300, b: 390, lh: 2.1 }, { a: 612, b: 688, lh: 2.1 }], C.wall, 0.22);   // PROJETO 2: janela da nave para a Sala de Apoio (x150); janela antiga de x520 removida (banheiros)
+  // MAQUETE 3: porta de entrada do corredor de acesso ao anexo alargada (1,52 m, antes 0,90 m): porta dupla de vidro temperado com perfis pretos e puxadores
+  (function(){
+    var cz = Z(720), cx = X(650), lw = 0.75, met = 0x1f2226;
+    [-1, 1].forEach(function(s){
+      var lx = cx + s * (lw / 2 + 0.01);
+      box(lw, 2.02, 0.012, 0, lx, 1.07, cz, null, { material: tempWinMat, cast: false });
+      box(lw + 0.02, 0.07, 0.05, met, lx, 0.05, cz); box(lw + 0.02, 0.07, 0.05, met, lx, 2.08, cz);
+      [-1, 1].forEach(function(q){ box(0.03, 2.1, 0.05, met, lx + q * (lw / 2), 1.05, cz); });
+      [0.14, -0.14].forEach(function(f){ box(0.03, 0.8, 0.03, 0xc9ced3, cx + s * 0.12, 1.05, cz + f); });
+    });
+    box(1.62, 0.07, 0.24, met, cx, 2.135, cz); box(1.62, 0.02, 0.26, 0x6b7075, cx, 0.02, cz);
+  })();
   vwall(600, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
   // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
   [385, 620].forEach(function(c){
@@ -640,7 +696,7 @@
       });
     })();
     // parede do pátio (face interna): em torno da porta dupla e da janela
-    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 470, 0, BH); ph(720, -1, 530, 645, 0, BH); ph(720, -1, 685, 700, 0, BH); ph(720, -1, 645, 685, 2.1, BH);
+    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 470, 0, BH); ph(720, -1, 530, 612, 0, BH); ph(720, -1, 688, 700, 0, BH); ph(720, -1, 612, 688, 2.1, BH);
     ph(720, -1, 300, 390, 2.1, BH);           // acima da porta
     ph(720, -1, 470, 530, 0, 1.1); ph(720, -1, 470, 530, 2.3, BH);   // abaixo e acima da janela (Sala de Apoio)
   })();
@@ -720,13 +776,13 @@
   rect(50, 1100, 205, 1240, 0.0, 0.1, C.salaExt, { cast: false });           // MAQUETE 3: Lanchonete
   hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
   hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [{ a: 207, b: 253, lh: 2.1 }], 'HALF');      // paredes das salas externas: azul mais claro
-  hwall(1100, 50, 205, BH, [], 'HALF'); hwall(1240, 50, 205, BH, [], 'HALF');   // MAQUETE 3: Cozinha e Lanchonete
+  hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [], 'HALF');   // MAQUETE 3: Cozinha (divisória para a Cantina em vidro da metade para cima) e Cantina
   vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1240, BH, [], 'HALF');
   vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
 
-  vwall(205, 880, 1240, BH, [door(930), win(985), door(1135), win(1200)], 'HALF');   // MAQUETE 3: portas e janelas da Cozinha e da Lanchonete (lado da varanda)
-  tempWindow(false, 205, 985, 60);   // MAQUETE 3: janela da Cozinha em vidro temperado
-  [930, 1135].forEach(function(c){ doorLeaf(false, 205, c); }); [985, 1200].forEach(function(c){ winFrame(false, 205, c); });   // portas das salas externas + janela da Sala 2 externo (lado da varanda)
+  vwall(205, 880, 1100, BH, [door(930)], 'GLASSUP');   // MAQUETE 3: parede da Cozinha voltada para a varanda: azulejo até a metade e vidro temperado (janelas longas) acima
+  vwall(205, 1100, 1240, BH, [door(1135), { a: 1165, b: 1235, sill: 1.1, lh: 2.2, open: true }], 'HALF');   // MAQUETE 3: Cantina: porta + abertura do balcão de atendimento
+  [930, 1135].forEach(function(c){ doorLeaf(false, 205, c); });   // portas das salas externas + janela da Sala 2 externo (lado da varanda)
   // ---- PROJETO 2: HALL (x410..590, y730..880), no lugar da antiga Sala de Apoio; acesso aberto pelo saguão ----
   winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
@@ -859,6 +915,16 @@
     box(0.5, 0.6, 0.9, 0xd6ecff, X(168), 1.45, Z(1200), null, { material: new THREE.MeshStandardMaterial({ color: 0xcfe6f3, transparent: true, opacity: 0.45, roughness: 0.1 }), cast: false });
     box(0.35, 1.9, 120 * S, 0xe6c99a, X(61), 1.0, Z(1170)); [0.5, 1.0, 1.5].forEach(function(hh){ box(0.4, 0.04, 120 * S, 0xc9a87c, X(61), hh + 0.1, Z(1170)); });
     box(0.7, 0.85, 0.7, 0xb58a5c, X(112), 0.5, Z(1145));
+    // MAQUETE 3: balcão de atendimento da Cantina (abertura y1165..1235 na parede da varanda): bancada externa com tampo de madeira, painel grafite, pendentes, letreiro LED e cardápio
+    var cx0 = X(205) + 0.08, cz = Z(1200);
+    box(0.4, 1.06, 1.5, 0x30343a, cx0 + 0.2, 0.53, cz); box(0.5, 0.05, 1.56, 0xb5814f, cx0 + 0.25, 1.085, cz); box(0.02, 0.9, 1.5, 0xb5814f, cx0 + 0.41, 0.55, cz, null, { cast: false });
+    for (var rp = 0; rp < 12; rp++) box(0.03, 0.85, 0.06, 0xb5814f, cx0 + 0.41, 0.55, cz - 0.69 + rp * 0.125, null, { cast: false });   // ripado de madeira no frontal
+    box(0.5, 0.04, 1.44, 0x23262a, X(175), 1.19, cz);   // tampo interno grafite junto à abertura
+    function signTex(txt, w, h, bg, fg, fs){ var cv = document.createElement('canvas'); cv.width = w; cv.height = h; var g = cv.getContext('2d'); g.fillStyle = bg; g.fillRect(0, 0, w, h); g.fillStyle = fg; g.font = 'bold ' + fs + 'px sans-serif'; g.textAlign = 'center'; g.fillText(txt, w / 2, h * 0.68); return new THREE.CanvasTexture(cv); }
+    var sg = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.4), new THREE.MeshBasicMaterial({ map: signTex('CANTINA', 512, 136, '#23262a', '#fff1c9', 78) })); sg.position.set(cx0 + 0.045, 2.6, cz); sg.rotation.y = Math.PI / 2; root.add(sg);
+    box(0.03, 0.46, 1.56, 0x23262a, cx0 + 0.01, 2.6, cz, null, { cast: false });
+    var mn = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 0.75), new THREE.MeshBasicMaterial({ map: signTex('CARDÁPIO', 512, 256, '#1b1d20', '#ffffff', 54) })); mn.position.set(X(127.5), 1.9, Z(1240) - 0.09); mn.rotation.y = Math.PI; root.add(mn);
+    [1180, 1200, 1220].forEach(function(py){ var pd = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.17, 0.2, 18), new THREE.MeshStandardMaterial({ color: 0x23262a, emissive: 0xffd9a0, emissiveIntensity: 0.55 })); pd.position.set(X(175), 2.4, Z(py)); root.add(pd); box(0.012, 0.6, 0.012, 0x23262a, X(175), 2.8, Z(py), roofGroup); });
   })();
 
   // ---------- Estacionamentos ----------
@@ -945,11 +1011,20 @@
     m.position.set(0, BH, Z((40 + 720) / 2)); m.castShadow = true; m.receiveShadow = true;
     roofGroup.add(m);
     // laje das salas externas
-    var slab = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 300 * S), mat(C.slab));
-    slab.position.set(X(127.5), BH + 0.08, Z(1030)); slab.castShadow = true; roofGroup.add(slab);
+    var slab = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 220 * S), mat(C.slab));   // MAQUETE 3: laje só sobre a Cozinha (y880..1100)
+    slab.position.set(X(127.5), BH + 0.08, Z(990)); slab.castShadow = true; roofGroup.add(slab);
     // PROJETO 2: laje da Cozinha/Cantina e prolongamento da varanda
-    var slab2 = new THREE.Mesh(new THREE.BoxGeometry(155 * S, 0.16, 60 * S), mat(C.slab));
-    slab2.position.set(X(127.5), BH + 0.08, Z(1210)); slab2.castShadow = true; roofGroup.add(slab2);
+    // MAQUETE 3: Cantina com telhado de policarbonato alveolar (leve declive para a varanda) sobre perfis de alumínio, avançando sobre o balcão de atendimento
+    (function(){
+      var x0 = 50, x1 = 262, y0 = 1100, y1 = 1240, w = (x1 - x0) * S, d = (y1 - y0) * S, drop = 0.12, ang = -Math.atan(drop / w), al = 0x23262a;
+      var g = new THREE.Group(); g.position.set(X((x0 + x1) / 2), BH + 0.09, Z((y0 + y1) / 2)); g.rotation.z = ang;
+      var pc = new THREE.Mesh(new THREE.BoxGeometry(w, 0.03, d), new THREE.MeshStandardMaterial({ color: 0xcfeef2, transparent: true, opacity: 0.5, roughness: 0.2, metalness: 0.1, side: THREE.DoubleSide }));
+      pc.castShadow = false; g.add(pc);
+      for (var k = 0; k <= 4; k++){ var rb = new THREE.Mesh(new THREE.BoxGeometry(w + 0.04, 0.05, 0.05), mat(al)); rb.position.set(0, 0.04, -d / 2 + k * d / 4); g.add(rb); }
+      for (var j = 0; j <= 6; j++){ var cb = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.04, d), mat(al)); cb.position.set(-w / 2 + j * w / 6, 0.03, 0); g.add(cb); }
+      roofGroup.add(g);
+      [y0 + 8, y1 - 8].forEach(function(py){ box(0.08, BH + 0.02, 0.08, al, X(x1 - 4), (BH + 0.02) / 2, Z(py), roofGroup); });   // pilares da borda (lado da varanda)
+    })();
     var van2 = new THREE.Mesh(new THREE.BoxGeometry(Math.sqrt((50 * S) * (50 * S) + 0.4 * 0.4), 0.1, 60 * S), ribMat(60 * S / 0.35, 1, true));
     van2.rotation.z = -Math.atan(0.4 / (50 * S)); van2.position.set(X(230), BH - 0.15, Z(1210)); van2.castShadow = true; van2.receiveShadow = true; roofGroup.add(van2);
     [1237].forEach(function(py){ box(0.14, BH - 0.4, 0.14, C.trim, X(252), (BH - 0.4) / 2, Z(py), roofGroup); });
@@ -975,7 +1050,6 @@
       for (var i = 1; i < n; i++){ var f = -0.5 + i / n; bar(bx, h, 0.012, f * w, 0); bar(w, bx, 0.012, 0, f * h); }
       for (var k = 0; k < n; k++){ var q = -0.5 + (k + 0.5) / n; box(0.05, 0.05, 0.016, white, horiz ? X(c) + q * w : X(fixed) + off, y0 + h / 2 + q * h * 0, horiz ? Z(fixed) + off : Z(c) + q * w, null, { cast: false }); }   // detalhes de cruzamento
     }
-    grille(false, 205, 1200, 0.13);   // MAQUETE 3: gradil só na janela da Lanchonete (a da Cozinha agora é de vidro temperado)
     // split (ar-condicionado) na parede; rot = direção da frente
     function split(x, y, z, rot){
       var g = new THREE.Group();
@@ -1033,18 +1107,24 @@
     });
     [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22); });   // PROJETO 2: corredor
     // salas externas 1 e 2
-    isopor(50, 880, 205, 1100); isopor(50, 1100, 205, 1240);
-    lampRound(127, 955); lampRound(127, 1105); lampRound(127, 1255); lampRound(127, 1405);
+    isopor(50, 880, 205, 1100);   // MAQUETE 3: a Cantina não tem forro (telhado de policarbonato aparente)
+    lampRound(127, 955);
     // banheiros (feminino e masculino)
     isopor(50, 730, 255, 880); isopor(255, 722, 700, 884);   // PROJETO 2: banheiros e Hall
     lampRound(110, 805); lampRound(200, 805); [310, 400, 490, 580, 665].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
     // salas do anexo e cozinha: laje emboçada branca lisa + luzes
     var lajeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0x8c8c88 });
-    [[50, 200], [200, 280], [280, 430], [430, 580], [580, 695]].forEach(function(r){
+    [[50, 200], [200, 280], [280, 430], [430, 580]].forEach(function(r){
       var cx = (r[0] + r[1]) / 2;
       box((r[1] - r[0]) * S, 0.08, 105 * S, 0, X(cx), BH - 0.04, Z(102.5), forroGroup, { material: lajeMat, cast: false });
       lampRound(cx, 100);
     });
+    // MAQUETE 3: forro da Sala 4 com o vão da escada (lance oeste)
+    (function(){
+      var xa = X(580), xb = X(695), zn = Z(50), zs = Z(155), hx1 = X(580) + 0.08, hx2 = hx1 + 0.8, hz0 = Z(40) + 0.11 + ((Z(155) - 0.08) - (Z(40) + 0.11) - 1.4);
+      [[xa, xb, zn, hz0], [hx2, xb, hz0, zs], [xa, hx1, hz0, zs]].forEach(function(q){ box(q[1] - q[0], 0.08, q[3] - q[2], 0, (q[0] + q[1]) / 2, BH - 0.04, (q[2] + q[3]) / 2, forroGroup, { material: lajeMat, cast: false }); });
+      lampRound(637, 100);
+    })();
     isopor(50, 155, 700, 220); [125, 240, 355, 505, 637].forEach(function(px){ lampRound(px, 188); });   // corredor do anexo
   })();
 
@@ -1072,7 +1152,7 @@
     labelGroup.add(sp);
   }
   label('Anexo ao templo', 370, 100, 6.4, 4.0);
-  label('Sala 1', 125, 100, 4.0, 1.7); label('Banheiro PCD', 240, 100, 3.4, 1.9); label('Sala 2', 355, 100, 4.0, 1.7); label('Sala 3', 505, 100, 4.0, 1.7); label('Sala 4', 637, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
+  label('Sala 1', 125, 100, 4.0, 1.7); label('Banheiro PCD', 240, 100, 3.4, 1.9); label('Sala 2', 355, 100, 4.0, 1.7); label('Sala 3', 505, 100, 4.0, 1.7); label('Sala 4 · escada', 637, 100, 4.0, 1.9); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
   label('Altar', 160, 250, 2.6, 1.5); label('Plataforma 2', 335, 252, 2.3, 2.6); label('Plataforma 1', 335, 297, 1.6, 2.6);
   label('Bateria', 560, 255, 3.1, 1.5); label('Teclado', 110, 258, 3.0, 1.5); label('Guitarra', 262, 255, 3.0, 1.5); label('Baixo', 292, 255, 3.4, 1.3); label('Microfones', 375, 262, 3.0, 2.0);
   label('Piso da nave', 370, 560, 1.4, 2.6);
@@ -1080,7 +1160,7 @@
   label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
   label('Hall', 335, 805, 3.0, 1.8); label('Apoio às Mamães', 495, 835, 2.2, 0.9); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Varanda', 230, 1060, 3.4, 1.6);
-  label('Cozinha', 127, 1000, 3.1, 1.9); label('Lanchonete', 127, 1170, 3.4, 1.9);
+  label('Cozinha', 127, 1000, 3.1, 1.9); label('Cantina', 127, 1170, 3.4, 1.9);
   label('Cobertura (abrigo)', 332, 790, 3.7, 3.0);
   label('Bebedouro', 668, 757, 2.0, 2.0);
   label('Estacionamento 1', 150, 1680, 2.2, 3.0); label('Estacionamento 2', 570, 1735, 2.2, 3.0);
@@ -1101,7 +1181,7 @@
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false, fp: true },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false, fp: true },
     { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
-    { id: 'cantina', name: 'Cozinha e Lanchonete', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
+    { id: 'cantina', name: 'Cozinha e Cantina', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
     { id: 'apoio',   name: 'Hall e banheiros', pos: [-1.0, 17, 4.5], tgt: [-1.0, 0, -1.8], roof: false, labels: true },
     { id: 'anexosalas', name: 'Salas do anexo', pos: [0.6, 12, -8.6], tgt: [0.6, 0, -15.2], roof: false, labels: true },
     { id: 'fachada', name: 'Fachada', pos: [1.8, 3.6, 12], tgt: [0.4, 1.9, -0.3], roof: true, labels: false },
@@ -1121,13 +1201,15 @@
     { id: 'apoiohall', name: 'Sala de Apoio às Mamães (Hall)', g: 'Banheiros e hall', pos: [1.5, 1.65, -1.55], tgt: [3.8, 1.1, -1.4], roof: true, labels: false, fp: true },
     { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
+    { id: 'cozvidro', name: 'Cozinha (vidro, da varanda)', g: 'Pátio (ambientes)', pos: [-0.9, 1.7, 1.9], tgt: [-3.3, 1.9, 1.9], roof: true, labels: false, fp: true },
+    { id: 'cantinaf', name: 'Cantina (balcão, da varanda)', g: 'Pátio (ambientes)', pos: [-0.8, 1.7, 5.2], tgt: [-3.3, 1.5, 6.0], roof: true, labels: false, fp: true },
     { id: 'cozinhae', name: 'Cozinha', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 0.5], tgt: [-6.0, 1.1, 3.4], roof: true, labels: false, fp: true },
-    { id: 'cantinae', name: 'Lanchonete', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 4.3], tgt: [-6.2, 1.1, 6.4], roof: true, labels: false, fp: true },
+    { id: 'cantinae', name: 'Cantina', g: 'Pátio (ambientes)', pos: [-3.5, 1.65, 4.3], tgt: [-6.2, 1.1, 6.4], roof: true, labels: false, fp: true },
     { id: 'anexocorr', name: 'Corredor do anexo (leste-oeste)', g: 'Anexo', pos: [-5.8, 1.65, -14.24], tgt: [6.4, 1.5, -14.24], roof: true, labels: false, fp: true },
     { id: 'sala1a', name: 'Sala 1 (anexo)', g: 'Anexo', pos: [-3.8, 1.65, -15.04], tgt: [-6.2, 1.3, -16.5], roof: true, labels: false, fp: true },
     { id: 'wcanexo', name: 'Banheiro acessível (anexo)', g: 'Anexo', pos: [-2.0, 1.65, -15.04], tgt: [-3.1, 1.1, -16.6], roof: true, labels: false, fp: true },
     { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [0.7, 1.65, -15.04], tgt: [-1.5, 1.3, -16.5], roof: true, labels: false, fp: true },
-    { id: 'apoiofp', name: 'Sala 4 (anexo)', g: 'Anexo', pos: [6.2, 1.65, -15.06], tgt: [4.8, 1.1, -16.7], roof: true, labels: false, fp: true },
+    { id: 'apoiofp', name: 'Sala 4 · escada (anexo)', g: 'Anexo', pos: [4.9, 1.65, -15.15], tgt: [5.9, 1.3, -16.9], roof: true, labels: false, fp: true },
     { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [3.8, 1.65, -15.04], tgt: [1.5, 1.3, -16.5], roof: true, labels: false, fp: true },
   ];
   var bar = document.getElementById('views');
