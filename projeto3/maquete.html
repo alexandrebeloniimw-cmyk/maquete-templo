@@ -521,6 +521,28 @@
   }
   gradeFrente(40, 520); gradeFrente(640, 700);
   [520, 640].forEach(function(px){ box(0.4, BH, 0.4, C.trim, X(px), BH / 2, Z(1760)); });
+  // MAQUETE 3 (Etapa 52): poste na calçada, perto do portão, na altura da grade (3,0 m), com placa retangular azul "4ª Igreja Metodista Wesleyana em Nilópolis" (dupla face)
+  (function(){
+    var px0 = X(470), pz0 = Z(1790), alum = 0xcfd5db, steel = new THREE.MeshStandardMaterial({ color: 0x3a3f45, metalness: 0.6, roughness: 0.35 });
+    var cv = document.createElement('canvas'); cv.width = 1024; cv.height = 512; var g = cv.getContext('2d');
+    g.fillStyle = '#1f55a8'; g.fillRect(0, 0, 1024, 512);
+    var gd = g.createLinearGradient(0, 0, 0, 512); gd.addColorStop(0, 'rgba(255,255,255,0.12)'); gd.addColorStop(1, 'rgba(0,0,0,0.12)'); g.fillStyle = gd; g.fillRect(0, 0, 1024, 512);
+    g.strokeStyle = '#ffffff'; g.lineWidth = 10; g.strokeRect(22, 22, 980, 468);
+    g.fillStyle = '#ffffff'; g.textAlign = 'center'; g.textBaseline = 'alphabetic';
+    g.font = '800 124px Segoe UI, Arial, sans-serif'; g.fillText('4ª Igreja', 512, 190);
+    g.font = '800 98px Segoe UI, Arial, sans-serif'; g.fillText('Metodista Wesleyana', 512, 322);
+    g.font = '700 82px Segoe UI, Arial, sans-serif'; g.fillText('em Nilópolis', 512, 436);
+    var tx = new THREE.CanvasTexture(cv); tx.anisotropy = 4;
+    var pole = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.07, 3.0, 16), steel); pole.position.set(px0, 1.5, pz0); pole.castShadow = true; root.add(pole);
+    var bp = new THREE.Mesh(new THREE.CylinderGeometry(0.17, 0.2, 0.08, 20), steel); bp.position.set(px0, 0.04, pz0); root.add(bp);
+    var BW = 1.9, BHt = 0.95, by = 2.4;
+    box(BW + 0.08, BHt + 0.08, 0.07, alum, px0, by, pz0, null, { material: new THREE.MeshStandardMaterial({ color: alum, metalness: 0.85, roughness: 0.25 }) });
+    [1, -1].forEach(function(sd){
+      var pn = new THREE.Mesh(new THREE.PlaneGeometry(BW, BHt), new THREE.MeshBasicMaterial({ map: tx })); pn.position.set(px0, by, pz0 + sd * 0.037); if (sd < 0) pn.rotation.y = Math.PI; root.add(pn);
+    });
+    [-0.5, 0.5].forEach(function(o){ box(0.07, 0.07, 0.1, 0x3a3f45, px0 + o * 0.9 * 0, by + o * (BHt / 2 + 0.04) * 2 * 0.5 * 2, pz0); });
+    var cap = new THREE.Mesh(new THREE.SphereGeometry(0.075, 12, 10), steel); cap.position.set(px0, 3.02, pz0); root.add(cap);
+  })();
 
   // ---------- Anexo (paredes das salas com altura padrão de 3 m) ----------
   // PROJETO 2: anexo reorganizado (3 salas + banheiro acessível + Sala de Apoio) com corredor y155..220 e bebedouro
@@ -1397,6 +1419,7 @@
     { id: 'anexo',   name: 'Anexo',           pos: [5, 19, -1],    tgt: [0, 0, -13], roof: false, labels: true },
     { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true },
     { id: 'rua', name: 'Rua (calçada)', g: 'Fora e rua', pos: [-12, 1.7, 19.4], tgt: [2, 1.0, 21.3], roof: true, labels: false, fp: true },
+    { id: 'placa', name: 'Placa azul na calçada', g: 'Fora e rua', pos: [-0.2, 1.7, 21.4], tgt: [2.1, 2.4, 17.8], roof: true, labels: false, fp: true },
     { id: 'portao', name: 'Portão (olhando o templo)', g: 'Fora e rua', pos: [4.2, 1.7, 18.0], tgt: [0.5, 1.8, -0.3], roof: true, labels: false, fp: true },
     { id: 'estac2', name: 'Estacionamento 2', g: 'Fora e rua', pos: [4.0, 1.65, 15.8], tgt: [4.0, 1.2, 0.0], roof: true, labels: false, fp: true },
     { id: 'estac1', name: 'Estacionamento 1', g: 'Fora e rua', pos: [0.4, 1.65, 14.0], tgt: [-5.0, 1.0, 13.2], roof: true, labels: false, fp: true },
