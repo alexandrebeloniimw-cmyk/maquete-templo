@@ -1722,20 +1722,22 @@
       ['geral', 'Visão geral do projeto', 'O templo completo: pátio com estacionamento, nave, hall coberto, cozinha e cantina, e o anexo com 2º andar.', 0],
       ['fachadaf', 'Fachada', 'Fachada moderna com a logo da 4ª IMW, ripado cinza, duas portas de vidro temperado e iluminação em LED.', 0],
       ['pespatio', 'Pátio e estacionamentos', 'Entrada ampla pelo portão, vagas organizadas dos dois lados e caminho direto até a fachada.', 0],
-      ['cantinaf', 'Cozinha e Cantina', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento e cobertura de policarbonato, voltadas para a varanda.', 0],
-      ['hallfp', 'Hall de recepção', 'Espaço aberto e livre que liga o pátio à nave, aos banheiros e ao corredor do anexo.', 0],
-      ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0],
+      ['cantinaf', 'Cozinha e Cantina', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento e cobertura de policarbonato, voltadas para a varanda.', 0, [[2.0,9.6,10.6],[-4.9,0.3,2.8]]],
+      ['hallfp', 'Hall de recepção', 'Espaço aberto e livre que liga o pátio à nave, aos banheiros e ao corredor do anexo.', 0, [[2.2,11,2.5],[2.2,0,-2.0]]],
+      ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e leva à escada.', 0],
-      ['sala2a', 'Salas do anexo', 'Salas de aula com ar-condicionado, tela e mobiliário, mais um banheiro acessível (PCD).', 0],
-      ['a2geral', '2º andar', 'Sala Multiuso, Biblioteca, Sala de Reuniões da Junta Diaconal, Copa e WC, com passarela sobre o corredor.', 0],
+      ['sala2a', 'Salas do anexo (térreo)', 'Salas de aula com ar-condicionado, tela e mobiliário; ao lado, banheiro acessível (PCD) e a escada para o 2º andar.', 0, [[-3.55,2.75,-14.75],[-5.8,0.3,-17.4]]],
+      ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca, Sala de Reuniões da Junta Diaconal e WC, com passarela vazada sobre o corredor.', 0, [[2.7,12,-14.2],[2.7,3.3,-17.0]]],
+      ['a2mult', '2º andar · Sala Multiuso', 'Sala Multiuso com tela de projeção, painel ripado e cadeiras, para aulas, reuniões e eventos.', 0, [[-4.9,12,-13.0],[-4.9,3.3,-16.5]]],
       ['fachadaf', 'À noite', 'O mesmo projeto iluminado: fachada, pátio, nave e anexo.', 1]
     ], i = 0, timer = null, raf = null, paused = false, active = false, nightByTour = false, DWELL = 8000, t0 = 0, rem = DWELL;
     var card = document.getElementById('tourCard'), btn = document.getElementById('tTour'), fill = document.querySelector('#tourBar i');
     function show(n){
       i = (n + S.length) % S.length; var s = S[i];
-      var b = document.querySelector('#views button[data-id="' + s[0] + '"]'); if (b) b.click();
+      if (s[4]) go({ id: 'tour' + i, pos: s[4][0], tgt: s[4][1], roof: false, labels: false });   // ambientes pequenos: câmera própria, de cima e inclinada
+      else { var b = document.querySelector('#views button[data-id="' + s[0] + '"]'); if (b) b.click(); }
       if (s[3] && !isNight){ setNight(true); nightByTour = true; } else if (!s[3] && isNight && nightByTour){ setNight(false); nightByTour = false; }
       document.getElementById('tourN').textContent = 'Passo ' + (i + 1) + ' de ' + S.length;
       document.getElementById('tourT').textContent = s[1]; document.getElementById('tourP').textContent = s[2];
@@ -1747,8 +1749,10 @@
       timer = setTimeout(function(){ show(i + 1); }, rem);
       (function loop(){ var f = Math.min(1, (performance.now() - t0) / DWELL); fill.style.width = (f * 100) + '%'; if (f < 1 && active && !paused) raf = requestAnimationFrame(loop); })();
     }
-    function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸ Pausar'; show(0); }
-    function stop(){ active = false; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
+    function off(){ var st = document.getElementById('stage'), w = st.clientWidth, h = st.clientHeight; if (w && h){ camera.setViewOffset(w, h, 0, h * 0.09, w, h); camera.updateProjectionMatrix(); need = 40; } }   // sobe a imagem para o cartão não cobrir o ambiente
+    window.addEventListener('resize', function(){ if (active) off(); });
+    function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸ Pausar'; off(); show(0); }
+    function stop(){ active = false; camera.clearViewOffset(); camera.updateProjectionMatrix(); need = 40; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
     btn.onclick = function(){ active ? stop() : start(); };
     document.getElementById('tourExit').onclick = stop;
     document.getElementById('tourNext').onclick = function(){ show(i + 1); };
