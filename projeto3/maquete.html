@@ -698,6 +698,21 @@
     // anexo: corredor e Sala Multiuso (professora com crianças)
     person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 78, 0.0, 0, 'talk');
     [[80, 160], null, [115, 176], [150, 160], [98, 198]].forEach(function(q){ if (!q){ n++; return; } person(q[0], q[1], 0.0, PI, 'stand', 0.6); });   // null = criança de blusa rosa retirada (mantém as cores das demais)   // Etapa 70: crianças afastadas da mesa (a de blusa rosa foi retirada)
+    // Etapa 76: mais fiéis sentados nos bancos da nave (≈ 60 a mais; gerados com sorteio fixo, sem pesar: tudo vira a mesma malha única)
+    (function(){
+      var seed = 7, rnd = function(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; };
+      var taken = {}; [[0, 3, [30, 60]], [0, 5, [25]], [0, 6, [70, 95]], [0, 7, [40]], [1, 2, [35, 65, 90]], [1, 4, [55]], [1, 5, [30, 85]], [1, 7, [60]], [1, 8, [40, 75]], [2, 3, [45, 80]], [2, 5, [30]], [2, 6, [60, 90]], [2, 8, [50]]].forEach(function(r){ taken[r[0] + '_' + r[1]] = r[2].slice(); });
+      for (var r = 0; r < 3; r++) for (var b = 0; b < 10; b++){
+        if (r === 0 && b === 0) continue;                                // Mesa de som
+        var key = r + '_' + b, have = taken[key] || [], target = rnd() < 0.82 ? (rnd() < 0.5 ? 3 : 2) : 1;
+        if (b === 9 && rnd() < 0.5) target = 1;
+        var slots = [18, 45, 72, 99];
+        for (var s = 0; s < slots.length && have.length < target; s++){
+          var o = slots[s] + Math.round((rnd() - 0.5) * 8);
+          if (have.every(function(h){ return Math.abs(h - o) > 24; })){ have.push(o); person([104, 279, 455][r] + o, 356 + b * 35.5 + 14, 0.08, PI, 'sit', rnd() < 0.12 ? 0.62 : 1); }
+        }
+      }
+    })();
     (function(){ var len = 0; crowdParts.forEach(function(gm){ len += gm.attributes.position.array.length; });
       var PP = new Float32Array(len), NN = new Float32Array(len), CC = new Float32Array(len), off = 0;
       crowdParts.forEach(function(gm){ PP.set(gm.attributes.position.array, off); NN.set(gm.attributes.normal.array, off); CC.set(gm.attributes.color.array, off); off += gm.attributes.position.array.length; });
