@@ -61,6 +61,7 @@
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
   <button id="tSpin">Girar</button>
+  <button id="tPeople" class="on">🧍 Pessoas</button>
   <button id="tNight">🌙 Ver a noite</button>
 </div>
     <div id="tabs"></div>
@@ -580,6 +581,69 @@
     box(0.1, 0.05, 1.18, met, px, 0.03, (z0 + z1) / 2);                                              // trilho inferior
     box(0.16, 0.12, 1.3, met, px, 2.16, (z0 + z1) / 2);                                              // caixa do trilho superior
     box(0.03, 0.5, 0.03, 0xe3e6e9, px - 0.07, 1.05, z1 - pw + 0.1);                                  // puxador da folha móvel
+  })();
+  // MAQUETE 3 (Etapa 61): pessoas (figuras simples) em ambientes escolhidos, com botão "Pessoas" para mostrar/ocultar
+  var peopleList = [];
+  (function(){
+    var skins = [0xf1c8a5, 0xd9a47c, 0xb97b57, 0x8a5a3c, 0x5e3b27], hairs = [0x1b1410, 0x3a2418, 0x6b4a2b, 0xb8a58a, 0x23201e, 0x7a7a7a];
+    var shirts = [0x2f6db5, 0xc0392b, 0xf2f2f2, 0x3d8b6e, 0xe0a83a, 0x7b4fa3, 0x222a36, 0xd97ba0, 0x8fb4d9, 0x58606a];
+    var pantsC = [0x232b3a, 0x3b3f46, 0x5a4a3a, 0x1d1d1f, 0x44566e, 0x2a2f2a];
+    var n = 0;
+    function cl(c, r){ return new THREE.MeshStandardMaterial({ color: c, roughness: r || 0.85 }); }
+    function cyl(r1, r2, h, m, x, y, z, rx, rz){ var q = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, 12), m); q.position.set(x, y, z); if (rx) q.rotation.x = rx; if (rz) q.rotation.z = rz; q.castShadow = true; return q; }
+    // px,py na planta; fy = altura do piso; th = direção do olhar (0 = +z, PI = -z, PI/2 = +x, -PI/2 = -x); pose: 'stand' | 'sit' | 'talk'
+    function person(px, py, fy, th, pose, sc){
+      var i = n++, skin = cl(skins[(i * 3 + 1) % skins.length], 0.6), shirt = cl(shirts[(i * 7 + 2) % shirts.length]), pants = cl(pantsC[(i * 5 + 1) % pantsC.length]), hair = cl(hairs[(i * 11 + 3) % hairs.length], 0.9), shoe = cl(0x16171a, 0.6);
+      var g = new THREE.Group(), up = new THREE.Group(), long = (i % 3 === 1);
+      if (pose === 'sit'){
+        [-1, 1].forEach(function(s){
+          g.add(cyl(0.075, 0.07, 0.46, pants, s * 0.09, 0.45, 0.22, Math.PI / 2));          // coxas
+          g.add(cyl(0.062, 0.05, 0.44, pants, s * 0.09, 0.22, 0.45));                         // canelas
+          var f = new THREE.Mesh(new THREE.BoxGeometry(0.09, 0.05, 0.2), shoe); f.position.set(s * 0.09, 0.03, 0.52); g.add(f);
+        });
+        up.position.y = -0.4;
+      } else {
+        [-1, 1].forEach(function(s){
+          g.add(cyl(0.078, 0.058, 0.84, pants, s * 0.095, 0.45, 0));
+          var f = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.06, 0.24), shoe); f.position.set(s * 0.095, 0.03, 0.05); g.add(f);
+        });
+      }
+      g.add(up);
+      var pel = new THREE.Mesh(new THREE.BoxGeometry(0.33, 0.16, 0.2), pants); pel.position.y = 0.88; up.add(pel);
+      var tor = cyl(0.175, 0.15, 0.58, shirt, 0, 1.17, 0); tor.scale.z = 0.62; up.add(tor);
+      var sh = cyl(0.04, 0.04, 0.44, shirt, 0, 1.44, 0, 0, Math.PI / 2); up.add(sh);
+      var neck = cyl(0.04, 0.045, 0.08, skin, 0, 1.52, 0); up.add(neck);
+      var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 16, 12), skin); head.scale.set(0.92, 1.08, 1); head.position.y = 1.64; head.castShadow = true; up.add(head);
+      var hr = new THREE.Mesh(new THREE.SphereGeometry(0.114, 16, 10, 0, Math.PI * 2, 0, long ? 1.9 : 1.45), hair); hr.scale.set(0.95, 1.08, 1.04); hr.position.set(0, 1.655, long ? -0.015 : -0.01); hr.rotation.x = -0.12; up.add(hr);
+      if (long){ var lh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.07), hair); lh.position.set(0, 1.56, -0.075); up.add(lh); }
+      [-1, 1].forEach(function(s){
+        var arm = new THREE.Group(); arm.position.set(s * 0.225, 1.4, 0);
+        arm.add(cyl(0.042, 0.036, 0.52, shirt, 0, -0.26, 0));
+        var hand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), skin); hand.position.set(0, -0.55, 0); arm.add(hand);
+        if (pose === 'sit') arm.rotation.x = -0.95; else if (pose === 'talk' && s === 1){ arm.rotation.x = -1.2; arm.rotation.z = -0.25; } else arm.rotation.z = s * 0.06;
+        up.add(arm);
+      });
+      g.position.set(X(px), fy, Z(py)); g.rotation.y = th; g.scale.setScalar(sc || 1); root.add(g); peopleList.push(g);
+    }
+    var N = -Math.PI, PI = Math.PI;
+    // nave: fiéis sentados nos bancos (olhando para o altar) — [fileira, banco, posições em px dentro do banco]
+    [[0, 3, [30, 60]], [0, 5, [25]], [0, 6, [70, 95]], [0, 7, [40]], [1, 2, [35, 65, 90]], [1, 4, [55]], [1, 5, [30, 85]], [1, 7, [60]], [1, 8, [40, 75]], [2, 3, [45, 80]], [2, 5, [30]], [2, 6, [60, 90]], [2, 8, [50]]].forEach(function(r){
+      r[2].forEach(function(o){ person([104, 279, 455][r[0]] + o, 356 + r[1] * 35.5 + 14, 0.08, PI, 'sit'); });
+    });
+    person(160, 704, 0.08, PI, 'stand');                                                   // operador da mesa de som
+    // altar: dirigente no centro e músicos
+    person(335, 292, 0.2, 0, 'talk'); person(285, 290, 0.2, 0, 'stand'); person(385, 290, 0.2, 0, 'stand');
+    person(262, 262, 0.4, 0, 'stand'); person(110, 262, 0.4, 0, 'stand'); person(560, 262, 0.4, 0, 'sit');
+    // corredor de acesso ao anexo e hall
+    person(665, 430, 0.08, PI, 'stand'); person(668, 560, 0.08, N / 2, 'talk'); person(640, 566, 0.08, PI / 2, 'stand');
+    person(332, 868, 0.06, 0, 'stand'); person(623, 868, 0.06, 0, 'talk');                 // recepção junto às portas da fachada
+    person(380, 790, 0.06, PI / 2, 'talk'); person(420, 796, 0.06, N / 2, 'stand'); person(530, 780, 0.06, PI, 'stand'); person(555, 786, 0.06, PI, 'stand', 0.62);
+    // pátio e estacionamentos
+    person(300, 1300, 0.04, PI / 2, 'talk'); person(345, 1305, 0.04, N / 2, 'stand'); person(322, 1340, 0.04, PI, 'stand'); person(340, 1480, 0.04, 0, 'stand');
+    person(570, 1210, 0.04, PI, 'stand'); person(585, 1630, 0.04, N / 2, 'stand'); person(160, 1560, 0.04, PI / 2, 'talk'); person(200, 1565, 0.04, N / 2, 'stand');
+    // anexo: corredor e Sala Multiuso (professora com crianças)
+    person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 78, 0.0, 0, 'talk');
+    [[85, 105], [120, 112], [155, 105], [105, 128], [140, 130]].forEach(function(q){ person(q[0], q[1], 0.0, PI, 'stand', 0.6); });
   })();
   // MAQUETE 3 (Etapa 58): câmeras de segurança pequenas (tipo bullet, com suporte, quebra-sol, lente e LED vermelho) em pontos estratégicos
   (function(){
@@ -1462,6 +1526,9 @@
     { id: 'banheiros', name: 'Banheiros e varanda', pos: [9, 8, 12], tgt: [-4, 0.8, 1.5], roof: false, labels: false },
     { id: 'nave',    name: 'Dentro da nave',  pos: [0, 1.7, -4.8], tgt: [0, 1.5, -13], roof: false, labels: false, fp: true },
     { id: 'forro',   name: 'Forro e luzes',   pos: [0, 1.6, -5], tgt: [0, 2.7, -12], roof: true, labels: false, fp: true },
+    { id: 'pesnave', name: 'Pessoas · nave', g: 'Panorama', pos: [-1.4, 1.75, -5.0], tgt: [-0.2, 1.1, -12.4], roof: true, labels: false, fp: true },
+    { id: 'peshall', name: 'Pessoas · hall', g: 'Panorama', pos: [-1.6, 2.0, -0.5], tgt: [3.4, 1.1, -2.3], roof: true, labels: false, fp: true },
+    { id: 'pespatio', name: 'Pessoas · pátio', g: 'Panorama', pos: [-1.0, 2.6, 15.8], tgt: [-1.0, 0.8, 8.5], roof: true, labels: false, fp: true },
     { id: 'camsp', name: 'Câmeras · pátio', g: 'Panorama', pos: [4.2, 2.0, 4.0], tgt: [6.4, 2.55, 2.9], roof: true, labels: false, fp: true },
     { id: 'camsn', name: 'Câmeras · nave', g: 'Panorama', pos: [-4.5, 2.1, -11.6], tgt: [-6.4, 2.7, -12.9], roof: true, labels: false, fp: true },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false, fp: true },
@@ -1545,6 +1612,7 @@
     scene.traverse(function(o){ if (o.material){ [].concat(o.material).forEach(function(m){ m.needsUpdate = true; }); } });
     var b = document.getElementById('tNight'); b.classList.toggle('on', on); b.textContent = on ? '☀️ Ver o dia' : '🌙 Ver a noite';
   }
+  document.getElementById('tPeople').onclick = function(){ var on = !this.classList.contains('on'); this.classList.toggle('on', on); peopleList.forEach(function(g){ g.visible = on; }); };
   document.getElementById('tNight').onclick = function(){ setNight(!isNight); };
   if (/[#&?]noite/.test(location.href)) setNight(true);
 
