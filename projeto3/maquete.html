@@ -123,7 +123,7 @@
   function X(px){ return (px - 370) * S; }
   function Z(py){ return (py - 900) * S; }
   // Etapa 89: a nave ganha 1,0 m de comprimento (a parede sul avança); hall, pátio e frente do terreno só se deslocam para o sul, sem mudar de tamanho
-  var NEXT = 50 * S, ZB = Z(720), ZT = ZB - 0.15, BP = 35.5 + 50 / 9, EXTSKIP = false;   // BP = novo passo entre os bancos (px): 0,71 m -> ≈ 0,82 m
+  var NEXT = 160 * S, ZB = Z(720), ZT = ZB - 0.15, BP = 35.5, BY0 = 430, EXTSKIP = false;   // Etapa 96: nave +2,2 m (11,2 m); BP = passo entre os bancos (0,71 m); BY0 = y do 1º banco (portas laterais livres)
   function nzw(z){ return z >= ZT ? z + NEXT : z; }
 
   var canvas = document.getElementById('c');
@@ -413,7 +413,7 @@
       gr.addColorStop(0, 'rgba(255,255,255,.10)'); gr.addColorStop(1, 'rgba(0,0,0,.05)'); g.fillStyle = gr; g.fillRect(i * P + 2, j * P + 2, P - 4, P - 4);
     }
     var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4;
-    tx.repeat.set((700 - 40) * S / (0.6 * N), (720 - 320) * S / (0.6 * N));
+    tx.repeat.set((700 - 40) * S / (0.6 * N), (720 - 320 + NEXT / S) * S / (0.6 * N));   // Etapa 96: piso esticado com a nave
     rect(40, 320, 700, 720, 0, 0.08, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: tx, roughness: 0.32, metalness: 0.0, envMapIntensity: 0.7 }) });   // nave (Piso)
     // rodapé de 10 cm (cinza grafite) na face interna das paredes da nave, interrompido nas portas
     var rm = mat(0x6b6f76, { roughness: 0.6 });
@@ -421,7 +421,8 @@
       box(w, 0.10, d, 0, X((x1 + x2) / 2), 0.08 + 0.05, Z((y1 + y2) / 2), null, { cast: false, material: rm }); }
     var xi = 40 + 0.09 / S, xe = 600 - 0.09 / S, yi = 720 - 0.09 / S;
     rod(xi, 320, xi, 720);                                      // parede oeste
-    rod(xe, 415, xe, 674);   // parede leste (corredor), entre as portas (Etapa 91: portas nos extremos)
+    rod(xe, 415, xe, 660);   // parede leste (corredor), entre as portas (Etapa 91: portas nos extremos)
+    EXTSKIP = true; rod(xe, 660, xe, 784); EXTSKIP = false;   // Etapa 96: trecho final até a porta sul, já na posição nova
     rod(42, yi, 300, yi); rod(390, yi, 598, yi);                 // parede sul (nave × hall), fora da porta de vidro
   })();
 
@@ -596,7 +597,7 @@
     }
     [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); });
     [370, 502].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima da porta norte (370) e entre as placas (502)
-    ventilador(X(600) - 0.07, -1, 719.5, 2.5).userData.noext = true;   // Etapa 91: acima da porta sul (já na posição final, com a nave +1,0 m)
+    ventilador(X(600) - 0.07, -1, 829.5, 2.5).userData.noext = true;   // Etapa 91: acima da porta sul (já na posição final, com a nave +1,0 m)
     // ---- 2 ar-condicionados (split) na parede que divide a nave e o hall (face interna, voltados para a nave) ----
     var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
     EXTSKIP = true;
@@ -745,9 +746,9 @@
     var N = -Math.PI, PI = Math.PI;
     // nave: fiéis sentados nos bancos (olhando para o altar) — [fileira, banco, posições em px dentro do banco]
     [[0, 3, [30, 60]], [0, 5, [25]], [0, 6, [70, 95]], [0, 7, [40]], [1, 2, [35, 65, 90]], [1, 4, [55]], [1, 5, [30, 85]], [1, 7, [60]], [1, 8, [40, 75]], [2, 3, [45, 80]], [2, 5, [30]], [2, 6, [60, 90]], [2, 8, [50]]].forEach(function(r){
-      r[2].forEach(function(o){ person([104, 279, 455][r[0]] + o, 356 + r[1] * BP + 14, 0.08, PI, 'sit', 1, true); });
+      r[2].forEach(function(o){ person([104, 279, 455][r[0]] + o, BY0 + r[1] * BP + 14, 0.08, PI, 'sit', 1, true); });
     });
-    person(160, 704 + 9 * (BP - 35.5) + 0.5, 0.08, PI, 'stand', 1, true);                                                   // operador da mesa de som
+    person(160, BY0 + 9 * BP + 29, 0.08, PI, 'stand', 1, true);                                                   // operador da mesa de som
     // altar: dirigente no centro e músicos
     person(335, 292, 0.2, 0, 'talk'); person(285, 290, 0.2, 0, 'stand'); person(385, 290, 0.2, 0, 'stand');
     person(262, 262, 0.4, 0, 'stand'); person(110, 262, 0.4, 0, 'stand'); person(560, 262, 0.4, 0, 'sit');
@@ -772,7 +773,7 @@
         var slots = [18, 45, 72, 99];
         for (var s = 0; s < slots.length && have.length < target; s++){
           var o = slots[s] + Math.round((rnd() - 0.5) * 8);
-          if (have.every(function(h){ return Math.abs(h - o) > 24; })){ have.push(o); person([104, 279, 455][r] + o, 356 + b * BP + 14, 0.08, PI, 'sit', rnd() < 0.12 ? 0.62 : 1, true); }
+          if (have.every(function(h){ return Math.abs(h - o) > 24; })){ have.push(o); person([104, 279, 455][r] + o, BY0 + b * BP + 14, 0.08, PI, 'sit', rnd() < 0.12 ? 0.62 : 1, true); }
         }
       }
     })();
@@ -858,10 +859,11 @@
     });
     box(1.86, 0.07, 0.24, met, cx, 2.135, cz); box(1.86, 0.02, 0.26, 0x6b7075, cx, 0.02, cz);
   })();
-  vwall(600, 225, 720, BH, [{ a: 325, b: 415, lh: 2.1 }, { a: 674, b: 715, lh: 2.1 }], 0xd2d4d7, 0.14);   // Etapa 91: portas nos extremos da nave (rente ao altar e rente à parede do hall); a abertura sul estica até y765 com a nave
+  vwall(600, 225, 660, BH, [{ a: 325, b: 415, lh: 2.1 }], 0xd2d4d7, 0.14);   // Etapa 96: parede leste em 2 trechos: o norte (porta rente ao altar) no lugar de sempre
+  EXTSKIP = true; vwall(600, 660, 880, BH, [{ a: 784, b: 875, lh: 2.1 }], 0xd2d4d7, 0.14); EXTSKIP = false;   // e o sul já na posição final (nave de 11,2 m): porta sul rente à parede do hall, y784..875   // Etapa 91: portas nos extremos da nave (rente ao altar e rente à parede do hall); a abertura sul estica até y765 com a nave
   // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
   EXTSKIP = true;   // Etapa 91: as folhas já nascem na posição final (a porta sul fica em y674..765, depois do avanço da nave)
-  [370, 719.5].forEach(function(c){
+  [370, 829.5].forEach(function(c){
     var temp = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
     var met = 0x6b7075, px = X(600), cz = Z(c);
     [-0.45, 0.45].forEach(function(o){
@@ -995,7 +997,7 @@
   EXTSKIP = true;   // Etapa 89: bancos e mesa de som já nascem na posição nova (passo BP)
   pewX.forEach(function(x0, fi){
     for (var k = 0; k < 10; k++){
-      var y0 = 356 + k * BP;
+      var y0 = BY0 + k * BP;
       var cx = X(x0 + 56), cz = Z(y0 + 11);
       if (fi === 0 && k === 9){
         box(2.24, 0.9, 0.44, C.mesa, cx, 0.08 + 0.45, cz);
@@ -1692,9 +1694,9 @@
       for (var i = 0; i < 260; i++){ g.fillStyle = 'rgba(190,190,185,.35)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); }
       g.strokeStyle = '#c9c9c3'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 125, 125);
     })();
-    function isopor(x1, y1, x2, y2){
+    function isopor(x1, y1, x2, y2, ex){
       var w = (x2 - x1) * S, d = (y2 - y1) * S;
-      var t = new THREE.CanvasTexture(cvE); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(w / 0.6, d / 0.6);
+      var t = new THREE.CanvasTexture(cvE); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(w / 0.6, (d + (ex || 0) * S) / 0.6);
       box(w, 0.04, d, 0, X((x1 + x2) / 2), FY, Z((y1 + y2) / 2), forroGroup, { material: new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, emissive: 0x7c7c78, emissiveMap: t }), cast: false });
     }
     var lampMat = new THREE.MeshBasicMaterial({ color: 0xfff6d6 });
@@ -1703,11 +1705,15 @@
       var m = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.04, 20), lampMat); m.position.set(X(xpx), FY - 0.04, Z(ypx)); forroGroup.add(m);
     }
     // nave + altar (y230..720)
-    isopor(40, 230, 700, 720);
+    isopor(40, 230, 700, 720, NEXT / S);   // Etapa 96: o forro estica com a nave (placas mantêm 0,6 m)
     [160, 335, 510].forEach(function(px){
       [252, 380, 470, 560, 650].forEach(function(py){ lamp(px, py, 0.9, 0.22); });
     });
     [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22); });   // PROJETO 2: corredor
+    EXTSKIP = true;   // Etapa 96: luminárias do trecho novo da nave e do corredor (já na posição final)
+    [160, 335, 510].forEach(function(px){ [740, 830].forEach(function(py){ lamp(px, py, 0.9, 0.22); }); });
+    [790, 860].forEach(function(py){ lamp(665, py, 0.9, 0.22); });
+    EXTSKIP = false;
     // salas externas 1 e 2
     isopor(50, 880, 205, 1100);   // MAQUETE 3: a Cantina não tem forro (telhado de policarbonato aparente)
     lampRound(127, 955);
@@ -1785,7 +1791,7 @@
     { id: 'camsp', name: 'Câmeras · pátio', g: 'Panorama', pos: [4.2, 2.0, 4.0], tgt: [6.4, 2.55, 2.9], roof: true, labels: false, fp: true },
     { id: 'camsn', name: 'Câmeras · nave', g: 'Panorama', pos: [-4.5, 2.1, -11.6], tgt: [-6.4, 2.7, -12.9], roof: true, labels: false, fp: true },
     { id: 'corredor', name: 'Corredor (anexo)', pos: [5.9, 1.65, -4.4], tgt: [5.9, 1.5, -13.4], roof: false, labels: false, fp: true },
-    { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -8.5], roof: false, labels: true },
+    { id: 'naveal',  name: 'Nave de cima',    pos: [1.5, 15, -2], tgt: [1.5, 0, -6.4], roof: false, labels: true },
     { id: 'cantina', name: 'Cozinha e Cantina (de cima)', pos: [-3.6, 15, 8.8], tgt: [-3.6, 0, 3.8], roof: false, labels: true },
     { id: 'apoio',   name: 'Hall e banheiros', pos: [-1.0, 17, 4.5], tgt: [-1.0, 0, -1.8], roof: false, labels: true },
     { id: 'anexosalas', name: 'Anexo · salas (térreo, de cima)', pos: [0.6, 14, -8.6], tgt: [0.6, 0, -16.6], roof: false, labels: true },
@@ -2014,7 +2020,7 @@
       ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
-      ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo: uma rente ao altar e outra rente à parede do hall, nos extremos da nave.', 0, [[-4.6,3.0,-7.1],[4.6,1.2,-7.1], false]],
+      ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo: uma rente ao altar e outra rente à parede do hall, nos extremos da nave.', 0, [[-6.1,2.9,-6.0],[4.6,1.0,-6.0], false]],
       ['corlat', 'Corredor que leva ao anexo', 'Corredor de 2,0 m ao lado da nave: liga o hall à porta do anexo, com portas de vidro para a nave e ventilação natural.', 0, [[5.6,8.0,0.0],[5.6,0.0,-9.5], false]],
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e tem a escada de acesso ao 2º andar.', 0],
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
