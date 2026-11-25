@@ -393,14 +393,33 @@
   rect(200, 155, 700, 220, 0.06, 0.04, C.corr, { cast: false });             // corredor do anexo (MAQUETE 3: começa em x200)
   rect(50, 155, 200, 220, 0.06, 0.04, C.salaAnexo, { cast: false });          // MAQUETE 3: Sala 1 esticada até a parede divisória nave x anexo
   rect(600, 220, 700, 320, 0.0, 0.1, C.corr, { cast: false });               // corredor de acesso ao anexo
-  // nave: piso de cor clara (porcelanato bege claro, placas de 0,6 m)
+  // nave: piso de porcelanato claro (placas de 0,6 m, cada placa com tom e veios próprios, rejunte)  [Etapa 84: realismo]
   (function(){
-    var cv = document.createElement('canvas'); cv.width = cv.height = 128; var g = cv.getContext('2d');
-    g.fillStyle = '#f0ebdf'; g.fillRect(0, 0, 128, 128);
-    for (var i = 0; i < 160; i++){ g.fillStyle = 'rgba(205,198,182,.18)'; g.fillRect(Math.random() * 128, Math.random() * 128, 2, 2); }
-    g.strokeStyle = '#d9d2c2'; g.lineWidth = 2; g.strokeRect(1, 1, 126, 126);
-    var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.repeat.set((700 - 40) * S / 0.6, (720 - 320) * S / 0.6);
-    rect(40, 320, 700, 720, 0, 0.08, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: tx, roughness: 0.55 }) });   // nave (Piso)
+    var N = 4, P = 128, cv = document.createElement('canvas'); cv.width = cv.height = N * P; var g = cv.getContext('2d');
+    var seed = 7; function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    g.fillStyle = '#c9c2b2'; g.fillRect(0, 0, N * P, N * P);                          // rejunte
+    for (var i = 0; i < N; i++) for (var j = 0; j < N; j++){
+      var v = 232 + Math.floor(rnd() * 12 - 6);
+      g.fillStyle = 'rgb(' + v + ',' + (v - 5) + ',' + (v - 15) + ')'; g.fillRect(i * P + 2, j * P + 2, P - 4, P - 4);
+      for (var k = 0; k < 5; k++){                                                      // veios suaves
+        g.strokeStyle = 'rgba(176,166,146,' + (0.10 + rnd() * 0.12) + ')'; g.lineWidth = 1 + rnd() * 1.5; g.beginPath();
+        var x0 = i * P + rnd() * P, y0 = j * P + rnd() * P; g.moveTo(x0, y0);
+        g.bezierCurveTo(x0 + rnd() * 60 - 30, y0 + rnd() * 60, x0 + rnd() * 80 - 40, y0 + rnd() * 80, i * P + rnd() * P, j * P + rnd() * P); g.stroke();
+      }
+      var gr = g.createLinearGradient(i * P, j * P, i * P + P, j * P + P);               // brilho leve na placa
+      gr.addColorStop(0, 'rgba(255,255,255,.10)'); gr.addColorStop(1, 'rgba(0,0,0,.05)'); g.fillStyle = gr; g.fillRect(i * P + 2, j * P + 2, P - 4, P - 4);
+    }
+    var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4;
+    tx.repeat.set((700 - 40) * S / (0.6 * N), (720 - 320) * S / (0.6 * N));
+    rect(40, 320, 700, 720, 0, 0.08, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: tx, roughness: 0.32, metalness: 0.0, envMapIntensity: 0.7 }) });   // nave (Piso)
+    // rodapé de 10 cm (cinza grafite) na face interna das paredes da nave, interrompido nas portas
+    var rm = mat(0x6b6f76, { roughness: 0.6 });
+    function rod(x1, y1, x2, y2){ var w = Math.abs(x2 - x1) * S, d = Math.abs(y2 - y1) * S; if (w < 0.02) w = 0.02; if (d < 0.02) d = 0.02;
+      box(w, 0.10, d, 0, X((x1 + x2) / 2), 0.08 + 0.05, Z((y1 + y2) / 2), null, { cast: false, material: rm }); }
+    var xi = 40 + 0.09 / S, xe = 600 - 0.09 / S, yi = 720 - 0.09 / S;
+    rod(xi, 320, xi, 720);                                      // parede oeste
+    rod(xe, 322, xe, 340); rod(xe, 430, xe, 575); rod(xe, 665, xe, 718);   // parede leste (corredor), entre as portas
+    rod(42, yi, 300, yi); rod(390, yi, 598, yi);                 // parede sul (nave × hall), fora da porta de vidro
   })();
 
   // ---------- Altar: Plataforma 1 (0,20 m) e Plataforma 2 (0,40 m de altura total, degrau de 20 cm) + 1/4 de pizza nos extremos ----------
@@ -460,6 +479,19 @@
       g.fillStyle = ((i + j) % 2 ? '#efe2c9' : '#e6d6b9'); g.fillRect(i * 32 + 2, j * 32 + 2, 28, 28);
     }
   })();
+  // madeira dos bancos com veios (Etapa 84)
+  var _benchWood = null;
+  function benchWood(){
+    if (_benchWood) return _benchWood;
+    var cv = document.createElement('canvas'); cv.width = 256; cv.height = 128; var g = cv.getContext('2d');
+    g.fillStyle = '#8b5e3c'; g.fillRect(0, 0, 256, 128);
+    var seed = 11; function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+    for (var i = 0; i < 70; i++){ var y = rnd() * 128, a = 0.08 + rnd() * 0.16; g.strokeStyle = rnd() < 0.5 ? 'rgba(60,35,18,' + a + ')' : 'rgba(190,140,95,' + a + ')'; g.lineWidth = 0.6 + rnd() * 1.6;
+      g.beginPath(); g.moveTo(0, y); g.bezierCurveTo(80, y + rnd() * 6 - 3, 170, y + rnd() * 6 - 3, 256, y + rnd() * 4 - 2); g.stroke(); }
+    var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4;
+    _benchWood = new THREE.MeshStandardMaterial({ map: tx, roughness: 0.55, metalness: 0, envMapIntensity: 0.4 });
+    return _benchWood;
+  }
   var tileCache = {};      // desempenho: reaproveita textura/material de mesmo tamanho
   function tileMat(rx, ry){
     var k = rx.toFixed(3) + '_' + ry.toFixed(3); if (tileCache[k]) return tileCache[k];
@@ -632,7 +664,7 @@
     var n = 0;
     var clCache = {};
     function cl(c, r){ var k = c + '_' + (r || 0.85); return clCache[k] || (clCache[k] = new THREE.MeshStandardMaterial({ color: c, roughness: r || 0.85 })); }
-    function cyl(r1, r2, h, m, x, y, z, rx, rz){ var q = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, 12), m); q.position.set(x, y, z); if (rx) q.rotation.x = rx; if (rz) q.rotation.z = rz; q.castShadow = true; return q; }
+    function cyl(r1, r2, h, m, x, y, z, rx, rz){ var q = new THREE.Mesh(new THREE.CylinderGeometry(r1, r2, h, 9), m); q.position.set(x, y, z); if (rx) q.rotation.x = rx; if (rz) q.rotation.z = rz; q.castShadow = true; return q; }
     var crowdMat = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.8 }), crowdParts = [];
     function mergeBy(g){   // junta todas as peças da pessoa em UMA malha com cores por vértice (bem menos chamadas de desenho)
       g.updateMatrixWorld(true); var P = [], N = [], C = [], len = 0;
@@ -661,17 +693,38 @@
         });
       }
       g.add(up);
+      // Etapa 84 (realismo): corpo com peito/cintura, ombros arredondados, colarinho, orelhas, nariz, olhos, sobrancelhas e 5 penteados
+      var woman = long, style = i % 5, eye = cl(0x17181a, 0.5);
       var pel = new THREE.Mesh(new THREE.BoxGeometry(0.33, 0.16, 0.2), pants); pel.position.y = 0.88; up.add(pel);
-      var tor = cyl(0.175, 0.15, 0.58, shirt, 0, 1.17, 0); tor.scale.z = 0.62; up.add(tor);
-      var sh = cyl(0.04, 0.04, 0.44, shirt, 0, 1.44, 0, 0, Math.PI / 2); up.add(sh);
-      var neck = cyl(0.04, 0.045, 0.08, skin, 0, 1.52, 0); up.add(neck);
-      var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 16, 12), skin); head.scale.set(0.92, 1.08, 1); head.position.y = 1.64; head.castShadow = true; up.add(head);
-      var hr = new THREE.Mesh(new THREE.SphereGeometry(0.114, 16, 10, 0, Math.PI * 2, 0, long ? 1.9 : 1.45), hair); hr.scale.set(0.95, 1.08, 1.04); hr.position.set(0, 1.655, long ? -0.015 : -0.01); hr.rotation.x = -0.12; up.add(hr);
-      if (long){ var lh = new THREE.Mesh(new THREE.BoxGeometry(0.2, 0.2, 0.07), hair); lh.position.set(0, 1.56, -0.075); up.add(lh); }
+      if (woman && pose !== 'sit'){ var sk = cyl(0.17, 0.27, 0.46, pants, 0, 0.72, 0); sk.scale.z = 0.8; up.add(sk); }   // saia
+      var waist = cyl(0.15, 0.155, 0.26, shirt, 0, 1.02, 0); waist.scale.z = 0.66; up.add(waist);
+      var chest = cyl(0.19, 0.152, 0.34, shirt, 0, 1.28, 0); chest.scale.z = 0.62; up.add(chest);
+      [-1, 1].forEach(function(sd){ var so = new THREE.Mesh(new THREE.SphereGeometry(0.058, 6, 5), shirt); so.position.set(sd * 0.205, 1.42, 0); so.castShadow = true; up.add(so); });
+      var sh = cyl(0.045, 0.045, 0.41, shirt, 0, 1.43, 0, 0, Math.PI / 2); up.add(sh);
+      up.add(cyl(0.062, 0.07, 0.035, shirt, 0, 1.485, 0));                                                                // gola
+      up.add(cyl(0.04, 0.046, 0.09, skin, 0, 1.53, 0));                                                                   // pescoço
+      var head = new THREE.Mesh(new THREE.SphereGeometry(0.108, 12, 9), skin); head.scale.set(0.92, 1.1, 1.02); head.position.y = 1.64; head.castShadow = true; up.add(head);
+      var jaw = new THREE.Mesh(new THREE.SphereGeometry(0.085, 7, 5), skin); jaw.scale.set(0.95, 0.8, 0.95); jaw.position.set(0, 1.585, 0.012); up.add(jaw);      // queixo
+      [-1, 1].forEach(function(sd){
+        var ear = new THREE.Mesh(new THREE.SphereGeometry(0.024, 5, 4), skin); ear.scale.set(0.5, 1, 0.8); ear.position.set(sd * 0.099, 1.635, -0.005); up.add(ear);
+        var ey = new THREE.Mesh(new THREE.SphereGeometry(0.011, 4, 3), eye); ey.position.set(sd * 0.037, 1.655, 0.1); up.add(ey);
+        var br = new THREE.Mesh(new THREE.BoxGeometry(0.044, 0.008, 0.012), hair); br.position.set(sd * 0.037, 1.682, 0.099); br.rotation.z = sd * 0.12; up.add(br);
+      });
+      var nose = new THREE.Mesh(new THREE.SphereGeometry(0.019, 5, 4), skin); nose.scale.set(0.9, 1.1, 1.2); nose.position.set(0, 1.625, 0.108); up.add(nose);
+      var mouth = new THREE.Mesh(new THREE.BoxGeometry(0.04, 0.006, 0.01), cl(0x8a4a45, 0.6)); mouth.position.set(0, 1.592, 0.098); up.add(mouth);
+      // cabelo: topo + parte de trás da cabeça (sem "capacete"), com penteado por pessoa
+      var topR = style === 3 ? 0.128 : 0.114;
+      var cap = new THREE.Mesh(new THREE.SphereGeometry(topR, 11, 6, 0, Math.PI * 2, 0, woman ? 1.5 : (style === 4 ? 1.25 : 1.4)), hair); cap.scale.set(0.97, 1.08, 1.06); cap.position.set(0, 1.655, -0.012); cap.rotation.x = -0.12; cap.castShadow = true; up.add(cap);
+      var back = new THREE.Mesh(new THREE.SphereGeometry(0.113, 10, 7, Math.PI, Math.PI, 0, woman ? 2.35 : 1.85), hair); back.scale.set(0.97, 1.08, 1.0); back.position.set(0, 1.652, -0.012); up.add(back);
+      if (woman){ var lh = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.07, 0.24, 8, 1, false, Math.PI, Math.PI), hair); lh.scale.z = 0.7; lh.position.set(0, 1.5, -0.06); up.add(lh); }   // cabelo comprido
+      if (style === 2 && !woman){ var fr = new THREE.Mesh(new THREE.BoxGeometry(0.17, 0.035, 0.05), hair); fr.position.set(0.0, 1.715, 0.085); fr.rotation.x = -0.35; up.add(fr); }   // topete
+      if (style === 2 && woman){ var bun = new THREE.Mesh(new THREE.SphereGeometry(0.055, 6, 5), hair); bun.position.set(0, 1.745, -0.075); up.add(bun); }                       // coque
+      if (style === 3){ [[-0.07, 0.07], [0.07, 0.07], [0, 0.1], [-0.1, 0.0], [0.1, 0.0], [0, 0.04]].forEach(function(q){ var cu = new THREE.Mesh(new THREE.SphereGeometry(0.048, 5, 4), hair); cu.position.set(q[0], 1.69 + q[1] * 0.5, -0.02 - Math.abs(q[0]) * 0.1); up.add(cu); }); }   // cacheado
       [-1, 1].forEach(function(s){
         var arm = new THREE.Group(); arm.position.set(s * 0.225, 1.4, 0);
-        arm.add(cyl(0.042, 0.036, 0.52, shirt, 0, -0.26, 0));
-        var hand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 8, 8), skin); hand.position.set(0, -0.55, 0); arm.add(hand);
+        arm.add(cyl(0.046, 0.04, 0.3, shirt, 0, -0.17, 0));                                   // braço (manga)
+        arm.add(cyl(0.039, 0.032, 0.26, skin, 0, -0.43, 0));                                  // antebraço
+        var hand = new THREE.Mesh(new THREE.SphereGeometry(0.04, 5, 4), skin); hand.scale.set(0.9, 1.25, 0.6); hand.position.set(0, -0.58, 0); arm.add(hand);
         if (pose === 'sit') arm.rotation.x = -0.95; else if (pose === 'talk' && s === 1){ arm.rotation.x = -1.2; arm.rotation.z = -0.25; } else arm.rotation.z = s * 0.06;
         up.add(arm);
       });
@@ -921,11 +974,14 @@
         continue;
       }
       var estofado = mat(0x7b8189, { roughness: 0.95 });                                              // assento e encosto acochoados (cinza)
-      box(2.24, 0.30, 0.44, C.wood, cx, 0.08 + 0.15, cz);                                             // base de madeira
-      [-1, 1].forEach(function(sd){ box(0.07, 0.45, 0.44, C.wood, cx + sd * 1.085, 0.08 + 0.225, cz); });   // laterais de madeira
+      var woodM = benchWood();                                                                        // Etapa 84: madeira com veios
+      box(2.24, 0.30, 0.44, 0, cx, 0.08 + 0.15, cz, null, { material: woodM });                       // base de madeira
+      [-1, 1].forEach(function(sd){ box(0.07, 0.45, 0.44, 0, cx + sd * 1.085, 0.08 + 0.225, cz, null, { material: woodM }); });   // laterais de madeira
       box(2.10, 0.13, 0.40, 0, cx, 0.08 + 0.30 + 0.065, cz, null, { material: estofado });            // assento estofado
-      box(2.24, 0.55, 0.08, C.wood, cx, 0.08 + 0.45 + 0.27, Z(y0 + 20));                              // encosto (moldura de madeira, lado oposto ao altar)
+      box(2.24, 0.55, 0.08, 0, cx, 0.08 + 0.45 + 0.27, Z(y0 + 20), null, { material: woodM });        // encosto (moldura de madeira, lado oposto ao altar)
       box(2.06, 0.38, 0.05, 0, cx, 0.08 + 0.45 + 0.30, Z(y0 + 20) - 0.065, null, { material: estofado });   // encosto estofado
+      var rail = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.24, 10), woodM); rail.rotation.z = Math.PI / 2;     // fecho arredondado do encosto
+      rail.position.set(cx, 0.08 + 0.45 + 0.545, Z(y0 + 20)); rail.castShadow = true; rail.receiveShadow = true; root.add(rail);
     }
   });
 
