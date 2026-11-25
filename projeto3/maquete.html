@@ -1032,8 +1032,20 @@
       [0.12, -0.78].forEach(function(hx){ var hd = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.025, 0.03), mat(0xc9cdd2, { metalness: 0.7, roughness: 0.3 })); hd.position.set(hx, 0.6, zz + sd * 0.01); g.add(hd); });
       var mr = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.07, 0.08), mat(col, { roughness: 0.35, metalness: 0.35 })); mr.position.set(0.52, 0.7, sd * (W / 2 + 0.07)); g.add(mr);
     });
-    var ws = new THREE.Mesh(new THREE.BoxGeometry(0.34, 0.016, W - 0.16), carGlass); ws.rotation.z = Math.atan2(0.31, -0.35); ws.position.set(0.345 + 0.004, 0.79 + 0.004, 0); g.add(ws);   // para-brisa
-    var rw = new THREE.Mesh(new THREE.BoxGeometry(0.3, 0.016, W - 0.16), carGlass); rw.rotation.z = Math.atan2(0.29, 0.3); rw.position.set(-0.64 - 0.004, 0.79 + 0.004, 0); g.add(rw);   // vidro traseiro
+    // MAQUETE 3 (Etapa 55): para-brisa e vidro traseiro acompanhando a curva da carroceria (faixa de vidro escuro, de lado a lado)
+    var windG = new THREE.MeshStandardMaterial({ color: 0x2f5068, transparent: true, opacity: 0.92, roughness: 0.05, metalness: 0.65 });
+    function glassStrip(p0, c, p1, ta, tb){
+      var pts = [], n = 9;
+      function B(t){ return [(1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * c[0] + t * t * p1[0], (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * c[1] + t * t * p1[1]]; }
+      function Dv(t){ return [2 * (1 - t) * (c[0] - p0[0]) + 2 * t * (p1[0] - c[0]), 2 * (1 - t) * (c[1] - p0[1]) + 2 * t * (p1[1] - c[1])]; }
+      var inn = [], out = [];
+      for (var k = 0; k <= n; k++){ var tt = ta + (tb - ta) * k / n, q = B(tt), d = Dv(tt), l = Math.sqrt(d[0] * d[0] + d[1] * d[1]); inn.push(q); out.push([q[0] + d[1] / l * 0.09, q[1] - d[0] / l * 0.09]); }
+      var sh2 = new THREE.Shape(); sh2.moveTo(inn[0][0], inn[0][1]); inn.forEach(function(q){ sh2.lineTo(q[0], q[1]); }); for (var k2 = out.length - 1; k2 >= 0; k2--) sh2.lineTo(out[k2][0], out[k2][1]); sh2.lineTo(inn[0][0], inn[0][1]);
+      var gm2 = new THREE.Mesh(new THREE.ExtrudeGeometry(sh2, { depth: W - 0.16, bevelEnabled: false }), windG); gm2.position.z = -(W - 0.16) / 2; g.add(gm2);
+      var rim = new THREE.Mesh(new THREE.ExtrudeGeometry(sh2, { depth: W - 0.1, bevelEnabled: false }), trim); rim.position.z = -(W - 0.1) / 2; rim.position.y = -0.03; g.add(rim);   // moldura escura sob o vidro
+    }
+    glassStrip([0.55, 0.62], [0.35, 0.92], [0.0, 0.94], 0.07, 0.62);   // para-brisa
+    glassStrip([0.0, 0.94], [-0.55, 0.95], [-0.8, 0.64], 0.42, 0.93);  // vidro traseiro
     var gr = new THREE.Mesh(new THREE.BoxGeometry(0.03, 0.12, W - 0.5), trim); gr.position.set(1.57, 0.4, 0); g.add(gr);   // grade frontal
     var pl = new THREE.Mesh(new THREE.BoxGeometry(0.02, 0.12, 0.3), mat(0xf4f4f4)); pl.position.set(-1.6, 0.34, 0); g.add(pl);   // placa traseira
     [[0.42], [-0.42]].forEach(function(l){                 // faróis
@@ -1406,6 +1418,7 @@
     { id: 'apoio',   name: 'Hall e banheiros', pos: [-1.0, 17, 4.5], tgt: [-1.0, 0, -1.8], roof: false, labels: true },
     { id: 'anexosalas', name: 'Salas do anexo', pos: [0.6, 12, -8.6], tgt: [0.6, 0, -15.2], roof: false, labels: true },
     { id: 'carrosd', name: 'Veículos · detalhe', g: 'Panorama', pos: [0.4, 2.0, 7.2], tgt: [4.4, 0.6, 10.2], roof: true, labels: false },
+    { id: 'carrosf', name: 'Veículos · para-brisa e vidro traseiro', g: 'Panorama', pos: [3.7, 1.35, 3.6], tgt: [2.9, 0.75, 6.2], roof: true, labels: false, fp: true },
     { id: 'carrosd2', name: 'Veículos · frente e vidros', g: 'Panorama', pos: [6.0, 1.9, 8.6], tgt: [3.2, 0.7, 10.6], roof: true, labels: false },
     { id: 'fachadan', name: 'Fachada · de perto (detalhes)', g: 'Panorama', pos: [1.2, 1.7, 4.6], tgt: [2.15, 2.3, -0.2], roof: true, labels: false },
     { id: 'fachadaf', name: 'Fachada · de frente', g: 'Panorama', pos: [2.15, 2.1, 9.5], tgt: [2.15, 2.0, -0.2], roof: true, labels: false },
