@@ -31,6 +31,19 @@
   #menuPanel button.mv.active { background:var(--accent); border-color:var(--accent); color:#fff; }
   #menuPanel button.fpv:after { content:' 👁'; font-size:11px; }
   .hint { padding:9px 18px 12px; font-size:12px; color:#5b6776; border-top:1px solid #e6ecf3; background:#f7f9fc; line-height:1.35; }
+  #tTour { background:#1f5fa8; color:#fff; }
+  #tTour.on { background:#c0392b; }
+  #tourCard { position:absolute; left:50%; bottom:18px; transform:translateX(-50%); width:min(560px,92%); background:rgba(12,24,44,.88); color:#fff; border-radius:16px; padding:14px 18px 12px; box-shadow:0 10px 30px rgba(0,0,0,.35); backdrop-filter:blur(6px); z-index:20; display:none; }
+  #tourCard .tn { font-size:12px; letter-spacing:.08em; text-transform:uppercase; opacity:.7; }
+  #tourCard h3 { margin:2px 0 4px; font-size:21px; font-weight:700; }
+  #tourCard p { margin:0 0 10px; font-size:15px; line-height:1.4; opacity:.94; }
+  #tourCard .tb { display:flex; align-items:center; gap:8px; }
+  #tourCard .tb button { background:rgba(255,255,255,.16); color:#fff; padding:7px 13px; font-size:13px; font-weight:600; }
+  #tourCard .tb button:hover { background:rgba(255,255,255,.3); }
+  #tourCard .tb .sp { flex:1; }
+  #tourBar { height:4px; background:rgba(255,255,255,.2); border-radius:3px; margin-bottom:10px; overflow:hidden; }
+  #tourBar i { display:block; height:100%; width:0; background:#6fb4ff; }
+  @media (max-width:760px){ #tourCard { bottom:10px; padding:11px 14px 10px; } #tourCard h3 { font-size:17px; } #tourCard p { font-size:13.5px; margin-bottom:8px; } }
   .bar { display:none; }
   @media (max-width:760px){
     #app { flex-direction:column; }
@@ -54,7 +67,7 @@
 </head>
 <body>
 <div id="app">
-  <div id="stage"><canvas id="c"></canvas></div>
+  <div id="stage"><canvas id="c"></canvas><div id="tourCard"><div id="tourBar"><i></i></div><div class="tn" id="tourN"></div><h3 id="tourT"></h3><p id="tourP"></p><div class="tb"><button id="tourPrev">◀ Anterior</button><button id="tourPause">⏸ Pausar</button><button id="tourNext">Próximo ▶</button><span class="sp"></span><button id="tourExit">✕ Sair</button></div></div></div>
   <aside id="side">
     <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Maquete 3: 2º andar no anexo (Multiuso, WC, Biblioteca, Sala de Reuniões e Copa, com passarela vazada sobre o corredor aberto ao céu) com escada na Sala 4; Cantina com balcão de atendimento e telhado de policarbonato; Cozinha e Sala de Apoio com vidro temperado; porta de vidro mais larga no corredor do anexo; bebedouro na outra ponta do Hall; Estacionamento 1 com 4 vagas e fachada com 2 portas de vidro</p></div>
     <div class="tools">
@@ -63,6 +76,7 @@
   <button id="tSpin">Girar</button>
   <button id="tPeople" class="on">🧍 Pessoas</button>
   <button id="tNight">🌙 Ver a noite</button>
+  <button id="tTour">▶ Apresentar</button>
 </div>
     <div id="tabs"></div>
     <div id="menuPanel"></div>
@@ -1702,6 +1716,49 @@
   }
   window.addEventListener('resize', resize); resize(); if (window.ResizeObserver) new ResizeObserver(resize).observe(document.getElementById('stage'));
 
+  // ---------- Passeio guiado automático ("Apresentar") ----------
+  (function(){
+    var S = [
+      ['geral', 'Visão geral do projeto', 'O templo completo: pátio com estacionamento, nave, hall coberto, cozinha e cantina, e o anexo com 2º andar.', 0],
+      ['fachadaf', 'Fachada', 'Fachada moderna com a logo da 4ª IMW, ripado cinza, duas portas de vidro temperado e iluminação em LED.', 0],
+      ['pespatio', 'Pátio e estacionamentos', 'Entrada ampla pelo portão, vagas organizadas dos dois lados e caminho direto até a fachada.', 0],
+      ['cantinaf', 'Cozinha e Cantina', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento e cobertura de policarbonato, voltadas para a varanda.', 0],
+      ['hallfp', 'Hall de recepção', 'Espaço aberto e livre que liga o pátio à nave, aos banheiros e ao corredor do anexo.', 0],
+      ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0],
+      ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
+      ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
+      ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e leva à escada.', 0],
+      ['sala2a', 'Salas do anexo', 'Salas de aula com ar-condicionado, tela e mobiliário, mais um banheiro acessível (PCD).', 0],
+      ['a2geral', '2º andar', 'Sala Multiuso, Biblioteca, Sala de Reuniões da Junta Diaconal, Copa e WC, com passarela sobre o corredor.', 0],
+      ['fachadaf', 'À noite', 'O mesmo projeto iluminado: fachada, pátio, nave e anexo.', 1]
+    ], i = 0, timer = null, raf = null, paused = false, active = false, nightByTour = false, DWELL = 8000, t0 = 0, rem = DWELL;
+    var card = document.getElementById('tourCard'), btn = document.getElementById('tTour'), fill = document.querySelector('#tourBar i');
+    function show(n){
+      i = (n + S.length) % S.length; var s = S[i];
+      var b = document.querySelector('#views button[data-id="' + s[0] + '"]'); if (b) b.click();
+      if (s[3] && !isNight){ setNight(true); nightByTour = true; } else if (!s[3] && isNight && nightByTour){ setNight(false); nightByTour = false; }
+      document.getElementById('tourN').textContent = 'Passo ' + (i + 1) + ' de ' + S.length;
+      document.getElementById('tourT').textContent = s[1]; document.getElementById('tourP').textContent = s[2];
+      rem = DWELL; t0 = performance.now(); need = 60; schedule();
+    }
+    function schedule(){
+      clearTimeout(timer); cancelAnimationFrame(raf);
+      if (paused || !active) return;
+      timer = setTimeout(function(){ show(i + 1); }, rem);
+      (function loop(){ var f = Math.min(1, (performance.now() - t0) / DWELL); fill.style.width = (f * 100) + '%'; if (f < 1 && active && !paused) raf = requestAnimationFrame(loop); })();
+    }
+    function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸ Pausar'; show(0); }
+    function stop(){ active = false; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
+    btn.onclick = function(){ active ? stop() : start(); };
+    document.getElementById('tourExit').onclick = stop;
+    document.getElementById('tourNext').onclick = function(){ show(i + 1); };
+    document.getElementById('tourPrev').onclick = function(){ show(i - 1); };
+    document.getElementById('tourPause').onclick = function(){
+      paused = !paused; this.textContent = paused ? '▶ Continuar' : '⏸ Pausar';
+      if (paused){ rem = Math.max(500, DWELL - (performance.now() - t0)); clearTimeout(timer); cancelAnimationFrame(raf); } else { t0 = performance.now() - (DWELL - rem); schedule(); }
+    };
+    if (/[#&?]passeio/.test(location.href)) setTimeout(start, 1200);
+  })();
   go(views[0], true);
   var clock = new THREE.Clock();
   function ease(t){ return t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2; }
