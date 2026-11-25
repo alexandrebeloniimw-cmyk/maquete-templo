@@ -122,6 +122,9 @@
   var S = 0.02;                       // 50 px da planta = 1 unidade (~1 m)
   function X(px){ return (px - 370) * S; }
   function Z(py){ return (py - 900) * S; }
+  // Etapa 89: a nave ganha 1,0 m de comprimento (a parede sul avança); hall, pátio e frente do terreno só se deslocam para o sul, sem mudar de tamanho
+  var NEXT = 50 * S, ZB = Z(720), ZT = ZB - 0.15, BP = 35.5 + 50 / 9, EXTSKIP = false;   // BP = novo passo entre os bancos (px): 0,71 m -> ≈ 0,82 m
+  function nzw(z){ return z >= ZT ? z + NEXT : z; }
 
   var canvas = document.getElementById('c');
   var renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
@@ -176,7 +179,7 @@
   sun.position.set(22, 30, 19);
   sun.castShadow = true;
   sun.shadow.mapSize.set(SMALL ? 1024 : 2048, SMALL ? 1024 : 2048); sun.shadow.radius = 2.5;
-  var sc = sun.shadow.camera; sc.left = -32; sc.right = 32; sc.top = 34; sc.bottom = -30; sc.near = 1; sc.far = 130;
+  var sc = sun.shadow.camera; sc.left = -32; sc.right = 32; sc.top = 35; sc.bottom = -30; sc.near = 1; sc.far = 130;
   sun.shadow.bias = -0.0004;
   scene.add(sun);
   var inner = new THREE.PointLight(0xfff0d8, 0.28, 24, 1.5); inner.position.set(0, 3.8, -9.5); scene.add(inner);
@@ -224,7 +227,7 @@
   function box(w, h, d, color, x, y, z, parent, o){
     o = o || {};
     var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), o.material || mat(color, o.mat));
-    m.position.set(x, y, z);
+    m.position.set(x, y, z); if (EXTSKIP) m.userData.noext = true;
     m.castShadow = o.cast !== false; m.receiveShadow = true;
     (parent || root).add(m);
     return m;
@@ -592,12 +595,14 @@
     [385, 502, 620].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima das portas (385, 620) e entre as placas (502)
     // ---- 2 ar-condicionados (split) na parede que divide a nave e o hall (face interna, voltados para a nave) ----
     var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
+    EXTSKIP = true;
     [X(170), X(510)].forEach(function(sx){
-      var zf = Z(720) - 0.125;
+      var zf = Z(720) + NEXT - 0.125;   // Etapa 89: acompanham a parede sul
       box(1.15, 0.3, 0.22, 0, sx, 2.5, zf - 0.12, null, { material: splitBranco });   // branco (emissivo leve para não escurecer na sombra)
       box(1.0, 0.03, 0.02, 0x9aa0a6, sx, 2.4, zf - 0.235, null, { cast: false });
       box(0.04, 0.03, 0.01, 0x44d17a, sx + 0.45, 2.55, zf - 0.232, null, { cast: false });
     });
+    EXTSKIP = false;
 
   })();
   muro(false, X(40), Z(1240), (1760 - 720) * S, BH, 0.22); muro(false, X(700), Z(1240), (1760 - 720) * S, BH, 0.22);   // Muro à esquerda / à direita
@@ -676,7 +681,8 @@
       var out = new THREE.Group(), mm = new THREE.Mesh(bg, crowdMat); mm.castShadow = true; out.add(mm); return out;
     }
     // px,py na planta; fy = altura do piso; th = direção do olhar (0 = +z, PI = -z, PI/2 = +x, -PI/2 = -x); pose: 'stand' | 'sit' | 'talk'
-    function person(px, py, fy, th, pose, sc){
+    function person(px, py, fy, th, pose, sc, fixed){
+      if (!fixed && py >= 720) py += 50;   // Etapa 89: hall, pátio e rua acompanham a parede sul da nave
       var i = n++, skin = cl(skins[(i * 3 + 1) % skins.length], 0.6), shirt = cl(shirts[(i * 7 + 2) % shirts.length]), pants = cl(pantsC[(i * 5 + 1) % pantsC.length]), hair = cl(hairs[(i * 11 + 3) % hairs.length], 0.9), shoe = cl(0x16171a, 0.6);
       var g = new THREE.Group(), up = new THREE.Group(), long = (i % 3 === 1);
       if (pose === 'sit'){
@@ -735,9 +741,9 @@
     var N = -Math.PI, PI = Math.PI;
     // nave: fiéis sentados nos bancos (olhando para o altar) — [fileira, banco, posições em px dentro do banco]
     [[0, 3, [30, 60]], [0, 5, [25]], [0, 6, [70, 95]], [0, 7, [40]], [1, 2, [35, 65, 90]], [1, 4, [55]], [1, 5, [30, 85]], [1, 7, [60]], [1, 8, [40, 75]], [2, 3, [45, 80]], [2, 5, [30]], [2, 6, [60, 90]], [2, 8, [50]]].forEach(function(r){
-      r[2].forEach(function(o){ person([104, 279, 455][r[0]] + o, 356 + r[1] * 35.5 + 14, 0.08, PI, 'sit'); });
+      r[2].forEach(function(o){ person([104, 279, 455][r[0]] + o, 356 + r[1] * BP + 14, 0.08, PI, 'sit', 1, true); });
     });
-    person(160, 704, 0.08, PI, 'stand');                                                   // operador da mesa de som
+    person(160, 704 + 9 * (BP - 35.5) + 0.5, 0.08, PI, 'stand', 1, true);                                                   // operador da mesa de som
     // altar: dirigente no centro e músicos
     person(335, 292, 0.2, 0, 'talk'); person(285, 290, 0.2, 0, 'stand'); person(385, 290, 0.2, 0, 'stand');
     person(262, 262, 0.4, 0, 'stand'); person(110, 262, 0.4, 0, 'stand'); person(560, 262, 0.4, 0, 'sit');
@@ -762,7 +768,7 @@
         var slots = [18, 45, 72, 99];
         for (var s = 0; s < slots.length && have.length < target; s++){
           var o = slots[s] + Math.round((rnd() - 0.5) * 8);
-          if (have.every(function(h){ return Math.abs(h - o) > 24; })){ have.push(o); person([104, 279, 455][r] + o, 356 + b * 35.5 + 14, 0.08, PI, 'sit', rnd() < 0.12 ? 0.62 : 1); }
+          if (have.every(function(h){ return Math.abs(h - o) > 24; })){ have.push(o); person([104, 279, 455][r] + o, 356 + b * BP + 14, 0.08, PI, 'sit', rnd() < 0.12 ? 0.62 : 1, true); }
         }
       }
     })();
@@ -770,7 +776,7 @@
       var PP = new Float32Array(len), NN = new Float32Array(len), CC = new Float32Array(len), off = 0;
       crowdParts.forEach(function(gm){ PP.set(gm.attributes.position.array, off); NN.set(gm.attributes.normal.array, off); CC.set(gm.attributes.color.array, off); off += gm.attributes.position.array.length; });
       var bg = new THREE.BufferGeometry(); bg.setAttribute('position', new THREE.BufferAttribute(PP, 3)); bg.setAttribute('normal', new THREE.BufferAttribute(NN, 3)); bg.setAttribute('color', new THREE.BufferAttribute(CC, 3));
-      var cm = new THREE.Mesh(bg, crowdMat); cm.castShadow = true; root.add(cm); peopleList.push(cm); })();
+      var cm = new THREE.Mesh(bg, crowdMat); cm.castShadow = true; cm.userData.noext = true; root.add(cm); peopleList.push(cm); })();
   })();
   // MAQUETE 3 (Etapa 58): câmeras de segurança pequenas (tipo bullet, com suporte, quebra-sol, lente e LED vermelho) em pontos estratégicos
   (function(){
@@ -980,9 +986,10 @@
 
   // ---------- Bancos: 4 fileiras x 10 (Mesa de som no lugar do Banco 1 da Fileira 1) ----------
   var pewX = [104, 279, 455];   // PROJETO 2: corredores nas extremidades e entre as fileiras (aprox. 1,3 m cada)   // PROJETO 2: Fileira 4 eliminada (dá lugar ao corredor de acesso ao anexo)
+  EXTSKIP = true;   // Etapa 89: bancos e mesa de som já nascem na posição nova (passo BP)
   pewX.forEach(function(x0, fi){
     for (var k = 0; k < 10; k++){
-      var y0 = 356 + k * 35.5;
+      var y0 = 356 + k * BP;
       var cx = X(x0 + 56), cz = Z(y0 + 11);
       if (fi === 0 && k === 9){
         box(2.24, 0.9, 0.44, C.mesa, cx, 0.08 + 0.45, cz);
@@ -998,9 +1005,10 @@
       box(2.24, 0.55, 0.08, 0, cx, 0.08 + 0.45 + 0.27, Z(y0 + 20), null, { material: woodM });        // encosto (moldura de madeira, lado oposto ao altar)
       box(2.06, 0.38, 0.05, 0, cx, 0.08 + 0.45 + 0.30, Z(y0 + 20) - 0.065, null, { material: estofado });   // encosto estofado
       var rail = new THREE.Mesh(new THREE.CylinderGeometry(0.04, 0.04, 2.24, 10), woodM); rail.rotation.z = Math.PI / 2;     // fecho arredondado do encosto
-      rail.position.set(cx, 0.08 + 0.45 + 0.545, Z(y0 + 20)); rail.castShadow = true; rail.receiveShadow = true; root.add(rail);
+      rail.position.set(cx, 0.08 + 0.45 + 0.545, Z(y0 + 20)); rail.castShadow = true; rail.receiveShadow = true; rail.userData.noext = true; root.add(rail);
     }
   });
+  EXTSKIP = false;
 
   // ---------- Cabines sanitárias: divisória padrão (painel laminado com vão de 15 cm no piso) e porta de cabine ----------
   var divMat = mat(0xdfe5e8, { roughness: 0.6 }), divDoorMat = mat(0xc4d3da, { roughness: 0.6 });
@@ -1876,7 +1884,7 @@
    [370, 1200, 3.6, 0xfff0d8, 1.4, 17],                                                                                                          // pátio
    [560, 1600, 3.4, 0xfff0d8, 1.2, 16],                                                                                                          // estacionamentos
    [480, 885, 3.4, 0xeaf4ff, 1.2, 14]].forEach(function(q){                                                                                      // fachada
-    var l = new THREE.PointLight(q[3], 0, q[5], 1.6); l.position.set(X(q[0]), q[2], Z(q[1])); l.userData.k = q[4]; nightLights.push(l);   // só entram na cena à noite (luzes apagadas pesariam em todos os materiais)
+    var l = new THREE.PointLight(q[3], 0, q[5], 1.6); l.position.set(X(q[0]), q[2], nzw(Z(q[1]))); l.userData.k = q[4]; nightLights.push(l);   // só entram na cena à noite (luzes apagadas pesariam em todos os materiais)
   });
   (function(){
     var n = 450, pos = new Float32Array(n * 3);
@@ -1910,7 +1918,7 @@
     [].forEach.call(bar.children, function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
     if (v.roof !== undefined) setRoof(v.roof); else setRoof(true);
     // Etapa 83: nomes só aparecem quando a pessoa clica em Nomes (as vistas não ligam mais)
-    var p1 = new THREE.Vector3().fromArray(v.pos), t1 = new THREE.Vector3().fromArray(v.tgt);
+    var p1 = new THREE.Vector3(v.pos[0], v.pos[1], nzw(v.pos[2])), t1 = new THREE.Vector3(v.tgt[0], v.tgt[1], nzw(v.tgt[2]));   // Etapa 89: câmeras do hall e do pátio acompanham
     if (instant){ camera.position.copy(p1); controls.target.copy(t1); controls.update(); return; }
     anim = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: p1, t1: t1 };
   }
@@ -1947,7 +1955,7 @@
     var hint = document.querySelector('.hint'), hint0 = hint ? hint.textContent : '', pend = null;
     function normal(){ controls.minDistance = 1.5; controls.maxDistance = 95; controls.enableZoom = true; controls.enablePan = true; controls.rotateSpeed = 1; controls.maxPolarAngle = Math.PI * 0.499; controls.minPolarAngle = 0; pend = null; if (hint) hint.textContent = hint0; resize(); }
     function applyFp(v){
-      var d = new THREE.Vector3().fromArray(v.tgt).sub(new THREE.Vector3().fromArray(v.pos)).normalize();
+      var d = new THREE.Vector3(v.tgt[0], v.tgt[1], nzw(v.tgt[2])).sub(new THREE.Vector3(v.pos[0], v.pos[1], nzw(v.pos[2]))).normalize();
       controls.target.copy(camera.position).addScaledVector(d, 0.02);
       camera.fov = 74; camera.updateProjectionMatrix(); controls.minDistance = 0.005; controls.maxDistance = 0.06; controls.enableZoom = false; controls.enablePan = false; controls.rotateSpeed = -0.35;
       controls.maxPolarAngle = Math.PI * 0.97; controls.minPolarAngle = Math.PI * 0.03;
@@ -2102,6 +2110,30 @@
         var m = new THREE.Mesh(geo, b.mat); m.castShadow = b.cast; m.receiveShadow = b.recv; m.renderOrder = b.ro; group.add(m);
       });
     }
+    // ---- Etapa 89: NAVE +1,0 m de comprimento. A parede sul da nave avança; o que está ao sul (hall, pátio, rua) só se desloca; peças que ligam as duas partes esticam ----
+    (function(){
+      scene.updateMatrixWorld(true);
+      function isId(o){ return o.position.lengthSq() === 0 && o.rotation.x === 0 && o.rotation.y === 0 && o.rotation.z === 0 && o.scale.x === 1 && o.scale.y === 1 && o.scale.z === 1; }
+      function stretch(c){
+        c.updateMatrixWorld(true);
+        var g = c.geometry.clone(); g.applyMatrix4(c.matrixWorld);
+        var P = g.attributes.position; for (var i = 0; i < P.count; i++){ var z = P.getZ(i); if (z >= ZT) P.setZ(i, z + NEXT); }
+        P.needsUpdate = true; g.computeBoundingBox(); g.computeBoundingSphere();
+        c.geometry = g; c.position.set(0, 0, 0); c.rotation.set(0, 0, 0); c.scale.set(1, 1, 1); c.updateMatrix(); c.updateMatrixWorld(true);
+      }
+      function walk(o){
+        o.children.slice().forEach(function(c){
+          if (c.userData.noext || c === labelGroup) return;
+          if (c.isGroup && isId(c)){ walk(c); return; }
+          var bb = new THREE.Box3().setFromObject(c); if (bb.isEmpty()) return;
+          if (bb.max.z < ZT) return;
+          if (bb.min.z >= ZT || bb.min.z >= ZB - 0.9 || !c.isMesh || !isId(o)){ if (isId(o)) c.position.z += NEXT; else console.warn('nave+: não deslocado', c.type); return; }
+          stretch(c);
+        });
+      }
+      scene.children.slice().forEach(function(c){ if (c.isGroup && c !== labelGroup) walk(c); });
+      labelGroup.children.forEach(function(c){ if (c.position.z >= ZT) c.position.z += NEXT; });
+    })();
     scene.children.slice().forEach(function(c){ if (c.isGroup && c !== labelGroup) mergeStatic(c); });
   })();
   window.__ready = true;
