@@ -1686,6 +1686,22 @@
     views.forEach(function(v){ if (v.tgt[2] > zb - 0.4 && v.tgt[2] < zf && v.pos[2] > zb - 0.4 && v.pos[2] < zb + 6 && inX(v.tgt[0])) v.tgt[2] = f(v.tgt[2]); });
     return { f: f };
   })();
+  // ---------- MAQUETE 3 (Etapa 78): 3 bancos iguais aos da nave (mesmo tamanho, passo de 0,71 m) nas salas 2 e 3 do anexo (térreo), para conferir a nova profundidade ----------
+  (function(){
+    var zIn = Z(-10) - 105 * S + 0.11;                                       // face interna da parede dos fundos das salas
+    var estofado = mat(0x7b8189, { roughness: 0.95 });
+    [385, 592.5].forEach(function(px){
+      var cx = X(px);
+      for (var i = 0; i < 3; i++){
+        var cz = zIn + 0.36 + i * 35.5 * S;                                   // 35,5 px = 0,71 m, o mesmo passo das fileiras da nave
+        box(2.24, 0.30, 0.44, C.wood, cx, 0.08 + 0.15, cz);
+        [-1, 1].forEach(function(sd){ box(0.07, 0.45, 0.44, C.wood, cx + sd * 1.085, 0.08 + 0.225, cz); });
+        box(2.10, 0.13, 0.40, 0, cx, 0.08 + 0.30 + 0.065, cz, null, { material: estofado });
+        box(2.24, 0.55, 0.08, C.wood, cx, 0.08 + 0.45 + 0.27, cz + 9 * S);
+        box(2.06, 0.38, 0.05, 0, cx, 0.08 + 0.45 + 0.30, cz + 9 * S - 0.065, null, { material: estofado });
+      }
+    });
+  })();
   var bar = document.getElementById('views');
   var anim = null, current = 'geral';
   // ---------- MAQUETE 3 (Etapa 57): modo noite ("Ver a noite") ----------
