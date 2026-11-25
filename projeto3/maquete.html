@@ -1001,8 +1001,21 @@
     box(0.012, 0.03, 0.03, 0x3aa655, X(xf) + 0.026, 1.06, Z(cc) + (dw / 2 - 0.1), null, { cast: false });                                      // indicador livre
   }
   // ---------- Banheiros (box, vasos, pia, corredor) e Salas externas ----------
-  rect(50, 730, 255, 880, 0.0, 0.1, C.bath, { cast: false });                // PROJETO 2: banheiros (trocados de lugar com a Sala de Apoio)
-  rect(255, 722, 700, 884, 0.0, 0.1, 0xe3ddd0, { cast: false });                // PROJETO 2: Hall (corredor grande aberto, porcelanato claro)
+  // Etapa 85 (realismo): piso de cerâmica 30 cm nos banheiros e porcelanato polido 80 cm no hall (canvas, com rejunte e variação por placa)
+  function floorTex(N, base, grout, rx, ry, vein){
+    var P = 128, cv = document.createElement('canvas'); cv.width = cv.height = N * P; var g = cv.getContext('2d');
+    var sd = 5 + N; function rn(){ sd = (sd * 16807) % 2147483647; return sd / 2147483647; }
+    g.fillStyle = grout; g.fillRect(0, 0, N * P, N * P);
+    for (var i = 0; i < N; i++) for (var j = 0; j < N; j++){
+      var d = Math.floor(rn() * 12 - 6);
+      g.fillStyle = 'rgb(' + (base[0] + d) + ',' + (base[1] + d) + ',' + (base[2] + d) + ')'; g.fillRect(i * P + 2, j * P + 2, P - 4, P - 4);
+      if (vein) for (var k = 0; k < 4; k++){ g.strokeStyle = 'rgba(170,160,140,' + (0.08 + rn() * 0.12) + ')'; g.lineWidth = 1 + rn() * 1.4; g.beginPath(); var x0 = i * P + rn() * P, y0 = j * P + rn() * P; g.moveTo(x0, y0); g.bezierCurveTo(x0 + rn() * 50 - 25, y0 + rn() * 50, x0 + rn() * 70 - 35, y0 + rn() * 70, i * P + rn() * P, j * P + rn() * P); g.stroke(); }
+      var gr = g.createLinearGradient(i * P, j * P, i * P + P, j * P + P); gr.addColorStop(0, 'rgba(255,255,255,.12)'); gr.addColorStop(1, 'rgba(0,0,0,.05)'); g.fillStyle = gr; g.fillRect(i * P + 2, j * P + 2, P - 4, P - 4);
+    }
+    var tx = new THREE.CanvasTexture(cv); tx.wrapS = tx.wrapT = THREE.RepeatWrapping; tx.anisotropy = 4; tx.repeat.set(rx, ry); return tx;
+  }
+  rect(50, 730, 255, 880, 0.0, 0.1, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: floorTex(2, [204, 209, 213], '#9ea5ab', (205 * S) / 0.6, (150 * S) / 0.6, false), roughness: 0.35, envMapIntensity: 0.6 }) });   // banheiros: cerâmica cinza-clara 30 x 30
+  rect(255, 722, 700, 884, 0.0, 0.1, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: floorTex(2, [232, 226, 212], '#c4bba8', (445 * S) / 1.6, (162 * S) / 1.6, true), roughness: 0.3, envMapIntensity: 0.7 }) });   // Hall: porcelanato polido 80 x 80
   rect(50, 1240, 255, 1300, 0.0, 0.08, C.varanda, { cast: false });         // Etapa 73: piso do abrigo de atendimento (lado do Estacionamento 1)
   rect(205, 880, 255, 1240, 0.0, 0.08, C.varanda, { cast: false });         // piso da varanda (PROJETO 2: prolongada até a Cantina)
   rect(50, 880, 205, 1100, 0.0, 0.1, C.salaExt, { cast: false });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
@@ -1030,20 +1043,42 @@
       stallFront(xf, c[0], c[1], 0.62);
       var cy = (c[0] + c[1]) / 2;
       box(0.18, 0.75, 0.22, C.white, X(62.5), 0.375, Z(cy), null, {});               // caixa acoplada
-      var bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 18), mat(C.white, { roughness: 0.4 }));
+      var bowl = new THREE.Mesh(new THREE.CylinderGeometry(0.22, 0.17, 0.4, 14), mat(C.white, { roughness: 0.3 }));
       bowl.scale.set(1, 1, 0.72); bowl.position.set(X(82), 0.2, Z(cy)); bowl.castShadow = true; bowl.receiveShadow = true; root.add(bowl);
+      // Etapa 85: assento, água, botão de descarga e porta-papel
+      var seat = new THREE.Mesh(new THREE.CylinderGeometry(0.225, 0.225, 0.035, 14), mat(0xf6f6f4, { roughness: 0.4 })); seat.scale.set(1, 1, 0.74); seat.position.set(X(82), 0.415, Z(cy)); root.add(seat);
+      var wtr = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.13, 0.01, 12), mat(0xa9cfe0, { roughness: 0.1 })); wtr.scale.set(1, 1, 0.7); wtr.position.set(X(82), 0.425, Z(cy)); root.add(wtr);
+      var fb = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.015, 10), mat(0xc9ced3, { roughness: 0.3, metalness: 0.6 })); fb.position.set(X(62.5), 0.76, Z(cy)); root.add(fb);
+      var tp = new THREE.Mesh(new THREE.CylinderGeometry(0.055, 0.055, 0.11, 10), mat(0xf7f7f5, { roughness: 0.9 })); tp.rotation.x = Math.PI / 2; tp.position.set(X(100), 0.7, Z(c[0]) + 0.075); root.add(tp);   // papel higiênico na divisória
     });
     box(0.64, 0.85, 0.3, C.white, X(200), 0.425, Z(y0 + 11.5));                      // pia (parede norte)
     box(0.5, 0.03, 0.2, 0xbcd5e8, X(200), 0.865, Z(y0 + 11.5), null, { cast: false });
+    // Etapa 85: cuba, torneira cromada, saboneteira, toalheiro, lixeira e moldura do espelho
+    var cuba = new THREE.Mesh(new THREE.CylinderGeometry(0.19, 0.14, 0.09, 12), mat(0xf4f6f6, { roughness: 0.25 })); cuba.scale.set(1.1, 1, 0.8); cuba.position.set(X(200), 0.875, Z(y0 + 11.5) + 0.01); root.add(cuba);
+    var chrome = mat(0xcfd4d9, { roughness: 0.2, metalness: 0.8 });
+    var tv = new THREE.Mesh(new THREE.CylinderGeometry(0.014, 0.014, 0.17, 8), chrome); tv.position.set(X(200), 0.96, Z(y0 + 11.5) - 0.1); root.add(tv);
+    var ts = new THREE.Mesh(new THREE.CylinderGeometry(0.011, 0.011, 0.11, 8), chrome); ts.rotation.x = Math.PI / 2; ts.position.set(X(200), 1.04, Z(y0 + 11.5) - 0.05); root.add(ts);
+    box(0.06, 0.12, 0.06, 0x2b2e33, X(200) + 0.26, 0.93, Z(y0 + 11.5) - 0.06, null, { cast: false });                      // saboneteira
+    box(0.26, 0.34, 0.1, 0xf1f2f2, X(160), 1.25, Z(y0) + 0.1, null, { cast: false }); box(0.2, 0.02, 0.102, 0x9aa1a8, X(160), 1.1, Z(y0) + 0.1, null, { cast: false });   // toalheiro de papel
+    var bin = new THREE.Mesh(new THREE.CylinderGeometry(0.13, 0.1, 0.3, 10), mat(0x7e858c, { roughness: 0.5 })); bin.position.set(X(238), 0.15, Z(y0 + 68)); root.add(bin);
+    [[0, 0.39], [0, -0.39]].forEach(function(q){ box(0.7, 0.015, 0.012, 0xcfd4d9, X(200), 1.55 + q[1], Z(y0) + 0.098, null, { cast: false }); });
+    [-0.35, 0.35].forEach(function(q){ box(0.015, 0.78, 0.012, 0xcfd4d9, X(200) + q, 1.55, Z(y0) + 0.098, null, { cast: false }); });
     box(0.7, 0.75, 0.02, 0, X(200), 1.55, Z(y0) + 0.09, null, { material: new THREE.MeshStandardMaterial({ color: 0xdde9ef, roughness: 0.05, metalness: 0.8 }), cast: false });   // espelho
   });
   // ---- Hall (corredor grande aberto): banco, painel de avisos na fachada, vaso, tapete ----
   (function(){
-    box(0.45, 0.45, 1.6, 0x8fa3ad, X(687), 0.28, Z(815)); box(0.12, 0.55, 1.6, 0x8fa3ad, X(697), 0.6, Z(815));
+    // Etapa 85: banco do hall em madeira com pés de metal (antes: duas caixas cinza)
+    (function(){ var wm = benchWood(), mt = mat(0x2a2d31, { roughness: 0.5 }), bx = X(687), bz = Z(815);
+      box(0.46, 0.05, 1.6, 0, bx, 0.45, bz, null, { material: wm });                                    // assento
+      box(0.05, 0.42, 1.6, 0, X(698), 0.78, bz, null, { material: wm });                                // encosto
+      [-0.72, 0.72].forEach(function(q){ box(0.04, 0.43, 0.04, 0x2a2d31, bx - 0.19, 0.215, bz + q, null, { material: mt }); box(0.04, 0.43, 0.04, 0x2a2d31, bx + 0.19, 0.215, bz + q, null, { material: mt }); box(0.04, 0.36, 0.04, 0x2a2d31, X(698), 0.6, bz + q, null, { material: mt }); });
+    })();
     // painel de avisos: agora na face externa (leste) da Sala de Apoio do Hall
-    (function(){ var px = X(560) + 0.09, pz = Z(844); box(0.04, 1.0, 1.4, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 0.98, pz); })();
+    (function(){ var px = X(560) + 0.09, pz = Z(844); box(0.04, 1.0, 1.4, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 0.98, pz);
+      [[-0.5, 1.7, 0xf4f1e8], [-0.15, 1.58, 0xf2d56b], [0.2, 1.72, 0xbfd8ea], [0.5, 1.55, 0xf2b6a8], [-0.4, 1.35, 0xf4f1e8], [0.05, 1.3, 0xc7e3c0], [0.45, 1.28, 0xf4f1e8]].forEach(function(q){ box(0.02, 0.22, 0.17, q[2], px + 0.03, q[1] - 0.05, pz + q[0], null, { cast: false }); }); })();   // Etapa 85: avisos presos no painel
     var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(748)); root.add(pot);
     var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(748)); root.add(pl);
+    [[0.2, 0.9, 0.1], [-0.18, 0.95, -0.05], [0.0, 1.1, 0.0], [-0.1, 0.8, 0.2], [0.12, 0.8, -0.18]].forEach(function(q){ var lf = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 6), mat(0x4f8a49, { roughness: 0.9 })); lf.position.set(X(428) + q[0], q[1], Z(748) + q[2]); root.add(lf); });   // Etapa 85: folhagem mais cheia
     var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(335), 0.12, Z(810)); root.add(rg);
   })();
 
