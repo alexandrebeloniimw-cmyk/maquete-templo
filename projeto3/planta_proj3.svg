@@ -408,10 +408,10 @@
 <line x1="600" y1="575" x2="644" y2="575" stroke="#555" stroke-width="2"/><line x1="600" y1="665" x2="644" y2="665" stroke="#555" stroke-width="2"/>
 <path d="M644 575 A44 44 0 0 0 600 619" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M644 665 A44 44 0 0 1 600 621" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
 <text x="590" y="388" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text><text x="590" y="623" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text>
-<rect x="612" y="718" width="76" height="5" fill="#bfe3dc" stroke="#6b7075" stroke-width="1"/><line x1="650" y1="718" x2="650" y2="723" stroke="#6b7075" stroke-width="1.2"/>
-<line x1="612" y1="722" x2="612" y2="684" stroke="#555" stroke-width="2"/><line x1="688" y1="722" x2="688" y2="684" stroke="#555" stroke-width="2"/>
-<path d="M612 684 A38 38 0 0 1 650 722" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M688 684 A38 38 0 0 0 650 722" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
-<text x="650" y="733" text-anchor="middle" font-size="6.5" font-weight="bold" fill="#2c5f55">porta dupla de vidro</text>
+<rect x="606" y="718" width="88" height="5" fill="#bfe3dc" stroke="#6b7075" stroke-width="1"/><line x1="650" y1="718" x2="650" y2="723" stroke="#6b7075" stroke-width="1.2"/>
+<line x1="606" y1="722" x2="606" y2="678" stroke="#555" stroke-width="2"/><line x1="694" y1="722" x2="694" y2="678" stroke="#555" stroke-width="2"/>
+<path d="M606 678 A44 44 0 0 1 650 722" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M694 678 A44 44 0 0 0 650 722" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="650" y="733" text-anchor="middle" font-size="6.5" font-weight="bold" fill="#2c5f55">porta dupla de vidro (1,76 m)</text>
 <line x1="665" y1="700" x2="665" y2="352" stroke="#333" stroke-width="2.5"/><polygon points="665,344 659,356 671,356" fill="#333"/>
 <text transform="translate(690,540) rotate(-90)" text-anchor="middle" font-size="14" font-weight="bold" fill="#444">Corredor de acesso ao anexo</text>
 <text x="665" y="745" text-anchor="middle" font-size="9" font-weight="bold" fill="#444">entrada</text>

@@ -835,10 +835,10 @@
   hwall(225, 40, 700, BH, [door(665)], C.wall, 0.18);                        // Parede divisor nave e anexo; porta do anexo
 
   // ---------- Parede do templo externo (nave x pátio): porta dupla e janela ----------
-  hwall(720, 40, 700, BH, [win(500), { a: 300, b: 390, lh: 2.1 }, { a: 612, b: 688, lh: 2.1 }], C.wall, 0.22);   // PROJETO 2: janela da nave para a Sala de Apoio (x150); janela antiga de x520 removida (banheiros)
-  // MAQUETE 3: porta de entrada do corredor de acesso ao anexo alargada (1,52 m, antes 0,90 m): porta dupla de vidro temperado com perfis pretos e puxadores
+  hwall(720, 40, 700, BH, [win(500), { a: 300, b: 390, lh: 2.1 }, { a: 606, b: 694, lh: 2.1 }], C.wall, 0.22);   // PROJETO 2: janela da nave para a Sala de Apoio (x150); janela antiga de x520 removida (banheiros)
+  // MAQUETE 3: porta de entrada do corredor de acesso ao anexo alargada (1,76 m, quase a largura do corredor; antes 1,52 m): porta dupla de vidro temperado com perfis pretos e puxadores
   (function(){
-    var cz = Z(720), cx = X(650), lw = 0.75, met = 0x1f2226;
+    var cz = Z(720), cx = X(650), lw = 0.85, met = 0x1f2226;   // Etapa 88: porta dupla de 1,76 m (antes 1,52 m), quase a largura do corredor
     [-1, 1].forEach(function(s){
       var lx = cx + s * (lw / 2 + 0.01);
       box(lw, 2.02, 0.012, 0, lx, 1.07, cz, null, { material: tempWinMat, cast: false });
@@ -846,7 +846,7 @@
       [-1, 1].forEach(function(q){ box(0.03, 2.1, 0.05, met, lx + q * (lw / 2), 1.05, cz); });
       [0.14, -0.14].forEach(function(f){ box(0.03, 0.8, 0.03, 0xc9ced3, cx + s * 0.12, 1.05, cz + f); });
     });
-    box(1.62, 0.07, 0.24, met, cx, 2.135, cz); box(1.62, 0.02, 0.26, 0x6b7075, cx, 0.02, cz);
+    box(1.78, 0.07, 0.24, met, cx, 2.135, cz); box(1.78, 0.02, 0.26, 0x6b7075, cx, 0.02, cz);
   })();
   vwall(600, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
   // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
@@ -942,7 +942,7 @@
       });
     })();
     // parede do pátio (face interna): em torno da porta dupla e da janela
-    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 470, 0, BH); ph(720, -1, 530, 612, 0, BH); ph(720, -1, 688, 700, 0, BH); ph(720, -1, 612, 688, 2.1, BH);
+    ph(720, -1, 40, 300, 0, BH); ph(720, -1, 390, 470, 0, BH); ph(720, -1, 530, 606, 0, BH); ph(720, -1, 694, 700, 0, BH); ph(720, -1, 606, 694, 2.1, BH);
     ph(720, -1, 300, 390, 2.1, BH);           // acima da porta
     ph(720, -1, 470, 530, 0, 1.1); ph(720, -1, 470, 530, 2.3, BH);   // abaixo e acima da janela (Sala de Apoio)
   })();
