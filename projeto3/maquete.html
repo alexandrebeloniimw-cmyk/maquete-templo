@@ -696,7 +696,7 @@
     person(300, 1300, 0.04, PI / 2, 'talk'); person(345, 1305, 0.04, N / 2, 'stand'); person(322, 1340, 0.04, PI, 'stand'); person(340, 1480, 0.04, 0, 'stand');
     person(570, 1210, 0.04, PI, 'stand'); person(585, 1630, 0.04, N / 2, 'stand'); person(545, 1712, 0.04, PI / 2, 'talk'); person(588, 1716, 0.04, N / 2, 'stand');   // na entrada do pátio, logo após o portão (saíram do carro vermelho do Estacionamento 1)
     // anexo: corredor e Sala Multiuso (professora com crianças)
-    person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 78, 0.0, 0, 'talk');
+    person(300, 165, 0.0, PI / 2, 'stand'); person(570, 160, 0.0, N / 2, 'talk'); person(120, 84, 0.0, 0, 'talk');
     [[80, 160], null, [115, 176], [150, 160], [98, 198]].forEach(function(q){ if (!q){ n++; return; } person(q[0], q[1], 0.0, PI, 'stand', 0.6); });   // null = criança de blusa rosa retirada (mantém as cores das demais)   // Etapa 70: crianças afastadas da mesa (a de blusa rosa foi retirada)
     // Etapa 76: mais fiéis sentados nos bancos da nave (≈ 60 a mais; gerados com sorteio fixo, sem pesar: tudo vira a mesma malha única)
     (function(){
@@ -1660,9 +1660,9 @@
     { id: 'escadaalto', name: 'Escada (de cima)', g: 'Anexo', pos: [5.8, 4.6, -15.4], tgt: [1.0, 1.2, -14.0], roof: false, labels: false },
     { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [5.7, 1.65, -16.04], tgt: [3.5, 1.3, -17.5], roof: true, labels: false, fp: true },
   ];
-  // ---------- MAQUETE 3 (Etapa 77): salas do anexo (térreo e 2º andar) mais fundas: a parede dos fundos recua 2,10 m (3 bancos da nave) para o norte, sem mexer no corredor ----------
+  // ---------- MAQUETE 3 (Etapa 77): salas do anexo (térreo e 2º andar) mais fundas: a parede dos fundos recua 1,60 m (Etapa 82: puxada 0,50 m para a frente; antes 2,10 m) para o norte, sem mexer no corredor ----------
   var ANX = (function(){
-    var D = 105 * S, zb = Z(-10), zf = Z(105), dep = zf - zb, k = (dep + D) / dep, xW = [X(40), X(700)];
+    var D = 80 * S, zb = Z(-10), zf = Z(105), dep = zf - zb, k = (dep + D) / dep, xW = [X(40), X(700)];
     function f(z){ return z >= zf ? z : zf - (zf - z) * k; }
     function inX(c){ return c > X(30) && c < X(705); }
     scene.children.slice().forEach(function(gr){
