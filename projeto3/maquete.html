@@ -56,7 +56,7 @@
 <div id="app">
   <div id="stage"><canvas id="c"></canvas></div>
   <aside id="side">
-    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores (Cozinha e Lanchonete), Estacionamento 1 com 4 vagas e fachada com 2 portas de vidro temperado</p></div>
+    <div class="top"><h1>Maquete 3 · Visão 3D</h1><p>Pátio com 2 ambientes menores, Estacionamento 1 com 4 vagas, fachada com 2 portas de vidro e corredor de acesso ao anexo mais largo</p></div>
     <div class="tools">
   <button id="tRoof" class="on">Telhado</button>
   <button id="tLabels" class="on">Nomes</button>
@@ -300,7 +300,7 @@
   rect(200, 50, 280, 155, 0.06, 0.04, 0xdfe7ea, { cast: false });            // PROJETO 2: banheiro do anexo (entre Sala 1 e Sala 2)   // PROJETO 2: 3 salas
   rect(580, 50, 695, 155, 0.06, 0.04, 0xe8d9c0, { cast: false });            // PROJETO 2: Sala de Apoio às Mamães (piso amadeirado claro)
   rect(50, 155, 700, 220, 0.06, 0.04, C.corr, { cast: false });              // corredor do anexo
-  rect(630, 220, 700, 320, 0.0, 0.1, C.corr, { cast: false });               // corredor de acesso ao anexo
+  rect(600, 220, 700, 320, 0.0, 0.1, C.corr, { cast: false });               // corredor de acesso ao anexo
   // nave: piso de cor clara (porcelanato bege claro, placas de 0,6 m)
   (function(){
     var cv = document.createElement('canvas'); cv.width = cv.height = 128; var g = cv.getContext('2d');
@@ -312,12 +312,12 @@
   })();
 
   // ---------- Altar: Plataforma 1 (0,20 m) e Plataforma 2 (0,40 m de altura total, degrau de 20 cm) + 1/4 de pizza nos extremos ----------
-  rect(40, 274, 630, 320, 0, 0.2, C.plat1);                                  // Plataforma 1 (degrau frontal)
-  rect(40, 230, 630, 274, 0, 0.4, C.plat2);                                  // Plataforma 2 (resto do altar)
+  rect(40, 274, 600, 320, 0, 0.2, C.plat1);                                  // Plataforma 1 (degrau frontal)
+  rect(40, 230, 600, 274, 0, 0.4, C.plat2);                                  // Plataforma 2 (resto do altar)
   (function(){
     var r = 46 * S, geoL = new THREE.CylinderGeometry(r, r, 0.2, 28, 1, false, 0, Math.PI / 2);
     var geoR = new THREE.CylinderGeometry(r, r, 0.2, 28, 1, false, -Math.PI / 2, Math.PI / 2);
-    [[geoL, 40], [geoR, 630]].forEach(function(p){
+    [[geoL, 40], [geoR, 600]].forEach(function(p){
       var m = new THREE.Mesh(p[0], mat(C.plat2)); m.position.set(X(p[1]), 0.3, Z(274)); m.castShadow = true; m.receiveShadow = true; root.add(m);
     });
   })();
@@ -332,10 +332,10 @@
       var t = tx.clone(); t.needsUpdate = true; t.repeat.set((x2 - x1) * S / 0.5, (y2 - y1) * S / 0.5);
       box((x2 - x1) * S, 0.025, (y2 - y1) * S, 0, X((x1 + x2) / 2), top + 0.0125, Z((y1 + y2) / 2), null, { cast: false, material: new THREE.MeshStandardMaterial({ map: t, roughness: 1 }) });
     }
-    tap(48, 238, 622, 266, 0.4);                       // Plataforma 2
-    tap(94, 280, 576, 314, 0.2);                       // Plataforma 1 (entre os 1/4 de círculo)
+    tap(48, 238, 592, 266, 0.4);                       // Plataforma 2
+    tap(94, 280, 546, 314, 0.2);                       // Plataforma 1 (entre os 1/4 de círculo)
     var r = 46 * S - 0.06, cm = new THREE.MeshStandardMaterial({ map: tx, roughness: 1 });
-    [[new THREE.CylinderGeometry(r, r, 0.025, 28, 1, false, 0, Math.PI / 2), 40], [new THREE.CylinderGeometry(r, r, 0.025, 28, 1, false, -Math.PI / 2, Math.PI / 2), 630]].forEach(function(q){
+    [[new THREE.CylinderGeometry(r, r, 0.025, 28, 1, false, 0, Math.PI / 2), 40], [new THREE.CylinderGeometry(r, r, 0.025, 28, 1, false, -Math.PI / 2, Math.PI / 2), 600]].forEach(function(q){
       var m = new THREE.Mesh(q[0], cm); m.position.set(X(q[1]), 0.4125, Z(274)); m.receiveShadow = true; root.add(m);
     });
   })();
@@ -445,7 +445,7 @@
     var pc = 0x4a4d52, pf = 0x5d6066;
     function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
     [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
-    [458, 547, 692].forEach(function(py){ placa(X(630) - 0.07 - 0.03, -1, py); });
+    [458, 547, 692].forEach(function(py){ placa(X(600) - 0.07 - 0.03, -1, py); });
     // ---- Ventiladores de parede (suspensos), entre as placas acústicas ----
     var fanDark = mat(0x34383d, { roughness: 0.5, metalness: 0.3 }), fanBlade = mat(0xd5d9de, { roughness: 0.5 });
     function ventilador(xf, dir, py, y){
@@ -465,7 +465,7 @@
       g.position.set(xf, y, Z(py)); g.rotation.y = dir > 0 ? 0 : Math.PI; root.add(g);
     }
     [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); });
-    [385, 502, 620].forEach(function(py){ ventilador(X(630) - 0.07, -1, py, 2.5); });   // lado das portas: acima das portas (385, 620) e entre as placas (502)
+    [385, 502, 620].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima das portas (385, 620) e entre as placas (502)
     // ---- 2 ar-condicionados (split) na parede que divide a nave e o hall (face interna, voltados para a nave) ----
     var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
     [X(170), X(510)].forEach(function(sx){
@@ -527,11 +527,11 @@
   // ---------- Parede do templo externo (nave x pátio): porta dupla e janela ----------
   hwall(720, 40, 700, BH, [win(500), { a: 300, b: 390, lh: 2.1 }, { a: 645, b: 685, lh: 2.1 }], C.wall, 0.22);   // PROJETO 2: janela da nave para a Sala de Apoio (x150); janela antiga de x520 removida (banheiros)
   doorLeaf(true, 720, 665, 0.86, 2.08, 0.22);                                // PROJETO 2: porta de entrada do corredor de acesso ao anexo
-  vwall(630, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
+  vwall(600, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
   // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
   [385, 620].forEach(function(c){
     var temp = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
-    var met = 0x6b7075, px = X(630), cz = Z(c);
+    var met = 0x6b7075, px = X(600), cz = Z(c);
     [-0.45, 0.45].forEach(function(o){
       var lz = cz + o;
       box(0.012, 2.02, 0.84, 0, px, 1.07, lz, null, { material: temp, cast: false });
@@ -542,7 +542,7 @@
     });
     box(0.24, 0.07, 1.84, met, px, 2.135, cz);
   });                              // PROJETO 2: parede do corredor (lado da nave/altar)
-  rect(630, 320, 700, 720, 0, 0.1, C.corr, { cast: false });                 // PROJETO 2: piso do corredor
+  rect(600, 320, 700, 720, 0, 0.1, C.corr, { cast: false });                 // PROJETO 2: piso do corredor
   // revestimento SOMENTE da face interna da nave e do altar: paredes em cinza claro
   (function(){
     var gray = 0xd2d4d7, off = 0.116, th = 0.012;
@@ -601,12 +601,12 @@
       arc.scale.set(1, 0.38, 1); arc.position.set(xc, yc - 0.52, zl + 0.004); root.add(arc);          // arco azul na base
       // faixa de LED quente no pé da parede (atrás da plataforma) + brilho
       var led = new THREE.MeshBasicMaterial({ color: 0xffc16b });
-      box((630 - 48) * S, 0.035, 0.012, 0, X(339), 0.62, z0 + 0.012, null, { material: led, cast: false });
+      box((600 - 48) * S, 0.035, 0.012, 0, X(324), 0.62, z0 + 0.012, null, { material: led, cast: false });
       var gcv = document.createElement('canvas'); gcv.width = 4; gcv.height = 128; var gg = gcv.getContext('2d');
       var grd = gg.createLinearGradient(0, 128, 0, 0); grd.addColorStop(0, 'rgba(255,190,110,.55)'); grd.addColorStop(1, 'rgba(255,190,110,0)');
       gg.fillStyle = grd; gg.fillRect(0, 0, 4, 128);
-      var glow = new THREE.Mesh(new THREE.PlaneGeometry((630 - 48) * S, 0.55), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(gcv), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
-      glow.position.set(X(339), 0.9, z0 + 0.014); root.add(glow);
+      var glow = new THREE.Mesh(new THREE.PlaneGeometry((600 - 48) * S, 0.55), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(gcv), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
+      glow.position.set(X(324), 0.9, z0 + 0.014); root.add(glow);
       // dois splits (ar-condicionado) altos, um de cada lado do letreiro
       [X(170), X(510)].forEach(function(sx){
         box(1.15, 0.3, 0.22, 0xf4f4f2, sx, 2.5, z0 + 0.12, null, {});
@@ -614,7 +614,7 @@
         box(0.04, 0.03, 0.01, 0x44d17a, sx + 0.45, 2.55, z0 + 0.232, null, { cast: false });
       });
       // caixas de som penduradas perto do teto, nos cantos
-      [X(70), X(600)].forEach(function(sx){
+      [X(70), X(570)].forEach(function(sx){
         box(0.04, 0.35, 0.04, 0x333333, sx, 2.75, z0 + 0.4);
         rbox(0.42, 0.62, 0.38, 0x1c1e22, sx, 2.3, z0 + 0.4, { b: 0.03, r: 0.05 });
         box(0.26, 0.26, 0.012, 0x34383d, sx, 2.35, z0 + 0.6, null, { cast: false });
