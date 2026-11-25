@@ -1860,7 +1860,7 @@
   })();
   // ---------- MAQUETE 3 (Etapa 78): 3 bancos iguais aos da nave (mesmo tamanho, passo de 0,71 m) nas salas 2 e 3 do anexo (térreo), para conferir a nova profundidade ----------
   (function(){
-    var zIn = Z(-10) + 0.11;                                       // face interna da parede dos fundos das salas
+    var zIn = Z(-10) + 0.11 - 0.85;                                // Etapa 90: bancos centralizados na profundidade da sala (antes encostados no lado do corredor); largura já centralizada
     var estofado = mat(0x7b8189, { roughness: 0.95 });
     [385, 592.5].forEach(function(px){
       var cx = X(px);
