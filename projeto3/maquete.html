@@ -999,12 +999,12 @@
   for (var i = 0; i <= 4; i++) line(50, 1300 + i * 100, 250, 1300 + i * 100);
   line(50, 1300, 50, 1700); line(250, 1300, 250, 1700);
   for (var r = 0; r < 4; r++) car(150, 1300 + r * 100 + 50, 0);
-  pSign(279, 1322);
+  // MAQUETE 3 (Etapa 47): placa 'P' do Estacionamento 1 removida
   // Estacionamento 2: 8 vagas verticais (4 fileiras x 2), frente para a nave (deslocado para trás: começa em y=900)
   for (var j = 0; j <= 4; j++) line(450, 900 + j * 200, 690, 900 + j * 200);
   [450, 570, 690].forEach(function(xv){ line(xv, 900, xv, 1700); });
   for (var rr = 1; rr < 4; rr++) for (var cc = 0; cc < 2; cc++) car(450 + cc * 120 + 60, 900 + rr * 200 + 100, Math.PI / 2);   // MAQUETE 3: os 2 carros da 1ª fileira (junto à porta da fachada) foram retirados; as vagas ficam livres
-  pSign(423, 922);
+  // MAQUETE 3 (Etapa 47): placa 'P' da fachada removida
 
   // ---------- Rua com 2 carros estacionados ----------
   (function(){
@@ -1227,10 +1227,7 @@
     [[-0.1, -0.45, 0.28], [0.1, 0.0, 0.34], [-0.05, 0.45, 0.26]].forEach(function(q){
       var sh = new THREE.Mesh(new THREE.SphereGeometry(q[2], 10, 8), mat(0x5f9a4f)); sh.position.set(X(279) + q[0], 0.56 + q[2] * 0.8, Z(1140) + q[1]); sh.castShadow = true; root.add(sh);
     });
-    // estrutura metálica retangular sobre a cobertura (centro da fachada) — some junto com o telhado
-    [295, 395].forEach(function(px){ box(0.07, 1.6, 0.07, steel, X(px), 3.3 + 0.8, Z(803), roofGroup); });
-    box(100 * S + 0.07, 0.07, 0.07, steel, X(345), 3.3 + 1.6, Z(803), roofGroup);
-    box(100 * S + 0.07, 0.05, 0.05, steel, X(345), 3.3 + 0.12, Z(803), roofGroup);
+    // MAQUETE 3 (Etapa 47): estrutura metálica retangular sobre a cobertura removida
     // caixa d'água sobre a laje das salas externas (cinza claro) — some junto com o telhado
     var tk = new THREE.Mesh(new THREE.CylinderGeometry(0.62, 0.55, 0.85, 24), mat(0xd7dbdf, { roughness: 0.6 })); tk.position.set(X(110), BH + 0.16 + 0.43, Z(1000)); tk.castShadow = true; roofGroup.add(tk);
     var lid = new THREE.Mesh(new THREE.CylinderGeometry(0.64, 0.64, 0.05, 24), mat(0xaeb3b8)); lid.position.set(X(110), BH + 0.16 + 0.88, Z(1000)); roofGroup.add(lid);
