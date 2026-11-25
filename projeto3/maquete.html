@@ -509,6 +509,22 @@
 
   })();
   muro(false, X(40), Z(1240), (1760 - 720) * S, BH, 0.22); muro(false, X(700), Z(1240), (1760 - 720) * S, BH, 0.22);   // Muro à esquerda / à direita
+  // MAQUETE 3 (Etapa 54): luminárias (arandelas de LED, luz para cima e para baixo) nos muros laterais do pátio, a cada 3,0 m, a 2,4 m de altura
+  (function(){
+    var hous = new THREE.MeshStandardMaterial({ color: 0x2b2f33, metalness: 0.5, roughness: 0.4 }), led = new THREE.MeshBasicMaterial({ color: 0xeaf4ff });
+    var gc = document.createElement('canvas'); gc.width = gc.height = 128; var gg = gc.getContext('2d'); var rg = gg.createRadialGradient(64, 64, 4, 64, 64, 62); rg.addColorStop(0, 'rgba(215,232,255,0.9)'); rg.addColorStop(1, 'rgba(215,232,255,0)'); gg.fillStyle = rg; gg.fillRect(0, 0, 128, 128);
+    var gt = new THREE.CanvasTexture(gc), gm = new THREE.MeshBasicMaterial({ map: gt, transparent: true, opacity: 0.55, blending: THREE.AdditiveBlending, depthWrite: false });
+    function sconce(xFace, zc, dir){   // dir = +1: parede à esquerda (face voltada para +x); -1: parede à direita
+      var cx = xFace + dir * 0.07;
+      box(0.04, 0.32, 0.16, 0x1a1c1f, xFace + dir * 0.02, 2.4, zc);                                   // espelho de fixação
+      box(0.14, 0.3, 0.12, 0, cx, 2.4, zc, null, { material: hous });                                  // corpo
+      box(0.15, 0.025, 0.1, 0, cx, 2.565, zc, null, { material: led, cast: false });                   // fenda de luz para cima
+      box(0.15, 0.025, 0.1, 0, cx, 2.235, zc, null, { material: led, cast: false });                   // fenda de luz para baixo
+      [[2.95, 1.1], [1.75, 1.3]].forEach(function(q){ var gp = new THREE.Mesh(new THREE.PlaneGeometry(1.0, q[1]), gm); gp.rotation.y = dir * Math.PI / 2; gp.position.set(xFace + dir * 0.012, q[0] - (q[0] > 2.4 ? 0.0 : 0.0), zc); root.add(gp); });   // lavagem de luz na parede
+    }
+    [970, 1120, 1270, 1420, 1570, 1720].forEach(function(py){ sconce(X(700) - 0.11, Z(py), -1); });
+    [1300, 1450, 1600].forEach(function(py){ sconce(X(40) + 0.11, Z(py), 1); });
+  })();
   // Muro com grade na frente (muro de 1 m + grade de 2 m), com o Portão principal
   function gradeFrente(x1, x2){
     var len = (x2 - x1) * S, cx = X((x1 + x2) / 2), z = Z(1760);
@@ -1398,6 +1414,7 @@
     { id: 'anexo',   name: 'Anexo',           pos: [5, 19, -1],    tgt: [0, 0, -13], roof: false, labels: true },
     { id: 'cima',    name: 'Vista de cima',   pos: [0, 56, 4.01],  tgt: [0, 0, 4],   roof: false, labels: true },
     { id: 'rua', name: 'Rua (calçada)', g: 'Fora e rua', pos: [-12, 1.7, 19.4], tgt: [2, 1.0, 21.3], roof: true, labels: false, fp: true },
+    { id: 'muroluz', name: 'Luminárias do muro (pátio)', g: 'Panorama', pos: [1.2, 1.8, 4.2], tgt: [6.4, 2.3, 9.5], roof: true, labels: false, fp: true },
     { id: 'portao', name: 'Portão (olhando o templo)', g: 'Fora e rua', pos: [4.2, 1.7, 18.0], tgt: [0.5, 1.8, -0.3], roof: true, labels: false, fp: true },
     { id: 'estac2', name: 'Estacionamento 2', g: 'Fora e rua', pos: [4.0, 1.65, 15.8], tgt: [4.0, 1.2, 0.0], roof: true, labels: false, fp: true },
     { id: 'estac1', name: 'Estacionamento 1', g: 'Fora e rua', pos: [0.4, 1.65, 14.0], tgt: [-5.0, 1.0, 13.2], roof: true, labels: false, fp: true },
