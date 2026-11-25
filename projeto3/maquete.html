@@ -1727,16 +1727,21 @@
       ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
+      ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo, entre as placas acústicas e os ventiladores.', 0, [[-4.6,3.0,-8.0],[4.6,1.2,-8.0], false]],
+      ['corlat', 'Corredor que leva ao anexo', 'Corredor de 2,0 m ao lado da nave: liga o hall à porta do anexo, com portas de vidro para a nave e ventilação natural.', 0, [[5.6,8.0,0.0],[5.6,0.0,-9.5], false]],
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e leva à escada.', 0],
+      ['anexot', 'Anexo · térreo', 'Vista de cima das salas do térreo: Sala 1, banheiro acessível, Salas 2 e 3 e a escada, voltadas para o corredor aberto.', 0, [[0.3,12.5,-14.4],[0.3,0,-17.0], false, 3.02]],
       ['sala2a', 'Salas do anexo (térreo)', 'Salas de aula com ar-condicionado, tela e mobiliário; ao lado, banheiro acessível (PCD) e a escada para o 2º andar.', 0, [[-3.55,2.75,-14.75],[-5.8,0.3,-17.4]]],
       ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca, Sala de Reuniões da Junta Diaconal e WC, com passarela vazada sobre o corredor.', 0, [[2.7,12,-14.2],[2.7,3.3,-17.0]]],
       ['a2mult', '2º andar · Sala Multiuso', 'Sala Multiuso com tela de projeção, painel ripado e cadeiras, para aulas, reuniões e eventos.', 0, [[-4.9,12,-13.0],[-4.9,3.3,-16.5]]],
-      ['fachadaf', 'À noite', 'O mesmo projeto iluminado: fachada, pátio, nave e anexo.', 1]
+      ['fachadaf', 'À noite · fachada', 'O mesmo projeto iluminado: a fachada com a logo e as luzes de LED.', 1],
+      ['noitegeral', 'À noite · pátio, hall, nave e anexo', 'Todo o conjunto à noite: pátio e estacionamentos, hall, nave e anexo com os ambientes iluminados.', 1, [[11,24,27],[0,0,-6], false]]
     ], i = 0, timer = null, raf = null, paused = false, active = false, nightByTour = false, DWELL = 8000, t0 = 0, rem = DWELL;
     var card = document.getElementById('tourCard'), btn = document.getElementById('tTour'), fill = document.querySelector('#tourBar i');
     function show(n){
       i = (n + S.length) % S.length; var s = S[i];
-      if (s[4]) go({ id: 'tour' + i, pos: s[4][0], tgt: s[4][1], roof: false, labels: false });   // ambientes pequenos: câmera própria, de cima e inclinada
+      renderer.clippingPlanes = (s[4] && s[4][3]) ? [new THREE.Plane(new THREE.Vector3(0, -1, 0), s[4][3])] : [];   // recorte: esconde tudo acima dessa altura (2º andar) para ver o térreo de cima
+      if (s[4]) go({ id: 'tour' + i, pos: s[4][0], tgt: s[4][1], roof: !!s[4][2], labels: false });   // ambientes pequenos: câmera própria, de cima e inclinada
       else { var b = document.querySelector('#views button[data-id="' + s[0] + '"]'); if (b) b.click(); }
       if (s[3] && !isNight){ setNight(true); nightByTour = true; } else if (!s[3] && isNight && nightByTour){ setNight(false); nightByTour = false; }
       document.getElementById('tourN').textContent = 'Passo ' + (i + 1) + ' de ' + S.length;
@@ -1752,7 +1757,7 @@
     function off(){ var st = document.getElementById('stage'), w = st.clientWidth, h = st.clientHeight; if (w && h){ camera.setViewOffset(w, h, 0, h * 0.09, w, h); camera.updateProjectionMatrix(); need = 40; } }   // sobe a imagem para o cartão não cobrir o ambiente
     window.addEventListener('resize', function(){ if (active) off(); });
     function start(){ active = true; paused = false; card.style.display = 'block'; btn.classList.add('on'); btn.textContent = '■ Parar'; document.getElementById('tourPause').textContent = '⏸ Pausar'; off(); show(0); }
-    function stop(){ active = false; camera.clearViewOffset(); camera.updateProjectionMatrix(); need = 40; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
+    function stop(){ active = false; renderer.clippingPlanes = []; camera.clearViewOffset(); camera.updateProjectionMatrix(); need = 40; clearTimeout(timer); cancelAnimationFrame(raf); card.style.display = 'none'; btn.classList.remove('on'); btn.textContent = '▶ Apresentar'; if (nightByTour){ setNight(false); nightByTour = false; } }
     btn.onclick = function(){ active ? stop() : start(); };
     document.getElementById('tourExit').onclick = stop;
     document.getElementById('tourNext').onclick = function(){ show(i + 1); };
