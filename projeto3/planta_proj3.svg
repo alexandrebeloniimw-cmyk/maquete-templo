@@ -404,14 +404,14 @@
 <polygon points="665,230 659,242 671,242" fill="#333"/>
 <text x="590" y="345" text-anchor="end" font-size="14" fill="#333">Acesso ao anexo →</text>
 <rect x="600" y="320" width="100" height="450" fill="#d9d9de"/>
-<line x1="600" y1="225" x2="600" y2="340" stroke="#222" stroke-width="4"/><line x1="600" y1="430" x2="600" y2="575" stroke="#222" stroke-width="4"/><line x1="600" y1="665" x2="600" y2="770" stroke="#222" stroke-width="4"/>
-<rect x="598" y="340" width="4" height="90" fill="#d2ebd9"/>
-<line x1="600" y1="340" x2="644" y2="340" stroke="#555" stroke-width="2"/><line x1="600" y1="430" x2="644" y2="430" stroke="#555" stroke-width="2"/>
-<path d="M644 340 A44 44 0 0 0 600 384" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M644 430 A44 44 0 0 1 600 386" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
-<rect x="598" y="575" width="4" height="90" fill="#d2ebd9"/>
-<line x1="600" y1="575" x2="644" y2="575" stroke="#555" stroke-width="2"/><line x1="600" y1="665" x2="644" y2="665" stroke="#555" stroke-width="2"/>
-<path d="M644 575 A44 44 0 0 0 600 619" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M644 665 A44 44 0 0 1 600 621" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
-<text x="590" y="388" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text><text x="590" y="623" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text>
+<line x1="600" y1="225" x2="600" y2="325" stroke="#222" stroke-width="4"/><line x1="600" y1="415" x2="600" y2="675" stroke="#222" stroke-width="4"/><line x1="600" y1="765" x2="600" y2="770" stroke="#222" stroke-width="4"/>
+<rect x="598" y="325" width="4" height="90" fill="#d2ebd9"/>
+<line x1="600" y1="325" x2="644" y2="325" stroke="#555" stroke-width="2"/><line x1="600" y1="415" x2="644" y2="415" stroke="#555" stroke-width="2"/>
+<path d="M644 325 A44 44 0 0 0 600 369" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M644 415 A44 44 0 0 1 600 371" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="598" y="675" width="4" height="90" fill="#d2ebd9"/>
+<line x1="600" y1="675" x2="644" y2="675" stroke="#555" stroke-width="2"/><line x1="600" y1="765" x2="644" y2="765" stroke="#555" stroke-width="2"/>
+<path d="M644 675 A44 44 0 0 0 600 719" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/><path d="M644 765 A44 44 0 0 1 600 721" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
+<text x="590" y="373" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text><text x="590" y="723" text-anchor="end" font-size="10" font-weight="bold" fill="#2c5f55">porta dupla</text>
 <g transform="translate(0,50)">
 <rect x="606" y="718" width="88" height="5" fill="#bfe3dc" stroke="#6b7075" stroke-width="1"/><line x1="650" y1="718" x2="650" y2="723" stroke="#6b7075" stroke-width="1.2"/>
 <line x1="606" y1="722" x2="606" y2="678" stroke="#555" stroke-width="2"/><line x1="694" y1="722" x2="694" y2="678" stroke="#555" stroke-width="2"/>

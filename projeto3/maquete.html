@@ -421,7 +421,7 @@
       box(w, 0.10, d, 0, X((x1 + x2) / 2), 0.08 + 0.05, Z((y1 + y2) / 2), null, { cast: false, material: rm }); }
     var xi = 40 + 0.09 / S, xe = 600 - 0.09 / S, yi = 720 - 0.09 / S;
     rod(xi, 320, xi, 720);                                      // parede oeste
-    rod(xe, 322, xe, 340); rod(xe, 430, xe, 575); rod(xe, 665, xe, 718);   // parede leste (corredor), entre as portas
+    rod(xe, 415, xe, 674);   // parede leste (corredor), entre as portas (Etapa 91: portas nos extremos)
     rod(42, yi, 300, yi); rod(390, yi, 598, yi);                 // parede sul (nave × hall), fora da porta de vidro
   })();
 
@@ -572,7 +572,7 @@
     var pc = 0x4a4d52, pf = 0x5d6066;
     function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
     [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
-    [458, 547, 692].forEach(function(py){ placa(X(600) - 0.07 - 0.03, -1, py); });
+    [458, 547, 636].forEach(function(py){ placa(X(600) - 0.07 - 0.03, -1, py); });
     // ---- Ventiladores de parede (suspensos), entre as placas acústicas ----
     var fanDark = mat(0x34383d, { roughness: 0.5, metalness: 0.3 }), fanBlade = mat(0xd5d9de, { roughness: 0.5 });
     function ventilador(xf, dir, py, y){
@@ -589,10 +589,11 @@
       put(ringG, fanDark, 0.24, 0, 0, 0, Math.PI / 2, 0, head); put(ringG, fanDark, 0.06, 0, 0, 0, Math.PI / 2, 0, head);
       put(new THREE.TorusGeometry(0.11, 0.005, 6, 28), fanDark, 0.24, 0, 0, 0, Math.PI / 2, 0, head);
       for (var j = 0; j < 8; j++){ var sp = new THREE.Group(); sp.position.set(0.24, 0, 0); sp.rotation.x = j * Math.PI / 8; put(new THREE.BoxGeometry(0.006, 0.45, 0.006), fanDark, 0, 0, 0, 0, 0, 0, sp); head.add(sp); }
-      g.position.set(xf, y, Z(py)); g.rotation.y = dir > 0 ? 0 : Math.PI; root.add(g);
+      g.position.set(xf, y, Z(py)); g.rotation.y = dir > 0 ? 0 : Math.PI; root.add(g); return g;
     }
     [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); });
-    [385, 502, 620].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima das portas (385, 620) e entre as placas (502)
+    [370, 502].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima da porta norte (370) e entre as placas (502)
+    ventilador(X(600) - 0.07, -1, 719.5, 2.5).userData.noext = true;   // Etapa 91: acima da porta sul (já na posição final, com a nave +1,0 m)
     // ---- 2 ar-condicionados (split) na parede que divide a nave e o hall (face interna, voltados para a nave) ----
     var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
     EXTSKIP = true;
@@ -854,9 +855,10 @@
     });
     box(1.78, 0.07, 0.24, met, cx, 2.135, cz); box(1.78, 0.02, 0.26, 0x6b7075, cx, 0.02, cz);
   })();
-  vwall(600, 225, 720, BH, [{ a: 340, b: 430, lh: 2.1 }, { a: 575, b: 665, lh: 2.1 }], 0xd2d4d7, 0.14);
+  vwall(600, 225, 720, BH, [{ a: 325, b: 415, lh: 2.1 }, { a: 674, b: 715, lh: 2.1 }], 0xd2d4d7, 0.14);   // Etapa 91: portas nos extremos da nave (rente ao altar e rente à parede do hall); a abertura sul estica até y765 com a nave
   // PROJETO 2: 2 portas duplas em vidro temperado (iguais à porta da nave) ligando a nave ao corredor: uma junto ao altar e outra na extremidade oposta
-  [385, 620].forEach(function(c){
+  EXTSKIP = true;   // Etapa 91: as folhas já nascem na posição final (a porta sul fica em y674..765, depois do avanço da nave)
+  [370, 719.5].forEach(function(c){
     var temp = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
     var met = 0x6b7075, px = X(600), cz = Z(c);
     [-0.45, 0.45].forEach(function(o){
@@ -868,7 +870,8 @@
       [0.14, -0.14].forEach(function(f){ box(0.03, 0.8, 0.03, 0xc9ced3, px + f, 1.05, hz); });
     });
     box(0.24, 0.07, 1.84, met, px, 2.135, cz);
-  });                              // PROJETO 2: parede do corredor (lado da nave/altar)
+  });
+  EXTSKIP = false;                              // PROJETO 2: parede do corredor (lado da nave/altar)
   rect(600, 320, 700, 720, 0, 0.1, C.corr, { cast: false });                 // PROJETO 2: piso do corredor
   // revestimento SOMENTE da face interna da nave e do altar: paredes em cinza claro
   (function(){
@@ -2008,7 +2011,7 @@
       ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
-      ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo, entre as placas acústicas e os ventiladores.', 0, [[-4.6,3.0,-8.0],[4.6,1.2,-8.0], false]],
+      ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo: uma rente ao altar e outra rente à parede do hall, nos extremos da nave.', 0, [[-4.6,3.0,-7.1],[4.6,1.2,-7.1], false]],
       ['corlat', 'Corredor que leva ao anexo', 'Corredor de 2,0 m ao lado da nave: liga o hall à porta do anexo, com portas de vidro para a nave e ventilação natural.', 0, [[5.6,8.0,0.0],[5.6,0.0,-9.5], false]],
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e tem a escada de acesso ao 2º andar.', 0],
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
