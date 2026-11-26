@@ -1008,7 +1008,14 @@
     }
     up(255, T / 2 + 0.012, 730, 745, 1.5, BH, 0.024); up(255, T / 2 + 0.012, 790, 820, 1.5, BH, 0.024); up(255, T / 2 + 0.012, 865, 880, 1.5, BH, 0.024);
     up(255, T / 2 + 0.012, 745, 790, 2.1, BH, 0.024); up(255, T / 2 + 0.012, 820, 865, 2.1, BH, 0.024);
-    up(700, -(0.11 + 0.012), 722, 884, 1.5, BH, 0.024);
+    up(700, -(0.11 + 0.012), 716, 884, 1.5, BH, 0.024);
+    // topos das paredes do Hall (vistos de cima) também na cor da nave
+    function cap(vx, wd, y1px, y2px){
+      var len = (y2px - y1px) * S;
+      var m = new THREE.Mesh(new THREE.BoxGeometry(wd, 0.02, len), mat(C.wall));
+      m.position.set(X(vx), BH + 0.01, Z((y1px + y2px) / 2)); m.castShadow = false; m.receiveShadow = true; root.add(m);
+    }
+    cap(255, T, 730, 880); cap(700, 0.22, 716, 884);
   })();
 
   // ---------- Bancos: 4 fileiras x 10 (Mesa de som no lugar do Banco 1 da Fileira 1) ----------
