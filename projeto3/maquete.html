@@ -222,6 +222,7 @@
   var root = new THREE.Group(); scene.add(root);
   var roofGroup = new THREE.Group(); scene.add(roofGroup);
   var labelGroup = new THREE.Group(); labelGroup.visible = false; scene.add(labelGroup);
+  var corrForro = new THREE.Group(); scene.add(corrForro);        // Etapa 103: forro do corredor de acesso ao anexo — fixo; só some com o botão Telhado desligado
   var forroGroup = new THREE.Group(); scene.add(forroGroup);      // forros e luzes (somem junto com o telhado)
 
   function box(w, h, d, color, x, y, z, parent, o){
@@ -1713,25 +1714,26 @@
       for (var i = 0; i < 260; i++){ g.fillStyle = 'rgba(190,190,185,.35)'; g.fillRect(Math.random() * 128, Math.random() * 128, 1.5, 1.5); }
       g.strokeStyle = '#c9c9c3'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 125, 125);
     })();
-    function isopor(x1, y1, x2, y2, ex){
+    function isopor(x1, y1, x2, y2, ex, grp){
       var w = (x2 - x1) * S, d = (y2 - y1) * S;
       var t = new THREE.CanvasTexture(cvE); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(w / 0.6, (d + (ex || 0) * S) / 0.6);
-      box(w, 0.04, d, 0, X((x1 + x2) / 2), FY, Z((y1 + y2) / 2), forroGroup, { material: new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, emissive: 0x7c7c78, emissiveMap: t }), cast: false });
+      box(w, 0.04, d, 0, X((x1 + x2) / 2), FY, Z((y1 + y2) / 2), grp || forroGroup, { material: new THREE.MeshStandardMaterial({ map: t, roughness: 0.95, emissive: 0x7c7c78, emissiveMap: t }), cast: false });
     }
     var lampMat = new THREE.MeshBasicMaterial({ color: 0xfff6d6 });
-    function lamp(xpx, ypx, w, d){ box(w, 0.04, d, 0, X(xpx), FY - 0.04, Z(ypx), forroGroup, { material: lampMat, cast: false }); }
+    function lamp(xpx, ypx, w, d, grp){ box(w, 0.04, d, 0, X(xpx), FY - 0.04, Z(ypx), grp || forroGroup, { material: lampMat, cast: false }); }
     function lampRound(xpx, ypx){
       var m = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.04, 20), lampMat); m.position.set(X(xpx), FY - 0.04, Z(ypx)); forroGroup.add(m);
     }
     // nave + altar (y230..720)
-    isopor(40, 230, 700, 720, NEXT / S);   // Etapa 96: o forro estica com a nave (placas mantêm 0,6 m)
+    isopor(40, 230, 600, 720, NEXT / S);   // Etapa 96: o forro estica com a nave (placas mantêm 0,6 m)
+    isopor(600, 230, 700, 720, NEXT / S, corrForro);   // Etapa 103: trecho do corredor de acesso ao anexo (mesmo forro), fixo
     [160, 335, 510].forEach(function(px){
       [252, 380, 470, 560, 650].forEach(function(py){ lamp(px, py, 0.9, 0.22); });
     });
-    [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22); });   // PROJETO 2: corredor
+    [380, 520, 650].forEach(function(py){ lamp(665, py, 0.9, 0.22, corrForro); });   // PROJETO 2: corredor
     EXTSKIP = true;   // Etapa 96: luminárias do trecho novo da nave e do corredor (já na posição final)
     [160, 335, 510].forEach(function(px){ [740, 830].forEach(function(py){ lamp(px, py, 0.9, 0.22); }); });
-    [790, 860].forEach(function(py){ lamp(665, py, 0.9, 0.22); });
+    [790, 860].forEach(function(py){ lamp(665, py, 0.9, 0.22, corrForro); });
     EXTSKIP = false;
     // salas externas 1 e 2
     isopor(50, 880, 205, 1100);   // MAQUETE 3: a Cantina não tem forro (telhado de policarbonato aparente)
@@ -1972,7 +1974,8 @@
   if (/[#&?]noite/.test(location.href)) setNight(true);
 
   function setLabels(on){ labelGroup.visible = on; document.getElementById('tLabels').classList.toggle('on', on); }
-  function setRoof(on){ roofGroup.visible = on; forroGroup.visible = on; document.getElementById('tRoof').classList.toggle('on', on); }
+  var corrOff = false;   // Etapa 103: o forro do corredor só some quando o botão Telhado é desligado de propósito
+  function setRoof(on, manual){ roofGroup.visible = on; forroGroup.visible = on; if (manual) corrOff = !on; else corrOff = false; corrForro.visible = !corrOff; document.getElementById('tRoof').classList.toggle('on', on); }
   function go(v, instant){
     current = v.id;
     [].forEach.call(bar.children, function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
@@ -1986,7 +1989,7 @@
     var b = document.createElement('button'); b.className = 'view'; b.textContent = v.name; b.dataset.id = v.id;
     b.onclick = function(){ go(v); }; bar.appendChild(b);
   });
-  document.getElementById('tRoof').onclick = function(){ setRoof(!roofGroup.visible); };
+  document.getElementById('tRoof').onclick = function(){ setRoof(!roofGroup.visible, true); };
   document.getElementById('tLabels').onclick = function(){ setLabels(!labelGroup.visible); };
   document.getElementById('tSpin').onclick = function(e){ controls.autoRotate = !controls.autoRotate; e.currentTarget.classList.toggle('on', controls.autoRotate); };
   controls.addEventListener('start', function(){ anim = null; });
@@ -2068,7 +2071,7 @@
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
       ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo: uma rente ao altar e outra rente à parede do hall, nos extremos da nave.', 0, [[-6.1,2.9,-6.0],[4.6,1.0,-6.0], false]],
-      ['corlat', 'Corredor que leva ao anexo', 'Corredor de 2,0 m ao lado da nave: liga o hall à porta do anexo, com portas de vidro para a nave e ventilação natural.', 0, [[5.6,8.0,0.0],[5.6,0.0,-9.5], false]],
+      ['corlat', 'Corredor que leva ao anexo', 'Corredor de 2,0 m ao lado da nave, com o mesmo forro da nave: liga o hall à porta do anexo, com portas de vidro para a nave.', 0, [[5.9,2.5,-2.0],[5.9,1.1,-12.5], false]],
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e tem a escada de acesso ao 2º andar.', 0],
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
       ['anexot', 'Anexo · térreo', 'Vista de cima das salas do térreo: Sala 1, banheiro acessível e as Salas 2 e 3, voltadas para o corredor aberto.', 0, [[0.3,16,-15.0],[0.3,0,-18.0], false, 3.02]],
