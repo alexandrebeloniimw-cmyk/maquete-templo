@@ -1016,6 +1016,25 @@
       m.position.set(X(vx), BH + 0.01, Z((y1px + y2px) / 2)); m.castShadow = false; m.receiveShadow = true; root.add(m);
     }
     cap(255, T, 730, 880); cap(700, 0.22, 716, 884);
+    // Etapa 110: banheiros passam a ter a aparência externa do Hall: parte de cima (acima de 1,5 m) das faces voltadas para fora na cor da nave + topos
+    (function(){
+      function upH(x1px, x2px, ypx, face){   // parede horizontal (norte/sul)
+        var len = (x2px - x1px) * S, hh = BH - 1.5;
+        var m = new THREE.Mesh(new THREE.BoxGeometry(len, hh, 0.024), mat(C.wall));
+        m.position.set(X((x1px + x2px) / 2), 1.5 + hh / 2, Z(ypx) + face); m.castShadow = true; m.receiveShadow = true; root.add(m);
+      }
+      function upV(xpx, y1px, y2px, face){   // parede vertical (oeste)
+        var len = (y2px - y1px) * S, hh = BH - 1.5;
+        var m = new THREE.Mesh(new THREE.BoxGeometry(0.024, hh, len), mat(C.wall));
+        m.position.set(X(xpx) + face, 1.5 + hh / 2, Z((y1px + y2px) / 2)); m.castShadow = true; m.receiveShadow = true; root.add(m);
+      }
+      upH(50, 255, 730, -(T / 2 + 0.012));        // norte (voltada para o pátio)
+      upV(50, 730, 880, -(T / 2 + 0.012));        // oeste
+      upH(205, 255, 880, T / 2 + 0.012);          // sul, trecho voltado para a varanda
+      function capH(x1px, x2px, ypx){ var m = new THREE.Mesh(new THREE.BoxGeometry((x2px - x1px) * S, 0.02, T), mat(C.wall)); m.position.set(X((x1px + x2px) / 2), BH + 0.01, Z(ypx)); m.receiveShadow = true; root.add(m); }
+      function capV(xpx, y1px, y2px){ var m = new THREE.Mesh(new THREE.BoxGeometry(T, 0.02, (y2px - y1px) * S), mat(C.wall)); m.position.set(X(xpx), BH + 0.01, Z((y1px + y2px) / 2)); m.receiveShadow = true; root.add(m); }
+      capH(50, 255, 730); capH(50, 255, 880); capV(50, 730, 880);
+    })();
   })();
 
   // ---------- Bancos: 4 fileiras x 10 (Mesa de som no lugar do Banco 1 da Fileira 1) ----------
