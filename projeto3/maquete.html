@@ -1555,6 +1555,25 @@
       if (nE) box(0.06, 0.32, oz2 - oz1, 0xe4e0d6, ox2, TOP + 0.19, czz, roofGroup);
     }
     cobertura(xa, xm, za, zb, true, true, true, false); cobertura(xm, xb, za, zs, false, false, false, true);
+    // Etapa 98: TELHADO DE POLICARBONATO sobre a passarela e a escada do 2º andar (protege quem entra/sai das salas e quem sobe a escada).
+    // Cobre todo o corredor aberto (x200..700, da fachada das salas até a parede da nave); inclina levemente (0,20 m) para o lado da nave; apoia-se em perfis grafite e em pilares no guarda-corpo da passarela
+    (function(){
+      var cx0 = xm, cx1 = xb, cz0 = zs, cz1 = ZORIG(225) - 0.09, hN = F + 2.55, hS = F + 2.35, cw = cx1 - cx0, cd = cz1 - cz0;
+      var ang = Math.atan((hN - hS) / cd), g = new THREE.Group();
+      g.position.set((cx0 + cx1) / 2, (hN + hS) / 2, (cz0 + cz1) / 2); g.rotation.x = ang; roofGroup.add(g);
+      var sheet = new THREE.Mesh(new THREE.BoxGeometry(cw, 0.035, cd), new THREE.MeshStandardMaterial({ color: 0xcfeef2, transparent: true, opacity: 0.5, roughness: 0.2, metalness: 0.1, side: THREE.DoubleSide, depthWrite: false }));
+      sheet.castShadow = false; g.add(sheet);
+      var gf = 0x23262a, gm = mat(gf);
+      function gb(w, h, d, x, y, z){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gm); m.position.set(x, y, z); g.add(m); }
+      gb(cw, 0.07, 0.06, 0, 0.04, -cd / 2 + 0.03); gb(cw, 0.07, 0.06, 0, 0.04, cd / 2 - 0.03);          // vigas de borda (fachada e lado da nave)
+      gb(0.06, 0.07, cd, -cw / 2 + 0.03, 0.04, 0); gb(0.06, 0.07, cd, cw / 2 - 0.03, 0.04, 0);          // vigas das pontas
+      for (var rk = 1; rk < 8; rk++) gb(cw, 0.04, 0.04, 0, 0.035, -cd / 2 + rk * cd / 8);               // terças
+      for (var rj = 1; rj < 16; rj++) gb(0.035, 0.04, cd, -cw / 2 + rj * cw / 16, 0.035, 0);            // caibros
+      // pilares no alinhamento do guarda-corpo da passarela (mesmos pontos dos montantes), menos na abertura da escada
+      var pzz = zp, hP = hN - (pzz - cz0) / cd * (hN - hS);
+      for (var gq = 0; gq <= 8; gq++){ var qx = cx0 + gq * cw / 8; if (qx > STlx0 - 0.03 && qx < STxl1 + 0.03) continue; box(0.07, hP - F, 0.07, gf, Math.min(cx1 - 0.05, Math.max(cx0 + 0.05, qx)), F + (hP - F) / 2, pzz - 0.03, roofGroup); }
+      box(0.07, hP - F, 0.07, gf, STlx0 - 0.04, F + (hP - F) / 2, pzz - 0.03, roofGroup);                // pilar no lado do patamar
+    })();
     [[85, 70], [85, 140], [85, 200], [160, 70], [160, 140], [160, 200], [240, 98], [335, 70], [435, 70], [335, 120], [435, 120], [540, 70], [610, 70], [540, 125], [610, 125], [670, 70], [670, 125]].forEach(function(q){
       var sp = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.1, 0.02, 16), glowM); sp.position.set(X(q[0]), TOP - 0.01, Z(q[1])); roofGroup.add(sp);
     });
