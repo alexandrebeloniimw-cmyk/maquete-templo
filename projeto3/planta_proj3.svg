@@ -217,10 +217,7 @@
 <text x="500" y="750" text-anchor="middle" font-size="8" fill="#2f6db5">janela para a nave</text>
 <text x="335" y="800" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">Hall</text><text x="335" y="816" text-anchor="middle" font-size="9" fill="#666">corredor de acesso · recepção</text>
 <text x="285" y="772" text-anchor="start" font-size="9" fill="#2f6db5">← banheiros</text><text x="345" y="742" text-anchor="middle" font-size="9" fill="#2f6db5">↑ nave</text><text x="665" y="765" text-anchor="middle" font-size="9" fill="#2f6db5">↑ anexo</text><text x="332" y="866" text-anchor="middle" font-size="9" fill="#2f6db5">↓ pátio</text>
-<rect x="676" y="775" width="22" height="80" rx="5" fill="#8fa3ad" stroke="#6f838d"/><text transform="translate(691,818) rotate(-90)" text-anchor="middle" font-size="8" fill="#fff">banco</text>
 <rect x="395" y="722" width="70" height="5" fill="#d9c7a8" stroke="#8a7550"/><text x="430" y="737" text-anchor="middle" font-size="7" fill="#5a4a2a">painel de avisos</text>
-<rect x="533" y="724" width="70" height="23" rx="3" fill="#8fa3ad" stroke="#6f838d"/><text x="568" y="739" text-anchor="middle" font-size="7" fill="#fff">banco</text>
-<rect x="259" y="772" width="23" height="44" rx="3" fill="#8fa3ad" stroke="#6f838d"/><text transform="translate(274,794) rotate(-90)" text-anchor="middle" font-size="7" fill="#fff">banco</text>
 <rect x="435" y="800" width="110" height="26" rx="2" fill="#b58a5c" stroke="#7a5a3a" stroke-width="1.3"/><rect x="445" y="803" width="28" height="6" fill="#2b2e32"/><circle cx="455" cy="790" r="6" fill="#3a3f45"/><text x="490" y="817" text-anchor="middle" font-size="8" font-weight="bold" fill="#fff">Recepção</text><text x="490" y="836" text-anchor="middle" font-size="6" fill="#5a4a2a">balcão 2,2 m</text>
 <circle cx="428" cy="748" r="9" fill="#6f9a68" stroke="#4d7a47"/>
 <rect x="684" y="750" width="14" height="18" rx="3" fill="#b9d8f2" stroke="#6a8aa5" stroke-width="1.3"/><text x="681" y="758" text-anchor="end" font-size="7" font-weight="bold" fill="#333">Bebedouro</text>
