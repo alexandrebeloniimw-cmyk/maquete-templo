@@ -1507,11 +1507,15 @@
     var STx0 = X(575), STtd = 0.26, STxl1 = STx0 - 16 * STtd, STlx0 = STxl1 - 1.0;   // Etapa 70: escada reta (pé da escada, passo, fim do lance, borda oeste do patamar)
     var xm = X(200) + 0.06, zs = Z(155) + 0.06, zp = Z(203);   // MAQUETE 3 (Etapa 45): o corredor do anexo (x200..700, y155..225) fica ABERTO (ventilação/iluminação); só passarela vazada
     [[xa, xm, za, zb], [xm, xb, za, zs]].forEach(function(q){ box(q[1] - q[0], 0.12, q[3] - q[2], 0xd8d4cb, (q[0] + q[1]) / 2, F - 0.06, (q[2] + q[3]) / 2); });
-    // passarela em grelha metálica vazada (0,96 m) sobre o corredor aberto: barras longitudinais + travessas, estrutura grafite
+    // Etapa 99: PASSARELA DE CONCRETO (laje maciça de 12 cm, antes grelha metálica vazada), com juntas de dilatação a cada ~2,5 m
     (function(){ var gx0 = xm, gx1 = xb, gz0 = zs, gz1 = zp, gl = gx1 - gx0;
-      box(gl, 0.1, 0.06, dk, (gx0 + gx1) / 2, F - 0.05, gz0 + 0.03); box(gl, 0.1, 0.06, dk, (gx0 + gx1) / 2, F - 0.05, gz1 - 0.03);
-      for (var gk = 0; gk <= Math.round(gl / 0.3); gk++) box(0.025, 0.04, gz1 - gz0, 0x6b7075, gx0 + gk * 0.3, F - 0.02, (gz0 + gz1) / 2, null, { cast: false });
-      for (var gm = 1; gm < 5; gm++) box(gl, 0.02, 0.02, 0x8a8f94, (gx0 + gx1) / 2, F - 0.005, gz0 + gm * (gz1 - gz0) / 5, null, { cast: false });
+      var ctx = noiseTex('#b4b4b0', ['#a6a6a2', '#c2c2be', '#9c9c98', '#bdbdb8', '#acaca8'], 1, function(g, rn){
+        for (var i = 0; i < 40; i++){ var x = rn() * 512, y = rn() * 512, r = 20 + rn() * 60, gr = g.createRadialGradient(x, y, 0, x, y, r), t = rn() < 0.5; gr.addColorStop(0, t ? 'rgba(120,120,116,.22)' : 'rgba(205,205,200,.22)'); gr.addColorStop(1, 'rgba(150,150,146,0)'); g.fillStyle = gr; g.fillRect(x - r, y - r, r * 2, r * 2); }
+        g.strokeStyle = 'rgba(70,70,68,.6)'; g.lineWidth = 3; g.strokeRect(1.5, 1.5, 509, 509);
+      });
+      ctx.repeat.set(gl / 2.5, 1);
+      var cm = new THREE.MeshStandardMaterial({ map: ctx, roughness: 0.92, envMapIntensity: 0.4 });
+      box(gl, 0.14, gz1 - gz0, 0, (gx0 + gx1) / 2, F - 0.07, (gz0 + gz1) / 2, null, { material: cm });
       // guarda-corpo de vidro (1,10 m) no lado sul e na ponta leste, com corrimão grafite
       [[gx0, STlx0], [STxl1, gx1]].forEach(function(sg){ var sl = sg[1] - sg[0], sc = (sg[0] + sg[1]) / 2; box(sl, 1.1, 0.03, 0, sc, F + 0.55, gz1, null, { material: tempWinMat, cast: false }); box(sl, 0.05, 0.06, dk, sc, F + 1.1, gz1); });   // abertura do guarda-corpo no patamar da escada
       box(0.03, 1.1, gz1 - gz0, 0, gx1 - 0.015, F + 0.55, (gz0 + gz1) / 2, null, { material: tempWinMat, cast: false }); box(0.06, 0.05, gz1 - gz0, dk, gx1 - 0.03, F + 1.1, (gz0 + gz1) / 2);
@@ -1841,7 +1845,7 @@
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
     { id: 'a2geral', name: '2º andar · Biblioteca e Reuniões (de cima)', g: '2º andar', pos: [1.0, 17, -7.0], tgt: [0.6, 3.2, -16.9], roof: false, labels: true },
     { id: 'a2ext', name: '2º andar · volume externo', g: '2º andar', pos: [5.5, 9.5, -4.5], tgt: [0.5, 4.5, -15.0], roof: true, labels: false },
-    { id: 'a2cor', name: '2º andar · passarela vazada', g: '2º andar', pos: [-3.0, 4.75, -15.42], tgt: [6.2, 4.5, -15.42], roof: true, labels: false, fp: true },
+    { id: 'a2cor', name: '2º andar · passarela de concreto', g: '2º andar', pos: [-3.0, 4.75, -15.42], tgt: [6.2, 4.5, -15.42], roof: true, labels: false, fp: true },
     { id: 'corabe', name: 'Anexo · corredor aberto ao céu e passarela', g: 'Anexo', pos: [-2.9, 1.65, -14.9], tgt: [4.5, 3.4, -14.9], roof: true, labels: false, fp: true },
     { id: 'a2reun', name: '2º andar · Sala de Reuniões e Copa', g: '2º andar', pos: [3.0, 4.8, -17.1], tgt: [5.6, 4.3, -17.1], roof: true, labels: false, fp: true },
     { id: 'a2bib', name: '2º andar · Biblioteca', g: '2º andar', pos: [0.9, 4.8, -15.9], tgt: [-1.0, 4.2, -17.8], roof: true, labels: false, fp: true },
@@ -2047,7 +2051,7 @@
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
       ['anexot', 'Anexo · térreo', 'Vista de cima das salas do térreo: Sala 1, banheiro acessível e as Salas 2 e 3, voltadas para o corredor aberto.', 0, [[0.3,16,-15.0],[0.3,0,-18.0], false, 3.02]],
       ['sala2a', 'Salas do anexo (térreo)', 'Salas de aula com ar-condicionado, tela e mobiliário; ao lado, o banheiro acessível (PCD).', 0, [[-3.55,2.75,-14.75],[-5.8,0.3,-17.4]]],
-      ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca e Sala de Reuniões com Copa, alinhadas às salas do térreo, com passarela vazada sobre o corredor.', 0, [[2.7,15,-14.6],[2.7,3.3,-18.0]]],
+      ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca e Sala de Reuniões com Copa, alinhadas às salas do térreo, com passarela de concreto sobre o corredor.', 0, [[2.7,15,-14.6],[2.7,3.3,-18.0]]],
       ['a2mult', '2º andar · Sala Multiuso', 'Sala Multiuso com tela de projeção, painel ripado e cadeiras, para aulas, reuniões e eventos.', 0, [[-4.9,14,-13.4],[-4.9,3.3,-18.0]]],
       ['fachadaf', 'À noite · fachada', 'O mesmo projeto iluminado: a fachada com a logo e as luzes de LED.', 1],
       ['noitegeral', 'À noite · pátio, hall, nave e anexo', 'Todo o conjunto à noite: pátio e estacionamentos, hall, nave e anexo com os ambientes iluminados.', 1, [[11,24,27],[0,0,-6], false]]
