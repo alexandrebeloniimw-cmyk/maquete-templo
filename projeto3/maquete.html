@@ -577,6 +577,7 @@
     function placa(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.75, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.75, Z(py), null, { cast: false }); }
     [385, 475, 565, 655].forEach(function(py){ placa(X(40) + 0.11 + 0.03, 1, py); });
     [458, 547, 636].forEach(function(py){ placa(X(600) - 0.07 - 0.03, -1, py); });
+    EXTSKIP = true; placa(X(600) - 0.07 - 0.03, -1, 725); EXTSKIP = false;   // Etapa 104: placa no trecho novo da parede leste (entre a placa y636 e a porta sul), mesmo passo de 1,8 m
     EXTSKIP = true; placa(X(40) + 0.11 + 0.03, 1, 745); EXTSKIP = false;   // Etapa 97: placa no trecho novo da parede oeste (mesmo passo de 1,8 m das outras)
     // Etapa 92: altar com painel acústico nas paredes oeste e leste (o do fundo, parede altar × anexo, foi excluído na Etapa 93), mesmo modelo da nave, um pouco mais alto por causa da plataforma
     function placaAltar(x, dir, py){ box(0.06, 1.9, 0.8, pc, x, 1.9, Z(py), null, { cast: false }); box(0.02, 1.8, 0.7, pf, x + dir * 0.035, 1.9, Z(py), null, { cast: false }); }
@@ -602,6 +603,7 @@
     [430, 520, 610].forEach(function(py){ ventilador(X(40) + 0.11, 1, py, 2.5); });
     ventilador(X(40) + 0.11, 1, 700, 2.5).userData.noext = true;   // Etapa 97: ventilador no trecho novo da parede oeste, entre as placas y655 e y745
     [370, 502].forEach(function(py){ ventilador(X(600) - 0.07, -1, py, 2.5); });   // lado das portas: acima da porta norte (370) e entre as placas (502)
+    ventilador(X(600) - 0.07, -1, 680.5, 2.5).userData.noext = true;   // Etapa 104: ventilador entre as placas y636 e y725 da parede leste
     ventilador(X(600) - 0.07, -1, 829.5, 2.5).userData.noext = true;   // Etapa 91: acima da porta sul (já na posição final, com a nave +1,0 m)
     // ---- 2 ar-condicionados (split) na parede que divide a nave e o hall (face interna, voltados para a nave) ----
     var splitBranco = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.45, emissive: 0xa8a8a8 });
