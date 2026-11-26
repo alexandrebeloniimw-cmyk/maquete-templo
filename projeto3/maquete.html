@@ -990,7 +990,7 @@
       function part(ya, yb, tile){
         if (yb - ya <= 0.001) return;
         var len = (b - a) * S, hh = yb - ya;
-        var m = new THREE.Mesh(new THREE.BoxGeometry(len, hh, 0.024), tile ? tileMat(len / 0.5, hh / 0.5) : mat(C.azul));
+        var m = new THREE.Mesh(new THREE.BoxGeometry(len, hh, 0.024), tile ? tileMat(len / 0.5, hh / 0.5) : mat(C.wall));
         m.position.set(X((a + b) / 2), ya + hh / 2, zf); m.castShadow = true; m.receiveShadow = true; root.add(m);
       }
       part(y0, Math.min(y1, 1.5), true); part(Math.max(y0, 1.5), y1, false);
