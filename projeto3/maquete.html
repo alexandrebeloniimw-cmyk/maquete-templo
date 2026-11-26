@@ -999,6 +999,18 @@
     clad(300, 390, 2.1, BH); clad(604, 696, 2.1, BH);
   })();
 
+  // Etapa 107: demais paredes do Hall (oeste = banheiros, leste = muro): parte superior (acima de 1,5 m) na cor das paredes da nave, só na face voltada para o Hall
+  (function(){
+    function up(vx, face, y1px, y2px, yb, yt, th){
+      var len = (y2px - y1px) * S, hh = yt - yb;
+      var m = new THREE.Mesh(new THREE.BoxGeometry(th, hh, len), mat(C.wall));
+      m.position.set(X(vx) + face, yb + hh / 2, Z((y1px + y2px) / 2)); m.castShadow = true; m.receiveShadow = true; root.add(m);
+    }
+    up(255, T / 2 + 0.012, 730, 745, 1.5, BH, 0.024); up(255, T / 2 + 0.012, 790, 820, 1.5, BH, 0.024); up(255, T / 2 + 0.012, 865, 880, 1.5, BH, 0.024);
+    up(255, T / 2 + 0.012, 745, 790, 2.1, BH, 0.024); up(255, T / 2 + 0.012, 820, 865, 2.1, BH, 0.024);
+    up(700, -(0.11 + 0.012), 722, 884, 1.5, BH, 0.024);
+  })();
+
   // ---------- Bancos: 4 fileiras x 10 (Mesa de som no lugar do Banco 1 da Fileira 1) ----------
   var pewX = [104, 279, 455];   // PROJETO 2: corredores nas extremidades e entre as fileiras (aprox. 1,3 m cada)   // PROJETO 2: Fileira 4 eliminada (dá lugar ao corredor de acesso ao anexo)
   EXTSKIP = true;   // Etapa 89: bancos e mesa de som já nascem na posição nova (passo BP)
