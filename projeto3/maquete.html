@@ -1265,7 +1265,7 @@
       drawL(null); var iml = new Image(); iml.onload = function(){ drawL(iml); }; iml.src = LOGO_IMW;
       var D = 2.1, LGY = FH / 2, LGZ = 0.5, lg = new THREE.Mesh(new THREE.PlaneGeometry(D, D), new THREE.MeshBasicMaterial({ map: tl, transparent: true }));
       lg.position.set(cxF, LGY, zf + 0.215 + LGZ); root.add(lg);   // Etapa 113: logo suspensa, à frente do letreiro
-      box(D + 0.16, D + 0.16, 0.03, grafite, cxF, LGY, zf + 0.195 + LGZ, null, { cast: false });
+      // Etapa 119: placa quadrada atrás da logo removida
       [-0.6, 0.6].forEach(function(q){ var cb = new THREE.Mesh(new THREE.CylinderGeometry(0.008, 0.008, 1, 6), new THREE.MeshStandardMaterial({ color: 0xcfd5db, metalness: 0.9, roughness: 0.3 })); var y1 = LGY + D / 2 + 0.05, y2 = FH + 0.03, dz = -(LGZ + 0.05); var L = Math.sqrt((y2 - y1) * (y2 - y1) + dz * dz); cb.scale.y = L; cb.position.set(cxF + q, (y1 + y2) / 2, zf + 0.2 + LGZ + dz / 2); cb.rotation.x = Math.atan2(-dz, y2 - y1); root.add(cb); });
     })();
     // MAQUETE 3 (Etapa 50): fachada mais imponente — acabamentos dourados, anéis de LED no logo, halo luminoso no letreiro, fitas de LED verticais, embasamento em granito preto, refletores de piso e balizadores
@@ -1278,7 +1278,7 @@
       // logo: anel dourado + anel de LED + halo
       var r1 = new THREE.Mesh(new THREE.TorusGeometry(1.08, 0.035, 10, 64), gold); r1.position.set(cxF, cyL, zf + 0.23 + LGZ2); root.add(r1);
       var r2 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.022, 8, 64), warm); r2.position.set(cxF, cyL, zf + 0.215 + LGZ2); root.add(r2);
-      var halo = new THREE.Mesh(new THREE.PlaneGeometry(4.2, 4.2), glowMat(glowTex('rgba(190,215,255,0.9)', 'rgba(150,190,255,0)'), 0.55)); halo.position.set(cxF, cyL, zf + 0.175 + LGZ2); root.add(halo);
+      // Etapa 119: halo quadrado atrás da logo removido
       // letreiro: halo luminoso, frisos dourados em cima e embaixo, letras com brilho
       var hs = new THREE.Mesh(new THREE.PlaneGeometry(W + 1.2, bandH + 0.9), glowMat(glowTex('rgba(190,215,255,0.55)', 'rgba(150,190,255,0)'), 0.5)); hs.position.set(cxF, bandY, zf + 0.14); root.add(hs);
       box(W, 0.045, 0.06, 0, cxF, bandY + bandH / 2 - 0.02, zf + 0.17, null, { material: gold, cast: false }); box(W, 0.045, 0.06, 0, cxF, bandY - bandH / 2 + 0.02, zf + 0.17, null, { material: gold, cast: false });
