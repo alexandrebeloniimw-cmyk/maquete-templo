@@ -1865,6 +1865,23 @@
     { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [4.4, 1.65, -16.04], tgt: [2.8, 1.3, -17.7], roof: true, labels: false, fp: true },
     { id: 'apoioanexo', name: 'Sala de Apoio às Mamães (anexo)', g: 'Anexo', pos: [5.7, 1.65, -16.0], tgt: [5.7, 1.1, -19.0], roof: true, labels: false, fp: true },
   ];
+  // ---------- Etapa 105: ambientes escolhidos deixam a imersão (olhos) e passam a visão de cima, um pouco inclinada (≈ 54°), com telhado/forro ocultos ----------
+  // Ficam imersivos (como antes): nave, pátio/estacionamentos/varanda e corredor ao lado da nave.
+  (function(){
+    var ids = ['cantinaf', 'cantinav', 'cantinae', 'cozvidro', 'cozinhae', 'bfem', 'bmasc', 'hallfp', 'recepcao', 'peshall', 'saguao', 'vidro',
+      'anexocorr', 'corabe', 'escadafp', 'sala1a', 'sala2a', 'sala3a', 'portacorrer', 'apoioanexo', 'wcanexo', 'rua'];
+    var ids2 = ['a2cor', 'a2reun', 'a2bib', 'a2mult', 'a2esc'];          // 2º andar: piso em y = 3,16 m
+    var clipIds = ['corabe', 'anexocorr', 'escadafp', 'sala1a', 'sala2a', 'sala3a', 'portacorrer', 'apoioanexo', 'wcanexo'];   // térreo do anexo: recorta o 2º andar
+    ids.concat(ids2).forEach(function(id){
+      var v = views.filter(function(x){ return x.id === id; })[0]; if (!v) return;
+      var dx = v.tgt[0] - v.pos[0], dz = v.tgt[2] - v.pos[2], len = Math.sqrt(dx * dx + dz * dz) || 1, ux = dx / len, uz = dz / len;
+      var fl = ids2.indexOf(id) >= 0 ? 3.4 : 0.6, back = Math.max(4.6, 0.6 * len);
+      var lx = v.pos[0] + dx / 2, lz = v.pos[2] + dz / 2;
+      v.tgt = [lx, fl, lz]; v.pos = [lx - ux * back, fl + back * 1.25, lz - uz * back];
+      v.fp = false; v.roof = false; v.labels = false;
+      if (clipIds.indexOf(id) >= 0) v.clip = 3.02;
+    });
+  })();
   // ---------- MAQUETE 3 (Etapa 77): salas do anexo (térreo e 2º andar) mais fundas: a parede dos fundos recua 1,60 m (Etapa 82: puxada 0,50 m para a frente; antes 2,10 m) para o norte, sem mexer no corredor ----------
   var ANX = (function(){
     var D = 80 * S, zb = Z(-10), zf = Z(105), dep = zf - zb, k = (dep + D) / dep, xW = [X(40), X(700)];
@@ -1982,6 +1999,7 @@
     current = v.id;
     [].forEach.call(bar.children, function(b){ b.classList.toggle('active', b.dataset.id === v.id); });
     if (v.roof !== undefined) setRoof(v.roof); else setRoof(true);
+    if (v.clip) renderer.clippingPlanes = [new THREE.Plane(new THREE.Vector3(0, -1, 0), v.clip)]; else if (!window.__tourActive) renderer.clippingPlanes = [];   // Etapa 105: vistas do térreo do anexo recortam o 2º andar
     // Etapa 83: nomes só aparecem quando a pessoa clica em Nomes (as vistas não ligam mais)
     var p1 = new THREE.Vector3(v.pos[0], v.pos[1], nzw(v.pos[2])), t1 = new THREE.Vector3(v.tgt[0], v.tgt[1], nzw(v.tgt[2]));   // Etapa 89: câmeras do hall e do pátio acompanham
     if (instant){ camera.position.copy(p1); controls.target.copy(t1); controls.update(); return; }
@@ -2088,7 +2106,7 @@
     function show(n){
       i = (n + S.length) % S.length; var s = S[i];
       renderer.clippingPlanes = (s[4] && s[4][3]) ? [new THREE.Plane(new THREE.Vector3(0, -1, 0), s[4][3])] : [];   // recorte: esconde tudo acima dessa altura (2º andar) para ver o térreo de cima
-      if (s[4]) go({ id: 'tour' + i, pos: s[4][0], tgt: s[4][1], roof: !!s[4][2], labels: false });   // ambientes pequenos: câmera própria, de cima e inclinada
+      if (s[4]) go({ id: 'tour' + i, pos: s[4][0], tgt: s[4][1], roof: !!s[4][2], labels: false, clip: s[4][3] });   // ambientes pequenos: câmera própria, de cima e inclinada
       else { var b = document.querySelector('#views button[data-id="' + s[0] + '"]'); if (b) b.click(); }
       if (s[3] && !isNight){ setNight(true); nightByTour = true; } else if (!s[3] && isNight && nightByTour){ setNight(false); nightByTour = false; }
       document.getElementById('tourN').textContent = 'Passo ' + (i + 1) + ' de ' + S.length;
