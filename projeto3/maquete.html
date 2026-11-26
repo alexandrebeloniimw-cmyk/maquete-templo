@@ -1542,9 +1542,10 @@
     fl(40, 40, 200, 275, C.salaAnexo); fl(200, 40, 280, 155, 0xdfe7ea); fl(280, 40, 490, 155, C.salaAnexo);
     fl(490, 40, 700, 155, C.salaAnexo);   // Etapa 72: paredes do 2º andar alinhadas às do térreo (x280 e x490)
     // paredes
-    uwall(true, 40, 40, 700, 'ext', [W(85), W(155), W(240, 30), W(385), W(595)]);
-    uwall(false, 40, 40, 275, 'ext', [W(70), W(140), W(210)]); uwall(true, 275, 40, 200, 'ext', [W(85), W(155)]); uwall(false, 700, 40, 155, 'ext', [W(110)]);
-    uwall(false, 200, 40, 155, 'int'); uwall(false, 200, 155, 275, 'int', [D(158, 203)]);
+    // Etapa 100: sem janelas nos fundos, nas laterais nem na frente (casas e prédios vizinhos); as janelas ficam só nas paredes voltadas ao corredor do anexo
+    uwall(true, 40, 40, 700, 'ext', []);
+    uwall(false, 40, 40, 275, 'ext', []); uwall(true, 275, 40, 200, 'ext', []); uwall(false, 700, 40, 155, 'ext', []);
+    uwall(false, 200, 40, 155, 'int'); uwall(false, 200, 155, 275, 'int', [D(158, 203), W(240, 50)]);   // Etapa 100: janela da Sala Multiuso voltada para o corredor
     uwall(true, 155, 200, 280, 'int', [D(217.5, 262.5)]); uwall(false, 280, 40, 155, 'int');
     uwall(true, 155, 280, 490, 'int', [D(300, 345), W(435)]); uwall(false, 490, 40, 155, 'int');
     uwall(true, 155, 490, 700, 'int', [D(512, 557), W(640)]);
