@@ -262,6 +262,15 @@
       }
       return null;
     }
+    if (color === 'HALFW' && !material){   // Etapa 111: metade de baixo com ladrilhinhos e metade de cima na cor das paredes da nave/hall
+      [[y0, Math.min(y0 + hh, 1.5), true], [Math.max(y0, 1.5), y0 + hh, false]].forEach(function(q){
+        var ph = q[1] - q[0]; if (ph <= 0.001) return;
+        var mt = q[2] ? tileMat(len / 0.5, ph / 0.5) : mat(C.wall);
+        if (horiz) box(len, ph, tt, 0, X(mid), q[0] + ph / 2, Z(fixed), null, { material: mt });
+        else box(tt, ph, len, 0, X(fixed), q[0] + ph / 2, Z(mid), null, { material: mt });
+      });
+      return null;
+    }
     if (color === 'HALF' && !material){
       [[y0, Math.min(y0 + hh, 1.5), true], [Math.max(y0, 1.5), y0 + hh, false]].forEach(function(q){
         var ph = q[1] - q[0]; if (ph <= 0.001) return;
@@ -1018,9 +1027,9 @@
     cap(255, T, 730, 880); cap(700, 0.22, 716, 884);
     // Etapa 110: banheiros passam a ter a aparência externa do Hall: parte de cima (acima de 1,5 m) das faces voltadas para fora na cor da nave + topos
     (function(){
-      function upH(x1px, x2px, ypx, face){   // parede horizontal (norte/sul)
+      function upH(x1px, x2px, ypx, face, dth){   // parede horizontal (norte/sul)
         var len = (x2px - x1px) * S, hh = BH - 1.5;
-        var m = new THREE.Mesh(new THREE.BoxGeometry(len, hh, 0.024), mat(C.wall));
+        var m = new THREE.Mesh(new THREE.BoxGeometry(len, hh, dth || 0.024), mat(C.wall));
         m.position.set(X((x1px + x2px) / 2), 1.5 + hh / 2, Z(ypx) + face); m.castShadow = true; m.receiveShadow = true; root.add(m);
       }
       function upV(xpx, y1px, y2px, face){   // parede vertical (oeste)
@@ -1034,6 +1043,7 @@
       function capH(x1px, x2px, ypx){ var m = new THREE.Mesh(new THREE.BoxGeometry((x2px - x1px) * S, 0.02, T), mat(C.wall)); m.position.set(X((x1px + x2px) / 2), BH + 0.01, Z(ypx)); m.receiveShadow = true; root.add(m); }
       function capV(xpx, y1px, y2px){ var m = new THREE.Mesh(new THREE.BoxGeometry(T, 0.02, (y2px - y1px) * S), mat(C.wall)); m.position.set(X(xpx), BH + 0.01, Z((y1px + y2px) / 2)); m.receiveShadow = true; root.add(m); }
       capH(50, 255, 730); capH(50, 255, 880); capV(50, 730, 880);
+      upH(50, 205, 880, -(T / 2 + 0.002), 0.004);        // Etapa 111: face interna (banheiros) da parede compartilhada com a Cozinha
     })();
   })();
 
@@ -1117,12 +1127,12 @@
   var kitMat2 = new THREE.MeshStandardMaterial({ map: floorTex(2, [226, 220, 208], '#a9a396', (155 * S) / 0.8, (140 * S) / 0.8, false), roughness: 0.35, envMapIntensity: 0.55 });
   rect(50, 880, 205, 1100, 0.0, 0.1, 0, { cast: false, material: kitMat });            // MAQUETE 3: Cozinha (maior que a Lanchonete)
   rect(50, 1100, 205, 1240, 0.0, 0.1, 0, { cast: false, material: kitMat2 });           // MAQUETE 3: Lanchonete
-  hwall(730, 50, 255, BH, [], 'HALF');   // paredes dos banheiros: mesmo azul claro das salas externas
-  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALF');   // MAQUETE 3: porta do Masculino pela varanda retirada (vão fechado)      // paredes das salas externas: azul mais claro
+  hwall(730, 50, 255, BH, [], 'HALFW');   // paredes dos banheiros: mesmo azul claro das salas externas
+  hwall(880, 50, 205, BH, [], 'HALF'); hwall(880, 205, 255, BH, [], 'HALFW');   // MAQUETE 3: porta do Masculino pela varanda retirada (vão fechado)      // paredes das salas externas: azul mais claro
   hwall(1100, 50, 205, BH, [], 'GLASSUP'); hwall(1240, 50, 205, BH, [{ a: 110, b: 195, sill: 1.1, lh: 2.2, open: true }], 'HALF');   // Etapa 73: janela de vendas voltada para o Estacionamento 1
   // MAQUETE 3: Cozinha (divisória para a Cantina em vidro da metade para cima) e Cantina
-  vwall(50, 730, 880, BH, [], 'HALF'); vwall(50, 880, 1240, BH, [], 'HALF');
-  vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALF');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
+  vwall(50, 730, 880, BH, [], 'HALFW'); vwall(50, 880, 1240, BH, [], 'HALF');
+  vwall(255, 730, 880, BH, [{ a: 745, b: 790, lh: 2.1 }, { a: 820, b: 865, lh: 2.1 }], 'HALFW');   // PROJETO 2: porta da Sala de Apoio às Mamães   // portas: Feminino (cima) / Masculino (baixo)
 
   vwall(205, 880, 1100, BH, [door(930)], 'GLASSUP');   // MAQUETE 3: parede da Cozinha voltada para a varanda: azulejo até a metade e vidro temperado (janelas longas) acima
   vwall(205, 1100, 1240, BH, [door(1135), { a: 1165, b: 1235, sill: 1.1, lh: 2.2, open: true }], 'HALF');   // MAQUETE 3: Cantina: porta + abertura do balcão de atendimento
@@ -1130,7 +1140,7 @@
   // ---- PROJETO 2: HALL (x410..590, y730..880), no lugar da antiga Sala de Apoio; acesso aberto pelo saguão ----
   winFrame(true, 720, 500);   // Hall aberto: sem paredes divisórias; janela na parede da nave
   // ---- PROJETO 2: banheiros iguais aos da IGREJA ATUAL (Feminino y730..805 / Masculino y805..880) ----
-  hwall(805, 50, 255, BH, [], 'HALF');
+  hwall(805, 50, 255, BH, [], 'HALFW');
   doorLeaf(false, 255, 767.5, 0.86, 2.08, 0.18); doorLeaf(false, 255, 842.5, 0.86, 2.08, 0.18);   // 1 porta de acesso para cada banheiro: Feminino pelo hall; Masculino pela varanda (acesso independente)
   [730, 805].forEach(function(y0, bi){
     // 2 cabines (≈ 0,67 × 1,75 m) ao fundo, com divisórias padrão e porta de cabine; pia + espelho na área de acesso (sem corredor interno)
