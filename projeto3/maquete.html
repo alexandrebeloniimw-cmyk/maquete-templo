@@ -1772,6 +1772,38 @@
     lampRound(127, 955);
     // banheiros (feminino e masculino)
     isopor(50, 730, 255, 880); isopor(255, 722, 700, 884);   // PROJETO 2: banheiros e Hall
+    // Etapa 112: iluminação moderna e aconchegante nos banheiros — spots embutidos de luz quente, fita de LED (cortina de luz) no alto das paredes e espelhos com luz atrás (backlight)
+    (function(){
+      var warm = new THREE.MeshBasicMaterial({ color: 0xffdca8 }), ring = new THREE.MeshStandardMaterial({ color: 0xe8e6e0, roughness: 0.5, metalness: 0.4 });
+      function glowTex(vertical){
+        var c = document.createElement('canvas'); c.width = c.height = 64; var g = c.getContext('2d');
+        if (vertical){ var lg = g.createLinearGradient(0, 0, 0, 64); lg.addColorStop(0, 'rgba(255,214,150,0.9)'); lg.addColorStop(1, 'rgba(255,214,150,0)'); g.fillStyle = lg; g.fillRect(0, 0, 64, 64); }
+        else { var rg = g.createRadialGradient(32, 32, 2, 32, 32, 31); rg.addColorStop(0, 'rgba(255,220,160,0.95)'); rg.addColorStop(1, 'rgba(255,220,160,0)'); g.fillStyle = rg; g.fillRect(0, 0, 64, 64); }
+        return new THREE.CanvasTexture(c);
+      }
+      var halo = new THREE.MeshBasicMaterial({ map: glowTex(false), transparent: true, opacity: 0.5, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+      var wash = new THREE.MeshBasicMaterial({ map: glowTex(true), transparent: true, opacity: 0.38, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+      var backGlow = new THREE.MeshBasicMaterial({ color: 0xffe2b4 });
+      [730, 805].forEach(function(y0){
+        // 6 spots embutidos por banheiro (moldura metálica + lente quente + halo suave no forro)
+        [90, 150, 210].forEach(function(px){ [y0 + 22, y0 + 55].forEach(function(py){
+          var r = new THREE.Mesh(new THREE.CylinderGeometry(0.095, 0.095, 0.02, 20), ring); r.position.set(X(px), FY - 0.03, Z(py)); forroGroup.add(r);
+          var l = new THREE.Mesh(new THREE.CylinderGeometry(0.07, 0.07, 0.02, 20), warm); l.position.set(X(px), FY - 0.045, Z(py)); forroGroup.add(l);
+          var h = new THREE.Mesh(new THREE.CircleGeometry(0.34, 24), halo); h.rotation.x = Math.PI / 2; h.position.set(X(px), FY - 0.052, Z(py)); forroGroup.add(h);
+        }); });
+        // fita de LED + lavagem de luz na parede, no alto da parede norte do banheiro (e na divisória, do lado oposto)
+        var zN = Z(y0) + 0.092, len = 199 * S, xc = X(154.5);
+        box(len, 0.025, 0.02, 0, xc, BH - 0.1, zN, forroGroup, { material: warm, cast: false });
+        var w1 = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.45), wash); w1.position.set(xc, BH - 0.1 - 0.22, zN + 0.004); forroGroup.add(w1);
+        // espelho com luz atrás: moldura luminosa quente ao redor do espelho (x200, centro 1,55 m) + brilho suave
+        box(0.78, 0.83, 0.004, 0, X(200), 1.55, Z(y0) + 0.083, null, { material: backGlow, cast: false });
+        var hm = new THREE.Mesh(new THREE.PlaneGeometry(1.5, 1.5), halo); hm.position.set(X(200), 1.55, Z(y0) + 0.086); hm.material = hm.material.clone(); hm.material.opacity = 0.32; root.add(hm);
+      });
+      // fita de LED também na parede sul do Masculino (y880)
+      (function(){ var zS = Z(880) - 0.092, len = 199 * S, xc = X(154.5);
+        box(len, 0.025, 0.02, 0, xc, BH - 0.1, zS, forroGroup, { material: warm, cast: false });
+        var w2 = new THREE.Mesh(new THREE.PlaneGeometry(len, 0.45), wash); w2.position.set(xc, BH - 0.1 - 0.22, zS - 0.004); forroGroup.add(w2); })();
+    })();
     lampRound(110, 805); lampRound(200, 805); [310, 400, 490, 580, 665].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
     // salas do anexo e cozinha: laje emboçada branca lisa + luzes
     var lajeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0x8c8c88 });
@@ -1994,6 +2026,7 @@
    [260, 110, 2.6, 0xfff0d8, 1.0, 10], [560, 110, 2.6, 0xfff0d8, 1.0, 10],                                                                       // salas do anexo e corredor
    [370, 1200, 3.6, 0xfff0d8, 1.4, 17],                                                                                                          // pátio
    [560, 1600, 3.4, 0xfff0d8, 1.2, 16],                                                                                                          // estacionamentos
+   [152, 767, 2.5, 0xffd9a8, 0.9, 6], [152, 842, 2.5, 0xffd9a8, 0.9, 6],                                                                         // banheiros (luz quente)
    [480, 885, 3.4, 0xeaf4ff, 1.2, 14]].forEach(function(q){                                                                                      // fachada
     var l = new THREE.PointLight(q[3], 0, q[5], 1.6); l.position.set(X(q[0]), q[2], nzw(Z(q[1]))); l.userData.k = q[4]; nightLights.push(l);   // só entram na cena à noite (luzes apagadas pesariam em todos os materiais)
   });
