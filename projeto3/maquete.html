@@ -1599,7 +1599,7 @@
       g.position.set((cx0 + cx1) / 2, (hN + hS) / 2, (cz0 + cz1) / 2); g.rotation.x = ang; roofGroup.add(g);
       var sheet = new THREE.Mesh(new THREE.BoxGeometry(cw, 0.035, cd), new THREE.MeshStandardMaterial({ color: 0xcfeef2, transparent: true, opacity: 0.5, roughness: 0.2, metalness: 0.1, side: THREE.DoubleSide, depthWrite: false }));
       sheet.castShadow = false; g.add(sheet);
-      var gf = C.azul, gm = mat(gf);   // Etapa 117: vigas e pilares de aço da cobertura do corredor no azul dos muros
+      var gf = 0x23262a, gm = mat(gf);
       function gb(w, h, d, x, y, z){ var m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), gm); m.position.set(x, y, z); g.add(m); }
       gb(cw, 0.07, 0.06, 0, 0.04, -cd / 2 + 0.03); gb(cw, 0.07, 0.06, 0, 0.04, cd / 2 - 0.03);          // vigas de borda (fachada e lado da nave)
       gb(0.06, 0.07, cd, -cw / 2 + 0.03, 0.04, 0); gb(0.06, 0.07, cd, cw / 2 - 0.03, 0.04, 0);          // vigas das pontas
