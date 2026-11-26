@@ -5,7 +5,8 @@
 <g transform="translate(0,-50)">
 <rect x="40" y="-40" width="660" height="270" fill="#d9d0f0" stroke="#666" stroke-width="1.5"/>
 <rect x="280" y="-30" width="210" height="185" fill="#f3e6d3" stroke="#666" stroke-width="1.5"/>
-<rect x="490" y="-30" width="205" height="185" fill="#f3e6d3" stroke="#666" stroke-width="1.5"/>
+<rect x="490" y="-30" width="125" height="185" fill="#f3e6d3" stroke="#666" stroke-width="1.5"/>
+<rect x="615" y="-30" width="80" height="185" fill="#efe9e0" stroke="#666" stroke-width="1.5"/>
 <rect x="50" y="-30" width="150" height="300" fill="#f3e6d3" stroke="#666" stroke-width="1.5"/>
 <rect x="200" y="-30" width="80" height="185" fill="#dfe7ea" stroke="#666" stroke-width="1.5"/>
 <rect x="200" y="155" width="500" height="115" fill="#d9d9de" stroke="#666" stroke-width="1.5"/>
@@ -22,12 +23,18 @@
 <rect x="329.0" y="86.5" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
 <text x="385.0" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke">Sala 2</text>
 <text x="385.0" y="44" text-anchor="middle" font-size="9" fill="#444" stroke="#fff" stroke-width="2.5" paint-order="stroke">≈ 4,2 × 3,7 m</text>
-<rect x="570.5" y="-28" width="44" height="9" rx="2" fill="#d6ecff" stroke="#2f6db5" stroke-width="1.2"/><text x="592.5" y="-21" text-anchor="middle" font-size="6.5" font-weight="bold" fill="#2f6db5">AC</text>
-<rect x="536.5" y="15.5" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
-<rect x="536.5" y="51.0" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
-<rect x="536.5" y="86.5" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
-<text x="592.5" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke">Sala 3</text>
-<text x="592.5" y="44" text-anchor="middle" font-size="9" fill="#444" stroke="#fff" stroke-width="2.5" paint-order="stroke">≈ 4,1 × 3,7 m</text>
+<rect x="530.5" y="-28" width="44" height="9" rx="2" fill="#d6ecff" stroke="#2f6db5" stroke-width="1.2"/><text x="552.5" y="-21" text-anchor="middle" font-size="6.5" font-weight="bold" fill="#2f6db5">AC</text>
+<rect x="496.5" y="15.5" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
+<rect x="496.5" y="51.0" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
+<rect x="496.5" y="86.5" width="112" height="22" rx="3" fill="#bdbdc2" stroke="#8a8a90" stroke-width="1"/>
+<text x="552.5" y="30" text-anchor="middle" font-size="16" font-weight="bold" fill="#333" stroke="#fff" stroke-width="3" paint-order="stroke">Sala 3</text>
+<text x="552.5" y="44" text-anchor="middle" font-size="9" fill="#444" stroke="#fff" stroke-width="2.5" paint-order="stroke">≈ 2,5 × 3,7 m</text>
+<rect x="618" y="51" width="36" height="33" rx="7" fill="#c9835f"/>
+<rect x="627" y="-24" width="55" height="23" fill="#bcd9ef" stroke="#6a8aa5"/><text x="654" y="-9" text-anchor="middle" font-size="7" fill="#2f4a60">trocador</text>
+<rect x="672" y="98" width="20" height="28" rx="3" fill="#fff" stroke="#888"/><ellipse cx="682" cy="112" rx="5" ry="8" fill="#dbe8f2" stroke="#9ab"/>
+<rect x="667" y="15" width="25" height="30" fill="#e9e6df" stroke="#999"/><rect x="669" y="22" width="12" height="16" fill="#2b2e32"/><text transform="translate(665,30) rotate(-90)" text-anchor="middle" font-size="5.5" fill="#444">micro-ondas</text>
+<circle cx="655" cy="65" r="14" fill="none" stroke="#e0a43a" stroke-width="1.5" stroke-dasharray="3 2"/>
+<text x="645" y="104" text-anchor="middle" font-size="8" font-weight="bold" fill="#333" stroke="#fff" stroke-width="2" paint-order="stroke">Apoio às</text><text x="645" y="113" text-anchor="middle" font-size="8" font-weight="bold" fill="#333" stroke="#fff" stroke-width="2" paint-order="stroke">Mamães</text><text x="645" y="122" text-anchor="middle" font-size="6" fill="#444" stroke="#fff" stroke-width="2" paint-order="stroke">≈ 1,6 × 3,7 m · sem janela</text>
 </g>
 <line x1="200" y1="155" x2="200" y2="162" stroke="#444" stroke-width="3"/><line x1="200" y1="218" x2="200" y2="225" stroke="#444" stroke-width="3"/>
 <rect x="196" y="162" width="3" height="30" fill="#bfe3dc" fill-opacity="0.85" stroke="#6b7075" stroke-width="1"/><rect x="201" y="188" width="3" height="30" fill="#bfe3dc" fill-opacity="0.85" stroke="#6b7075" stroke-width="1"/>
@@ -211,17 +218,7 @@
 <text x="335" y="800" text-anchor="middle" font-size="22" font-weight="bold" fill="#333">Hall</text><text x="335" y="816" text-anchor="middle" font-size="9" fill="#666">corredor de acesso · recepção</text>
 <text x="285" y="772" text-anchor="start" font-size="9" fill="#2f6db5">← banheiros</text><text x="345" y="742" text-anchor="middle" font-size="9" fill="#2f6db5">↑ nave</text><text x="665" y="765" text-anchor="middle" font-size="9" fill="#2f6db5">↑ anexo</text><text x="332" y="866" text-anchor="middle" font-size="9" fill="#2f6db5">↓ pátio</text>
 <rect x="676" y="775" width="22" height="80" rx="5" fill="#8fa3ad" stroke="#6f838d"/><text transform="translate(691,818) rotate(-90)" text-anchor="middle" font-size="8" fill="#fff">banco</text>
-<rect x="430" y="804" width="130" height="80" fill="#e8d9c0"/>
-<rect x="430" y="802" width="130" height="4" fill="#cfeee8" stroke="#2fa38f" stroke-width="1.2"/><rect x="428" y="802" width="4" height="82" fill="#cfeee8" stroke="#2fa38f" stroke-width="1.2"/><rect x="558" y="802" width="4" height="82" fill="#cfeee8" stroke="#2fa38f" stroke-width="1.2"/>
-<rect x="430" y="878" width="130" height="5" fill="#b5814f" stroke="#7a5a3a" stroke-width="0.8"/><circle cx="495" cy="844" r="17" fill="none" stroke="#e0a43a" stroke-width="1.5" stroke-dasharray="3 2"/>
-<rect x="442" y="802" width="46" height="5" fill="#ece6da"/><rect x="442" y="797" width="50" height="3" fill="#bfe3dc" stroke="#23262a" stroke-width="1"/><line x1="442" y1="795" x2="556" y2="795" stroke="#888" stroke-width="1" stroke-dasharray="4 3"/><polygon points="556,795 548,792 548,798" fill="#888"/>
-<text x="500" y="791" text-anchor="middle" font-size="6" fill="#2c5f55">porta de correr de vidro</text>
-<rect x="435" y="819" width="34" height="32" rx="7" fill="#c9835f"/>
-<rect x="493" y="854" width="55" height="22" fill="#bcd9ef" stroke="#6a8aa5"/><text x="520" y="868" text-anchor="middle" font-size="7" fill="#2f4a60">trocador</text>
-<rect x="501" y="808" width="28" height="18" rx="3" fill="#fff" stroke="#888"/><ellipse cx="515" cy="817" rx="8" ry="4.5" fill="#dbe8f2" stroke="#9ab"/>
-<rect x="543" y="817" width="14" height="30" fill="#e9e6df" stroke="#999"/><rect x="545" y="825" width="10" height="14" fill="#2b2e32"/><text transform="translate(540,832) rotate(-90)" text-anchor="middle" font-size="6" fill="#444">micro-ondas</text>
-<text x="514" y="834" text-anchor="middle" font-size="8" font-weight="bold" fill="#333">Apoio às</text><text x="514" y="843" text-anchor="middle" font-size="8" font-weight="bold" fill="#333">Mamães</text><text x="514" y="851" text-anchor="middle" font-size="5.5" fill="#666">≈ 2,6 × 1,6 m</text><text x="495" y="800" text-anchor="middle" font-size="6" fill="#1f7d6c">vidro temperado (metade p/ cima)</text>
-<rect x="563" y="810" width="5" height="70" fill="#d9c7a8" stroke="#8a7550"/><text transform="translate(581,845) rotate(-90)" text-anchor="middle" font-size="8" fill="#5a4a2a">painel de avisos</text>
+<rect x="395" y="722" width="70" height="5" fill="#d9c7a8" stroke="#8a7550"/><text x="430" y="737" text-anchor="middle" font-size="7" fill="#5a4a2a">painel de avisos</text>
 <circle cx="428" cy="748" r="9" fill="#6f9a68" stroke="#4d7a47"/>
 <rect x="684" y="750" width="14" height="18" rx="3" fill="#b9d8f2" stroke="#6a8aa5" stroke-width="1.3"/><text x="681" y="758" text-anchor="end" font-size="7" font-weight="bold" fill="#333">Bebedouro</text>
 <rect x="252" y="820" width="7" height="45" fill="#ece6da"/><line x1="255" y1="865" x2="300" y2="865" stroke="#555" stroke-width="2"/><path d="M255 820 A45 45 0 0 1 300 865" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
@@ -362,13 +359,18 @@
 <line x1="506.5" y1="155" x2="512.5" y2="155" stroke="#222" stroke-width="4"/><line x1="557.5" y1="155" x2="563.5" y2="155" stroke="#222" stroke-width="4"/>
 <line x1="512.5" y1="155" x2="512.5" y2="110" stroke="#555" stroke-width="2"/>
 <path d="M512.5 110 A45 45 0 0 1 557.5 155" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
-<rect x="405" y="152" width="60" height="6" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
-<line x1="405" y1="155" x2="465" y2="155" stroke="#5b9bd5" stroke-width="2"/>
-<rect x="610" y="152" width="60" height="6" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
-<line x1="610" y1="155" x2="670" y2="155" stroke="#5b9bd5" stroke-width="2"/>
+<rect x="632.5" y="153.5" width="45" height="3" fill="#d9d9de"/>
+<line x1="626.5" y1="155" x2="632.5" y2="155" stroke="#222" stroke-width="4"/><line x1="677.5" y1="155" x2="683.5" y2="155" stroke="#222" stroke-width="4"/>
+<line x1="632.5" y1="155" x2="632.5" y2="110" stroke="#555" stroke-width="2"/>
+<path d="M632.5 110 A45 45 0 0 1 677.5 155" fill="none" stroke="#888" stroke-width="1" stroke-dasharray="3 3"/>
+<rect x="405.0" y="152" width="60" height="6" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+<line x1="405.0" y1="155" x2="465.0" y2="155" stroke="#5b9bd5" stroke-width="2"/>
+<rect x="565.0" y="152" width="42" height="6" fill="#ffffff" stroke="#555" stroke-width="1.5"/>
+<line x1="565.0" y1="155" x2="607.0" y2="155" stroke="#5b9bd5" stroke-width="2"/>
 <line x1="200" y1="50" x2="200" y2="155" stroke="#444" stroke-width="3"/>
 <line x1="280" y1="50" x2="280" y2="155" stroke="#444" stroke-width="3"/>
 <line x1="490" y1="50" x2="490" y2="155" stroke="#444" stroke-width="3"/>
+<line x1="615" y1="50" x2="615" y2="155" stroke="#444" stroke-width="3"/>
 </g>
 <g transform="translate(0,160)">
 <rect x="202" y="885" width="6" height="33" fill="#dff3ef" stroke="#2fa38f" stroke-width="1.2"/>
@@ -532,6 +534,6 @@
 <rect x="44" y="252" width="5" height="40" fill="#54575c" stroke="#33353a" stroke-width="0.8"/>
 <rect x="591" y="252" width="5" height="40" fill="#54575c" stroke="#33353a" stroke-width="0.8"/>
 <rect x="200" y="105" width="500" height="115" fill="#cfe8f5" fill-opacity="0.35" stroke="#4a90b8" stroke-width="1.2" stroke-dasharray="6 4"/>
-<text x="450" y="154" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#2b6a8c">corredor 2,40 m aberto ao céu (ventilação) · passarela vazada acima</text>
+<text x="450" y="154" text-anchor="middle" font-size="8.5" font-weight="bold" fill="#2b6a8c">corredor 2,40 m aberto ao céu (ventilação) · passarela de concreto acima</text>
 </g>
 </svg>

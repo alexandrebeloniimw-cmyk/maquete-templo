@@ -107,7 +107,7 @@
     <input id="search" type="search" placeholder="🔍 Buscar (ex.: cantina, escada, nave)" autocomplete="off">
     <div id="tabs"></div>
     <div id="menuPanel"></div>
-    <details class="about"><summary>Sobre o projeto</summary><ul><li>Térreo: nave, hall, banheiros, Sala de Apoio às Mamães, cozinha e cantina (atende pela varanda e pelo estacionamento) e o anexo com salas e escada reta.</li><li>2º andar: Sala Multiuso, WC, Biblioteca e Sala de Reuniões com Copa, com passarela sobre o corredor aberto.</li><li>Pátio com dois estacionamentos e fachada com portas de vidro temperado.</li></ul></details>
+    <details class="about"><summary>Sobre o projeto</summary><ul><li>Térreo: nave, hall, banheiros, cozinha e cantina (atende pela varanda e pelo estacionamento) e o anexo com salas, Sala de Apoio às Mamães e escada reta.</li><li>2º andar: Sala Multiuso, WC, Biblioteca e Sala de Reuniões com Copa, com passarela sobre o corredor aberto.</li><li>Pátio com dois estacionamentos e fachada com portas de vidro temperado.</li></ul></details>
     <div class="credit">A Maquete 3 é a mais aceita pela Junta Diaconal<br>Criação e elaboração: Alexandre Prado</div>
   </aside>
   <div class="bar" id="views"></div>
@@ -315,13 +315,14 @@
     seg3(horiz, fixed, c, w + 0.1, 0.06, th, 0x5b3d25, h + 0.04);
     [-1, 1].forEach(function(o){ seg3(horiz, fixed, c, 0.06, h + 0.02, th, 0x5b3d25, h / 2 + 0.01, o * (w / 2 + 0.03)); });
   }
-  function winFrame(horiz, fixed, c){
+  function winFrame(horiz, fixed, c, w){
+    w = w || 1.2;
     var y0 = 1.1, y1 = 2.3, yc = (y0 + y1) / 2;
-    seg3(horiz, fixed, c, 1.2, 0.05, 0.2, C.white, y0 + 0.025);
-    seg3(horiz, fixed, c, 1.2, 0.05, 0.2, C.white, y1 - 0.025);
-    [-0.575, 0.575].forEach(function(o){ seg3(horiz, fixed, c, 0.05, 1.2, 0.2, C.white, yc, o); });
+    seg3(horiz, fixed, c, w, 0.05, 0.2, C.white, y0 + 0.025);
+    seg3(horiz, fixed, c, w, 0.05, 0.2, C.white, y1 - 0.025);
+    [-1, 1].forEach(function(q){ seg3(horiz, fixed, c, 0.05, 1.2, 0.2, C.white, yc, q * (w / 2 - 0.025)); });
     seg3(horiz, fixed, c, 0.04, 1.2, 0.1, C.white, yc);
-    seg3(horiz, fixed, c, 1.3, 0.04, 0.3, C.white, y0 - 0.02);
+    seg3(horiz, fixed, c, w + 0.1, 0.04, 0.3, C.white, y0 - 0.02);
   }
   // MAQUETE 3: janela de vidro temperado 1,20 x 1,20 m (peitoril 1,10 m): vidro translúcido, perfil fino de alumínio, montante central (folhas de correr), trinco e peitoril
   var tempWinMat = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
@@ -391,7 +392,8 @@
     rect(40, 720, 700, 1760, 0, 0.05, 0, { cast: false, material: new THREE.MeshStandardMaterial({ map: tx, roughness: 0.9 }) });   // pátio
   })();
   rect(40, 40, 700, 230, 0, 0.06, C.anexo, { cast: false });                 // bloco do anexo
-  [[50,200],[280,490],[490,695]].forEach(function(r){ rect(r[0], 50, r[1], 155, 0.06, 0.04, 0, { cast: false, material: anxWood((r[1] - r[0]) * S, 105 * S) }); });   // Etapa 87: piso de tábuas de madeira clara   // Etapa 70: Sala 4 eliminada; Salas 2 e 3 ocupam x280..695
+  [[50,200],[280,490],[490,615]].forEach(function(r){ rect(r[0], 50, r[1], 155, 0.06, 0.04, 0, { cast: false, material: anxWood((r[1] - r[0]) * S, 105 * S) }); });
+  rect(615, 50, 695, 155, 0.06, 0.04, 0, { cast: false, material: anxTile(80 * S, 105 * S, [226, 222, 214], '#b9b4aa', 0.3) });   // Etapa 101: piso de cerâmica clara da Sala de Apoio às Mamães   // Etapa 87: piso de tábuas de madeira clara   // Etapa 70: Sala 4 eliminada; Salas 2 e 3 ocupam x280..695
   rect(200, 50, 280, 155, 0.06, 0.04, 0, { cast: false, material: anxTile(80 * S, 105 * S, [214, 224, 229], '#a3aeb4', 0.3) });            // PROJETO 2: banheiro do anexo (entre Sala 1 e Sala 2)   // PROJETO 2: 3 salas
   rect(200, 155, 700, 220, 0.06, 0.04, 0, { cast: false, material: anxTile(500 * S, 65 * S, [206, 206, 210], '#9a9aa0', 0.3) });             // corredor do anexo (MAQUETE 3: começa em x200)
   rect(50, 155, 200, 220, 0.06, 0.04, 0, { cast: false, material: anxWood(150 * S, 65 * S) });          // MAQUETE 3: Sala 1 esticada até a parede divisória nave x anexo
@@ -645,14 +647,14 @@
 
   // ---------- Anexo (paredes das salas com altura padrão de 3 m) ----------
   // PROJETO 2: anexo reorganizado (3 salas + banheiro acessível + Sala de Apoio) com corredor y155..220 e bebedouro
-  [200, 280, 490].forEach(function(px){ vwall(px, 50, 155, BH); });   // Etapa 70: sem as paredes x430 e x580 (Sala 4 eliminada)
+  [200, 280, 490, 615].forEach(function(px){ vwall(px, 50, 155, BH); });   // Etapa 101: parede x615 divide a Sala 3 (x490..615) da Sala de Apoio (x615..695)   // Etapa 70: sem as paredes x430 e x580 (Sala 4 eliminada)
   vwall(695, 50, 155, BH);
-  hwall(155, 200, 695, BH, [door(240), door(325), win(435), door(535), win(640)]);   // MAQUETE 3: a Sala 1 não tem mais parede/porta/janela para o corredor (foi esticada até y220)
+  hwall(155, 200, 695, BH, [door(240), door(325), win(435), door(535), { a: 565, b: 607, sill: 1.1, lh: 2.3 }, door(655)]);   // MAQUETE 3: a Sala 1 não tem mais parede/porta/janela para o corredor (foi esticada até y220)
   vwall(200, 155, 225, BH, [{ a: 162, b: 218, lh: 2.1 }]);               // MAQUETE 3: nova parede leste da Sala 1 (voltada para o corredor de acesso), com vão da porta de vidro de correr
   doorLeaf(true, 225, 665, 0.86, 2.08, 0.2);                                // porta de madeira de acesso ao anexo
-  [325, 535].forEach(function(c){ doorLeaf(true, 155, c); });   // Etapa 70: portas das Salas 2 e 3
+  [325, 535, 655].forEach(function(c){ doorLeaf(true, 155, c); });   // Etapa 101: 655 = porta da Sala de Apoio   // Etapa 70: portas das Salas 2 e 3
   doorLeaf(true, 155, 240, 0.9, 2.08, 0.16);                              // porta do banheiro do anexo      // portas de madeira: Salas 1-3 e Sala de Apoio
-  [435, 640].forEach(function(c){ winFrame(true, 155, c); });           // janelas das 3 salas
+  winFrame(true, 155, 435); winFrame(true, 155, 586, 0.84);   // Etapa 101: Sala 3 com janela de 0,84 m (a Sala de Apoio não tem janela)           // janelas das 3 salas
   // MAQUETE 3 (Etapa 56): porta de vidro temperado DE CORRER (2 folhas de 0,60 m, uma fixa e uma móvel, trilho superior e inferior, puxador) da Sala 1 voltada para o corredor de acesso
   (function(){
     var temp = new THREE.MeshStandardMaterial({ color: 0xb4dccf, transparent: true, opacity: 0.32, roughness: 0.05, metalness: 0.2, side: THREE.DoubleSide });
@@ -808,11 +810,11 @@
     cam(X(700) - 0.11, 2.6, Z(780), -1, 0.15); cam(X(255) + 0.1, 2.6, Z(770), 1, 0.15);
     // anexo: corredor (parede divisória com a nave) e salas
     cam(X(285), 2.6, Z(225) - 0.09, 0.5, -1); cam(X(560), 2.6, Z(225) - 0.09, -0.5, -1);
-    cam(X(125), 2.55, Z(40) + 0.12, 0, 1); cam(X(592), 2.55, Z(40) + 0.12, 0, 1);
+    cam(X(125), 2.55, Z(40) + 0.12, 0, 1); cam(X(552.5), 2.55, Z(40) + 0.12, 0, 1);
   })();
   (function(){
     function acBox(x, y, z){ box(0.95, 0.28, 0.2, 0xf4f4f2, x, y, z); box(0.8, 0.025, 0.02, 0x9aa0a6, x, y - 0.09, z + 0.105, null, { cast: false }); }
-    [125, 385, 592].forEach(function(cx){
+    [125, 385, 552.5].forEach(function(cx){
       acBox(X(cx), 2.45, Z(40) + 0.11 + 0.1);                                                   // split na parede do fundo
       box(1.5, 0.85, 0.04, 0x16191c, X(cx), 1.5, Z(40) + 0.11 + 0.02);                          // tela
       if (cx !== 125) return;                                                                      // Etapa 80: Salas 2 e 3 sem mesa e sem cadeiras (os 3 bancos são a medida da sala)
@@ -1127,51 +1129,16 @@
       box(0.05, 0.42, 1.6, 0, X(698), 0.78, bz, null, { material: wm });                                // encosto
       [-0.72, 0.72].forEach(function(q){ box(0.04, 0.43, 0.04, 0x2a2d31, bx - 0.19, 0.215, bz + q, null, { material: mt }); box(0.04, 0.43, 0.04, 0x2a2d31, bx + 0.19, 0.215, bz + q, null, { material: mt }); box(0.04, 0.36, 0.04, 0x2a2d31, X(698), 0.6, bz + q, null, { material: mt }); });
     })();
-    // painel de avisos: agora na face externa (leste) da Sala de Apoio do Hall
-    (function(){ var px = X(560) + 0.09, pz = Z(844); box(0.04, 1.0, 1.4, 0xd9c7a8, px, 1.5, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 2.02, pz); box(0.05, 0.05, 1.48, 0x7a5a3a, px, 0.98, pz);
-      [[-0.5, 1.7, 0xf4f1e8], [-0.15, 1.58, 0xf2d56b], [0.2, 1.72, 0xbfd8ea], [0.5, 1.55, 0xf2b6a8], [-0.4, 1.35, 0xf4f1e8], [0.05, 1.3, 0xc7e3c0], [0.45, 1.28, 0xf4f1e8]].forEach(function(q){ box(0.02, 0.22, 0.17, q[2], px + 0.03, q[1] - 0.05, pz + q[0], null, { cast: false }); }); })();   // Etapa 85: avisos presos no painel
+    // painel de avisos: Etapa 101 — na parede da nave, lado do Hall (a sala de apoio saiu do Hall)
+    (function(){ var px = X(430), pz = Z(720) + 0.14; box(1.4, 1.0, 0.04, 0xd9c7a8, px, 1.5, pz); box(1.48, 0.05, 0.05, 0x7a5a3a, px, 2.02, pz); box(1.48, 0.05, 0.05, 0x7a5a3a, px, 0.98, pz);
+      [[-0.5, 1.7, 0xf4f1e8], [-0.15, 1.58, 0xf2d56b], [0.2, 1.72, 0xbfd8ea], [0.5, 1.55, 0xf2b6a8], [-0.4, 1.35, 0xf4f1e8], [0.05, 1.3, 0xc7e3c0], [0.45, 1.28, 0xf4f1e8]].forEach(function(q){ box(0.17, 0.22, 0.02, q[2], px + q[0], q[1] - 0.05, pz + 0.03, null, { cast: false }); }); })();   // Etapa 85: avisos presos no painel
     var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.15, 0.4, 18), mat(0xdcd8cf, { roughness: 0.6 })); pot.position.set(X(428), 0.2, Z(748)); root.add(pot);
     var pl = new THREE.Mesh(new THREE.SphereGeometry(0.34, 16, 12), mat(0x5d8f56, { roughness: 0.9 })); pl.position.set(X(428), 0.75, Z(748)); root.add(pl);
     [[0.2, 0.9, 0.1], [-0.18, 0.95, -0.05], [0.0, 1.1, 0.0], [-0.1, 0.8, 0.2], [0.12, 0.8, -0.18]].forEach(function(q){ var lf = new THREE.Mesh(new THREE.SphereGeometry(0.2, 8, 6), mat(0x4f8a49, { roughness: 0.9 })); lf.position.set(X(428) + q[0], q[1], Z(748) + q[2]); root.add(lf); });   // Etapa 85: folhagem mais cheia
     var rg = new THREE.Mesh(new THREE.CylinderGeometry(0.9, 0.9, 0.02, 40), mat(0xcfc3ae, { roughness: 1 })); rg.position.set(X(335), 0.12, Z(810)); root.add(rg);
   })();
 
-  // ---- MAQUETE 3: Sala de Apoio às Mamães no Hall, em horizontal (x430..560, y804..884 ≈ 2,6 × 1,6 m): poltrona, trocador, pia e micro-ondas ----
-  (function(){
-    rect(430, 804, 560, 884, 0.1, 0.02, 0xcfcac2, { cast: false });   // piso de microcimento claro
-    // paredes: azulejo até a metade (1,5 m) e vidro temperado da metade para cima, com perfis pretos (norte, oeste e leste; a sul é a fachada)
-    hwall(804, 430, 560, BH, [door(465)], 'GLASSUP');
-    vwall(430, 804, 884, BH, [], 'GLASSUP');
-    vwall(560, 804, 884, BH, [], 'GLASSUP');
-    // porta de correr de vidro temperado (folha de 1,0 m com perfis pretos, trilho superior e puxador), do lado do Hall; corre para o leste sobre a parede de vidro
-    (function(){
-      var cz = Z(804) - 0.13, cx = X(465), lw = 1.0, met = 0x1f2226, tx0 = X(450), tx1 = X(556);
-      box(lw, 2.06, 0.012, 0, cx, 1.06, cz, null, { material: tempWinMat, cast: false });
-      box(lw + 0.04, 0.06, 0.05, met, cx, 0.05, cz); box(lw + 0.04, 0.06, 0.05, met, cx, 2.09, cz);
-      [-1, 1].forEach(function(q){ box(0.04, 2.1, 0.05, met, cx + q * (lw / 2 + 0.01), 1.07, cz); });
-      box(0.025, 0.9, 0.05, 0xc9ced3, cx + 0.38, 1.05, cz - 0.04);                                  // puxador vertical
-      box(tx1 - tx0, 0.07, 0.07, met, (tx0 + tx1) / 2, 2.2, cz, null, { cast: false });              // trilho superior
-      box(tx1 - tx0, 0.015, 0.04, 0x6b7075, (tx0 + tx1) / 2, 0.01, cz, null, { cast: false });        // guia no piso
-      box(0.3, 0.05, 0.05, met, cx, 2.17, cz, null, { cast: false });                                 // roldana
-    })();
-    // design: faixa de vidro jateado (privacidade na altura dos olhos, 1,55–2,05 m) nas 3 paredes de vidro
-    var fr = new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.62, roughness: 0.9 });
-    gbox(true, 804, (488 + 560) / 2, (560 - 488) * S, 0.5, 0.036, 1.8, 0, fr);
-    gbox(false, 430, 844, 80 * S, 0.5, 0.036, 1.8, 0, fr);
-    gbox(false, 560, 844, 80 * S, 0.5, 0.036, 1.8, 0, fr);
-    // design: ripado de madeira na parede da fachada (atrás do trocador) e pendente circular de LED
-    for (var rk = 0; rk < 26; rk++) box(0.05, 1.75, 0.04, 0xb5814f, X(433) + rk * 0.098 + 0.05, 1.83, Z(884) - 0.07, null, { cast: false });
-    box(2.55, 0.05, 0.05, 0x23262a, X(495), 0.93, Z(884) - 0.07, null, { cast: false }); box(2.55, 0.05, 0.05, 0x23262a, X(495), 2.72, Z(884) - 0.07, null, { cast: false });
-    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.34, 0.022, 10, 40), new THREE.MeshStandardMaterial({ color: 0xfff1c9, emissive: 0xffe2a8, emissiveIntensity: 0.9 })); ring.rotation.x = Math.PI / 2; ring.position.set(X(495), 2.5, Z(844)); root.add(ring);
-    [0, 2.1, 4.2].forEach(function(a){ box(0.01, 0.5, 0.01, 0x23262a, X(495) + 0.34 * Math.cos(a), 2.75, Z(844) + 0.34 * Math.sin(a), null, { cast: false }); });
-    box(0.7, 0.45, 0.65, 0xc9835f, X(450) + 0.1, 0.3, Z(835)); box(0.14, 0.55, 0.65, 0xc9835f, X(450) - 0.22, 0.6, Z(835)); box(0.12, 0.18, 0.65, 0xb06f4e, X(450) + 0.45, 0.5, Z(835));   // poltrona de amamentação (terracota)
-    [[0.35, 0.28], [0.35, -0.28], [-0.15, 0.28], [-0.15, -0.28]].forEach(function(q){ box(0.03, 0.08, 0.03, 0x23262a, X(450) + q[0] - 0.05, 0.04, Z(835) + q[1]); });   // pés pretos
-    box(1.1, 0.9, 0.45, 0xf4f2ec, X(520), 0.45, Z(884) - 0.13 - 0.25); box(1.1, 0.06, 0.45, 0xbcd9ef, X(520), 0.93, Z(884) - 0.13 - 0.25); box(1.12, 0.04, 0.47, 0xb5814f, X(520), 0.89, Z(884) - 0.13 - 0.25);   // trocador (parede sul) com friso de madeira
-    box(0.56, 0.85, 0.36, 0xf4f2ec, X(515), 0.425, Z(804) + 0.11 + 0.2); var ps3 = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps3.position.set(X(515), 0.88, Z(804) + 0.11 + 0.2); root.add(ps3); box(0.03, 0.22, 0.03, 0x15171a, X(515), 1.02, Z(804) + 0.11 + 0.06); box(0.03, 0.03, 0.12, 0x15171a, X(515), 1.12, Z(804) + 0.11 + 0.1);   // pia com torneira preta
-    var mx = X(560) - 0.11 - 0.25;
-    box(0.5, 0.9, 0.6, 0xe9e6df, mx, 0.45, Z(832)); box(0.52, 0.04, 0.62, 0xb9bcbe, mx, 0.92, Z(832));          // balcão
-    box(0.36, 0.26, 0.45, 0x2b2e32, mx, 1.07, Z(832)); box(0.02, 0.18, 0.3, 0x15171a, mx - 0.19, 1.07, Z(832), null, { cast: false });   // micro-ondas
-  })();
+  // Etapa 101: a Sala de Apoio às Mamães saiu do Hall (foi para o anexo, ao lado da Sala 3); o Hall fica livre
   // ---- bebedouro: parede externa dos banheiros (abrigo coberto) ----
   box(0.35, 1.0, 0.3, 0xcfd8dc, X(698) - 0.175, 0.55, Z(759)); box(0.3, 0.05, 0.26, 0x5b9bd5, X(698) - 0.175, 1.07, Z(759)); box(0.12, 0.12, 0.05, 0x888, X(698) - 0.1, 1.15, Z(759));   // MAQUETE 3: bebedouro na outra extremidade do Hall (muro leste)
 
@@ -1748,7 +1715,7 @@
     lampRound(110, 805); lampRound(200, 805); [310, 400, 490, 580, 665].forEach(function(px){ lampRound(px, 768); lampRound(px, 845); });
     // salas do anexo e cozinha: laje emboçada branca lisa + luzes
     var lajeMat = new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 1, emissive: 0x8c8c88 });
-    [[50, 200], [200, 280], [280, 490], [490, 695]].forEach(function(r){
+    [[50, 200], [200, 280], [280, 490], [490, 615], [615, 695]].forEach(function(r){
       var cx = (r[0] + r[1]) / 2;
       box((r[1] - r[0]) * S, 0.08, 105 * S, 0, X(cx), BH - 0.04, Z(102.5 - DYP), forroGroup, { material: lajeMat, cast: false });
       lampRound(cx, 100 - DYP);
@@ -1784,13 +1751,13 @@
     labelGroup.add(sp);
   }
   label('Anexo ao templo', 370, 100, 6.4, 4.0);
-  label('Sala 1', 125, 50, 4.0, 1.7); label('Banheiro PCD', 240, 50, 3.4, 1.9); label('Sala 2', 385, 50, 4.0, 1.7); label('Sala 3', 592, 50, 4.0, 1.7); label('Escada ao 2º andar', 470, 195, 4.0, 2.4); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
+  label('Sala 1', 125, 50, 4.0, 1.7); label('Banheiro PCD', 240, 50, 3.4, 1.9); label('Sala 2', 385, 50, 4.0, 1.7); label('Sala 3', 552.5, 50, 3.4, 1.7); label('Sala de Apoio às Mamães', 655, 50, 3.0, 1.9); label('Escada ao 2º andar', 470, 195, 4.0, 2.4); label('Bebedouro (anexo)', 620, 190, 4.0, 1.9);
   label('Altar', 160, 250, 2.6, 1.5); label('Plataforma 2', 335, 252, 2.3, 2.6); label('Plataforma 1', 335, 297, 1.6, 2.6);
   label('Bateria', 560, 255, 3.1, 1.5); label('Teclado', 110, 258, 3.0, 1.5); label('Guitarra', 262, 255, 3.0, 1.5); label('Baixo', 292, 255, 3.4, 1.3); label('Microfones', 375, 262, 3.0, 2.0);
   label('Piso da nave', 370, 560, 1.4, 2.6);
   label('Mesa de som', 160, 687, 1.7, 2.4);
   label('Acesso ao anexo', 665, 270, 6.2, 3.2); label('Corredor de acesso ao anexo', 665, 520, 3.4, 3.4);
-  label('Hall', 335, 805, 3.0, 1.8); label('Apoio às Mamães', 495, 835, 2.2, 0.9); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
+  label('Hall', 335, 805, 3.0, 1.8); label('Fachada 4ª IMW', 500, 925, 3.6, 3.0); label('Banheiro Feminino', 120, 767, 3.6, 3.0); label('Banheiro Masculino', 120, 842, 3.6, 3.0);
   label('Varanda', 230, 1060, 3.4, 1.6);
   label('Cozinha', 127, 1000, 3.1, 1.9); label('Cantina', 127, 1170, 3.4, 1.9);
   label('Cobertura (abrigo)', 332, 790, 3.7, 3.0);
@@ -1841,7 +1808,6 @@
     { id: 'corrnave', name: 'Corredor da nave', g: 'Templo', pos: [-2.48, 1.65, -4.0], tgt: [-2.48, 1.4, -12.0], roof: true, labels: false, fp: true },
     { id: 'bfem', name: 'Banheiro Feminino', g: 'Banheiros e hall', pos: [-2.7, 1.65, -2.16], tgt: [-5.8, 1.2, -2.5], roof: true, labels: false, fp: true },
     { id: 'bmasc', name: 'Banheiro Masculino', g: 'Banheiros e hall', pos: [-2.5, 1.65, -0.64], tgt: [-5.6, 1.2, -1.3], roof: true, labels: false, fp: true },
-    { id: 'apoiohall', name: 'Sala de Apoio às Mamães (Hall)', g: 'Banheiros e hall', pos: [1.5, 1.65, -1.55], tgt: [3.8, 1.1, -1.4], roof: true, labels: false, fp: true },
     { id: 'hallfp', name: 'Hall', g: 'Banheiros e hall', pos: [5.2, 1.65, -1.2], tgt: [-1.0, 1.4, -2.0], roof: true, labels: false, fp: true },
     { id: 'varanda', name: 'Varanda', g: 'Pátio (ambientes)', pos: [-2.8, 1.65, 0.0], tgt: [-2.8, 1.5, 7.0], roof: true, labels: false, fp: true },
     { id: 'a2geral', name: '2º andar · Biblioteca e Reuniões (de cima)', g: '2º andar', pos: [1.0, 17, -7.0], tgt: [0.6, 3.2, -16.9], roof: false, labels: true },
@@ -1865,7 +1831,8 @@
     { id: 'sala2a', name: 'Sala 2 (anexo)', g: 'Anexo', pos: [0.7, 1.65, -16.04], tgt: [-1.5, 1.3, -17.5], roof: true, labels: false, fp: true },
     { id: 'escadafp', name: 'Escada reta de acesso ao 2º andar', g: 'Anexo', pos: [5.7, 1.65, -15.3], tgt: [1.0, 2.2, -14.1], roof: true, labels: false, fp: true },
     { id: 'escadaalto', name: 'Escada (de cima)', g: 'Anexo', pos: [5.8, 4.6, -15.4], tgt: [1.0, 1.2, -14.0], roof: false, labels: false },
-    { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [5.7, 1.65, -16.04], tgt: [3.5, 1.3, -17.5], roof: true, labels: false, fp: true },
+    { id: 'sala3a', name: 'Sala 3 (anexo)', g: 'Anexo', pos: [4.4, 1.65, -16.04], tgt: [2.8, 1.3, -17.7], roof: true, labels: false, fp: true },
+    { id: 'apoioanexo', name: 'Sala de Apoio às Mamães (anexo)', g: 'Anexo', pos: [5.7, 1.65, -16.0], tgt: [5.7, 1.1, -19.0], roof: true, labels: false, fp: true },
   ];
   // ---------- MAQUETE 3 (Etapa 77): salas do anexo (térreo e 2º andar) mais fundas: a parede dos fundos recua 1,60 m (Etapa 82: puxada 0,50 m para a frente; antes 2,10 m) para o norte, sem mexer no corredor ----------
   var ANX = (function(){
@@ -1900,7 +1867,7 @@
   (function(){
     var zIn = Z(-10) + 0.11 - 0.85;                                // Etapa 90: bancos centralizados na profundidade da sala (antes encostados no lado do corredor); largura já centralizada
     var estofado = mat(0x7b8189, { roughness: 0.95 });
-    [385, 592.5].forEach(function(px){
+    [385, 552.5].forEach(function(px){
       var cx = X(px);
       for (var i = 0; i < 3; i++){
         var cz = zIn + 0.36 + i * 35.5 * S;                                   // 35,5 px = 0,71 m, o mesmo passo das fileiras da nave
@@ -1911,6 +1878,34 @@
         box(2.06, 0.38, 0.05, 0, cx, 0.08 + 0.45 + 0.30, cz + 9 * S - 0.065, null, { material: estofado });
       }
     });
+  })();
+  // ---------- Etapa 101: SALA DE APOIO ÀS MAMÃES no anexo (x615..695, ao lado da Sala 3): reservada, sem janela, porta para o corredor ----------
+  (function(){
+    var zf = Z(105), xw = X(615) + 0.06, xe = X(695) - 0.06, zback = Z(-80) + 0.11;   // frente (parede do corredor), faces internas oeste/leste e fundo (referência final do anexo)
+    var cx = (xw + xe) / 2;
+    var cream = 0xf4f2ec, graph = 0x23262a;
+    // poltrona de amamentação (terracota, pés pretos) junto à parede oeste, voltada para o leste
+    (function(){ var bx = xw + 0.36, bz = zf - 1.75;
+      box(0.7, 0.45, 0.65, 0xc9835f, bx + 0.1, 0.3, bz); box(0.14, 0.55, 0.65, 0xc9835f, bx - 0.22, 0.6, bz); box(0.12, 0.18, 0.65, 0xb06f4e, bx + 0.45, 0.5, bz);
+      [[0.35, 0.28], [0.35, -0.28], [-0.15, 0.28], [-0.15, -0.28]].forEach(function(q){ box(0.03, 0.08, 0.03, graph, bx + q[0] - 0.05, 0.04, bz + q[1]); });
+    })();
+    // pia com cuba e torneira, na parede leste
+    (function(){ var px = xe - 0.2, pz = zf - 0.85;
+      box(0.4, 0.85, 0.56, cream, px, 0.425, pz); var ps = new THREE.Mesh(new THREE.CylinderGeometry(0.15, 0.11, 0.06, 18), mat(0xffffff, { roughness: 0.25 })); ps.position.set(px, 0.87, pz); root.add(ps);
+      box(0.04, 0.2, 0.04, 0x1f2226, px + 0.12, 1.0, pz);
+    })();
+    // balcão com micro-ondas, na parede leste
+    (function(){ var mx = xe - 0.25, mz = zf - 2.5;
+      box(0.5, 0.9, 0.6, 0xe9e6df, mx, 0.45, mz); box(0.52, 0.04, 0.62, 0xb9bcbe, mx, 0.92, mz);
+      box(0.36, 0.26, 0.45, 0x2b2e32, mx, 1.07, mz); box(0.02, 0.18, 0.3, 0x15171a, mx - 0.19, 1.07, mz, null, { cast: false });
+    })();
+    // trocador (parede dos fundos) com friso de madeira e ripado atrás
+    (function(){ var tz = zback + 0.25;
+      box(1.1, 0.9, 0.45, cream, cx, 0.45, tz); box(1.1, 0.06, 0.45, 0xbcd9ef, cx, 0.93, tz); box(1.12, 0.04, 0.47, 0xb5814f, cx, 0.89, tz);
+      for (var rk = 0; rk < 13; rk++) box(0.05, 1.75, 0.04, 0xb5814f, xw + 0.05 + rk * 0.1, 1.83, zback + 0.03, null, { cast: false });
+    })();
+    // pendente circular de LED
+    var ring = new THREE.Mesh(new THREE.TorusGeometry(0.28, 0.02, 10, 40), new THREE.MeshStandardMaterial({ color: 0xfff1c9, emissive: 0xffe2a8, emissiveIntensity: 0.9 })); ring.rotation.x = Math.PI / 2; ring.position.set(cx, 2.55, zf - 1.8); root.add(ring);
   })();
   var bar = document.getElementById('views');
   var anim = null, current = 'geral';
@@ -2043,7 +2038,6 @@
       ['cantinaf', 'Cozinha e Cantina (varanda)', 'Cozinha de vidro e azulejo, e cantina com balcão de atendimento na varanda e cobertura de policarbonato.', 0, [[2.0,9.6,10.6],[-4.9,0.3,2.8]]],
       ['cantinav', 'Cantina · atendimento dos 2 lados', 'Nova janela de vendas voltada para o Estacionamento 1: a cantina atende pela varanda e por este lado, com abrigo de policarbonato para o público.', 0, [[-1.2,5.6,11.0],[-4.4,0.9,6.4], true]],
       ['hallfp', 'Hall de recepção', 'Espaço aberto e livre que liga o pátio à nave, aos banheiros e ao corredor do anexo.', 0, [[2.2,11,2.5],[2.2,0,-2.0]]],
-      ['apoiohall', 'Sala de Apoio às Mamães', 'Sala envidraçada com porta de correr, poltrona, trocador, pia e micro-ondas, ao lado do hall.', 0, [[2.5,7.4,-5.8],[2.5,0.9,-1.1]]],
       ['pesnave', 'Nave', 'Nave com bancos estofados, placas acústicas, ventiladores e ar-condicionado.', 0],
       ['altarfp', 'Vista do altar', 'Plataformas, painel ripado e a cruz com o coração, à frente de toda a congregação.', 0],
       ['portasnave', 'Portas da nave para o corredor', 'Duas portas duplas de vidro temperado ligam a nave ao corredor de acesso ao anexo: uma rente ao altar e outra rente à parede do hall, nos extremos da nave.', 0, [[-6.1,2.9,-6.0],[4.6,1.0,-6.0], false]],
@@ -2051,6 +2045,7 @@
       ['corabe', 'Corredor do anexo', 'Corredor largo e aberto ao céu, que ventila as salas e tem a escada de acesso ao 2º andar.', 0],
       ['escadat', 'Escada de acesso ao 2º andar', 'Escada reta ao longo da parede da nave, com degraus de madeira e guarda-corpo de vidro, que chega direto à passarela do 2º andar.', 0, [[5.8,4.6,-15.4],[1.0,1.2,-14.0], false]],
       ['anexot', 'Anexo · térreo', 'Vista de cima das salas do térreo: Sala 1, banheiro acessível e as Salas 2 e 3, voltadas para o corredor aberto.', 0, [[0.3,16,-15.0],[0.3,0,-18.0], false, 3.02]],
+      ['apoioanexo', 'Sala de Apoio às Mamães', 'Sala reservada no anexo, ao lado da Sala 3, com porta para o corredor e sem janela: poltrona de amamentação, trocador, pia e micro-ondas.', 0, [[6.4,10,-13.8],[5.7,0,-18.0], false, 3.02]],
       ['sala2a', 'Salas do anexo (térreo)', 'Salas de aula com ar-condicionado, tela e mobiliário; ao lado, o banheiro acessível (PCD).', 0, [[-3.55,2.75,-14.75],[-5.8,0.3,-17.4]]],
       ['a2geral', '2º andar · Biblioteca e Reuniões', 'Biblioteca e Sala de Reuniões com Copa, alinhadas às salas do térreo, com passarela de concreto sobre o corredor.', 0, [[2.7,15,-14.6],[2.7,3.3,-18.0]]],
       ['a2mult', '2º andar · Sala Multiuso', 'Sala Multiuso com tela de projeção, painel ripado e cadeiras, para aulas, reuniões e eventos.', 0, [[-4.9,14,-13.4],[-4.9,3.3,-18.0]]],
